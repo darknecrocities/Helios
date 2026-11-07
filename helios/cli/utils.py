@@ -52,8 +52,14 @@ def load_model_and_config(
     """Instantiate Helios model from preset and optionally restore checkpoint weights."""
     target_device = resolve_device(str(device)) if isinstance(device, str) else device
 
-    if model_path is not None:
-        p = Path(model_path).resolve()
+    effective_path = model_path
+    if effective_path is None:
+        default_ckpt = Path("checkpoints/helios_core_pretrained").resolve()
+        if default_ckpt.is_dir() and (default_ckpt / "state.pt").exists():
+            effective_path = default_ckpt
+
+    if effective_path is not None:
+        p = Path(effective_path).resolve()
         if p.is_dir() and (p / "manifest.json").exists():
             manifest = json.loads((p / "manifest.json").read_text(encoding="utf-8"))
             config_dict = manifest.get("config", {})
@@ -71,11 +77,14 @@ def load_model_and_config(
 
     model = HeliosForCausalLM(config).to(target_device)
 
-    if model_path is not None:
-        p = Path(model_path).resolve()
+    if effective_path is not None:
+        p = Path(effective_path).resolve()
         if p.is_dir() and (p / "state.pt").exists():
-            ckpt_mgr = CheckpointManager(checkpoint_dir=p.parent)
-            ckpt_mgr.load_checkpoint(p, model=model, restore_rng=False)
+            payload = torch.load(p / "state.pt", map_location=target_device, weights_only=False)
+            state_dict = (
+                payload.get("model_state_dict", payload) if isinstance(payload, dict) else payload
+            )
+            model.load_state_dict(state_dict)
         elif p.is_file():
             payload = torch.load(p, map_location=target_device, weights_only=False)
             state_dict = (
@@ -92,8 +101,14 @@ def load_or_create_tokenizer(
     vocab_size: int = 32000,
 ) -> BaseTokenizer:
     """Load pretrained tokenizer or initialize ByteLevelBPETokenizer with padded vocab."""
-    if tokenizer_path is not None and Path(tokenizer_path).exists():
-        return HeliosTokenizer.from_pretrained(tokenizer_path)
+    effective_path = tokenizer_path
+    if effective_path is None:
+        default_tok = Path("checkpoints/helios_core_pretrained").resolve()
+        if (default_tok / "tokenizer.json").exists():
+            effective_path = default_tok
+
+    if effective_path is not None and Path(effective_path).exists():
+        return HeliosTokenizer.from_pretrained(effective_path)
 
     tok = ByteLevelBPETokenizer()
     cur_size = tok.vocab_size

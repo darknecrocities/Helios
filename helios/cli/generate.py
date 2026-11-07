@@ -74,9 +74,15 @@ def stream_generate(
         for _ in range(model.config.n_layers)
     ]
 
+    stop_ids = {
+        v for k, v in tokenizer.special_tokens.items()
+        if k in ("<|end_of_text|>", "<|eot_id|>", "<|im_end|>", "</s>", "<pad>")
+    }
     eos_token_id = tokenizer.special_tokens.get("<|end_of_text|>")
     if eos_token_id is None:
         eos_token_id = tokenizer.special_tokens.get("<|eot_id|>")
+    if eos_token_id is not None:
+        stop_ids.add(eos_token_id)
 
     generated_ids: list[int] = []
 
@@ -90,7 +96,7 @@ def stream_generate(
     t_prefill = time.perf_counter() - t0
     tok_id = int(next_tok.item())
 
-    if eos_token_id is not None and tok_id == eos_token_id:
+    if tok_id in stop_ids:
         if telemetry is not None:
             telemetry.update(
                 {
@@ -104,8 +110,9 @@ def stream_generate(
         return generated_ids
 
     generated_ids.append(tok_id)
-    tok_str = tokenizer.decode([tok_id], skip_special_tokens=False)
-    yield tok_str
+    tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
+    if tok_str:
+        yield tok_str
 
     # 2. Incremental Decode Steps with O(1) KV caching
     t_decode_start = time.perf_counter()
@@ -122,12 +129,13 @@ def stream_generate(
             cur_tok = model._sample_token(next_logits, temperature=temperature, top_k=top_k)
             tok_id = int(cur_tok.item())
 
-            if eos_token_id is not None and tok_id == eos_token_id:
+            if tok_id in stop_ids:
                 break
 
             generated_ids.append(tok_id)
-            tok_str = tokenizer.decode([tok_id], skip_special_tokens=False)
-            yield tok_str
+            tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
+            if tok_str:
+                yield tok_str
 
     t_decode = time.perf_counter() - t_decode_start
     num_gen = len(generated_ids)

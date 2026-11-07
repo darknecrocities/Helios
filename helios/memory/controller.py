@@ -134,11 +134,15 @@ class HMAController:
     ) -> str:
         """Assemble retrieved evidence and working turns into an isolated prompt block."""
         retrieved = self.query(query_text=query_text, top_k=3)
+        if not retrieved:
+            return ""
         evidence_blocks: list[str] = []
         for item in retrieved:
             block = self.sanitizer.wrap_isolated_context(item.content, item.id, item.tier)
             evidence_blocks.append(block)
 
+        if not evidence_blocks:
+            return ""
         evidence_str = "\n".join(evidence_blocks)
         return (
             "<retrieved_evidence>\n"

@@ -137,6 +137,52 @@ app.command(name="eval", help="Benchmark generation speed, KV cache footprint, a
     run_eval
 )
 
+
+@app.command(name="auto-improve")
+def auto_improve_cmd(
+    target_accuracy: float = typer.Option(
+        1.0,
+        "--target-accuracy",
+        "-t",
+        help="Target benchmark pass rate (0.0 to 1.0).",
+    ),
+    rounds: int = typer.Option(
+        3,
+        "--rounds",
+        "-r",
+        help="Maximum self-improving evaluation and retraining rounds.",
+    ),
+    checkpoint_dir: str = typer.Option(
+        "checkpoints/helios_core_pretrained",
+        "--checkpoint-dir",
+        "-c",
+        help="Checkpoint directory to evaluate and refine.",
+    ),
+) -> None:
+    """Run autonomous benchmark evaluation, error triage, and active retraining loop."""
+    from helios.training.auto_improve import AutoImprover
+
+    typer.echo("====================================================================")
+    typer.echo(" Helios Autonomous Evaluation & Active Retraining Engine")
+    typer.echo(f" Target Accuracy: {target_accuracy * 100:.1f}% | Max Rounds: {rounds}")
+    typer.echo(f" Checkpoint Target: {checkpoint_dir}")
+    typer.echo("====================================================================")
+
+    improver = AutoImprover(
+        checkpoint_dir=checkpoint_dir,
+        target_accuracy=target_accuracy,
+        max_rounds=rounds,
+    )
+    res = improver.run()
+    typer.echo("✓ Auto-Improve Completed!")
+    typer.echo(
+        f"  Final Accuracy: {res['final_accuracy'] * 100:.2f}% "
+        f"({res['passed']}/{res['total']})"
+    )
+    typer.echo(f"  Rounds Run    : {res['rounds_run']}")
+    typer.echo(f"  Certified Model: {res['certified_checkpoint']}")
+
+
 # Subcommand Groups
 app.add_typer(export_app, name="export")
 

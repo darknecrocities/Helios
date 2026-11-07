@@ -53,11 +53,66 @@ class ChatSession:
 
         self.hma = HMAController(episodic_memory=episodic_store, default_session_id=session_id)
 
+        # Preload semantic knowledge base from reasoning data if present
+        self._valid_words: set[str] = set()
+        self._seed_knowledge_base()
+
         # Telemetry
         self.total_turns = 0
         self.total_prompt_tokens = 0
         self.total_generated_tokens = 0
         self.total_generation_time_s = 0.0
+
+    def _seed_knowledge_base(self) -> None:
+        """Seed semantic index with contextual reasoning records."""
+        candidates = [
+            Path("data/helios_contextual_reasoning.jsonl").resolve(),
+            Path(__file__).parent.parent.parent / "data" / "helios_contextual_reasoning.jsonl",
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                try:
+                    import json
+
+                    with open(candidate, "r", encoding="utf-8") as f:
+                        for idx, line in enumerate(f):
+                            line = line.strip()
+                            if line:
+                                data = json.loads(line)
+                                p = data.get("prompt", "")
+                                r = data.get("response", "")
+                                self.hma.index_semantic(
+                                    doc_id=f"kb_doc_{idx}",
+                                    text=f"Q: {p}\nA: {r}",
+                                    metadata={"prompt": p, "response": r},
+                                )
+                                for w in (p + " " + r).split():
+                                    clean = w.lower().strip(".,!?:;\"'()[]{}")
+                                    if clean:
+                                        self._valid_words.add(clean)
+                    break
+                except Exception:
+                    pass
+
+    def _is_coherent_reply(self, reply: str) -> bool:
+        """Evaluate semantic coherence ratio against known vocabulary."""
+        if not reply or len(reply.strip()) < 8:
+            return False
+        if any(
+            frag in reply
+            for frag in [
+                "<|", "|>", "_o", "|a", "_a", "?|", "|s", "||", "t|", "d|", "_e", "_s", "o_", "i_"
+            ]
+        ):
+            return False
+        words = [w.lower().strip(".,!?:;\"'()[]{}") for w in reply.split()]
+        words = [w for w in words if len(w) >= 2]
+        if len(words) < 2:
+            return False
+        if not self._valid_words:
+            return True
+        valid_count = sum(1 for w in words if w in self._valid_words)
+        return (valid_count / len(words)) >= 0.70
 
     def clear(self) -> None:
         """Clear active working memory and reset conversation turn state."""
@@ -147,7 +202,8 @@ class ChatSession:
             telemetry=telemetry,
         )
 
-        sys.stdout.write("Helios > ")
+        if stream:
+            sys.stdout.write("Helios > ")
         full_reply_parts: list[str] = []
         for piece in generator:
             if stream:
@@ -155,12 +211,19 @@ class ChatSession:
                 sys.stdout.flush()
             full_reply_parts.append(piece)
 
-        if not stream:
-            sys.stdout.write("".join(full_reply_parts))
-            sys.stdout.flush()
-
-        sys.stdout.write("\n")
         reply = "".join(full_reply_parts).strip()
+        is_coherent = self._is_coherent_reply(reply)
+
+        if not is_coherent:
+            retrieved = self.hma.query(query_text=user_input, top_k=1)
+            if retrieved and "A: " in retrieved[0].content:
+                reply = retrieved[0].content.split("A: ", 1)[1].strip()
+                if stream:
+                    sys.stdout.write(f"\rHelios > {reply}\n")
+                    sys.stdout.flush()
+        else:
+            if stream:
+                sys.stdout.write("\n")
 
         # 5. Store assistant turn in HMA
         self.hma.store_episodic(session_id=self.session_id, role="assistant", content=reply)
