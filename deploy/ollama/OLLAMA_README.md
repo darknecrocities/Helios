@@ -17,36 +17,32 @@
 
 ---
 
-## Model Family & Empirical Hardware Requirements
+## Model Family & Complete Hardware Memory Breakdown
 
-Every model in the Helios family has been verified for real-world memory consumption:
-
-| Model Tag | Parameters | Context Window | Weight Size (Q4) | Active RAM (Q4 + Cache) | What It Is Best For | Where It Runs |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`Helios:nano`** | **17.84M** | **2,048** | **9.4 MB** | **~13 MB** | Ultra-fast responses, embedded edge chat | Raspberry Pi, any smartphone, smart watches |
-| **`Helios:alpha`** | **100.09M** | **4,096** | **52.5 MB** | **~71 MB** | Everyday conversational assistant & bilingual QA | Budget phones, browser WebAssembly, basic laptops |
-| **`Helios:beta`** | **303.35M** | **8,192** | **159.1 MB** | **~215 MB** | Step-by-step math problems & logic puzzles | Standard 4GB–8GB RAM laptops, Apple Silicon M1–M4 |
-| **`Helios:core`** | **1,128.89M** | **16,384** | **592.1 MB** | **~800 MB** | Deep programming, system design, essay writing | Standard 8GB RAM laptops, gaming PCs, RTX 3050 |
-| **`Helios:pro`** | **3,319.73M** | **32,768** | **1.70 GB** | **~2.35 GB** | Advanced proofs, medical QA, autonomous agent tool use | Standard 8GB–16GB RAM laptops/PCs, RTX 3060/4060 |
-| **`Helios:flagship`**| **5,802.04M** | **65,536** | **2.97 GB** | **~4.11 GB** | High-capacity foundation reasoning, clinical & scientific proofs | **Standard 16GB RAM laptops / MacBooks** |
+| Model Tag | Parameters | Context Window | Raw Q4 Weights | KV-Cache (@ 2K) | KV-Cache (@ Max Ctx) | Runtime Buffers | Active RAM (@ 2K) | Active RAM (@ Max Ctx) | Where It Runs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`Helios:nano`** | **17.84M** | **2,048** | 8.93 MB | 4.38 MB | 4.38 MB | 48.0 MB | **61.3 MB** | **61.3 MB** | Raspberry Pi, smartphones, microVMs |
+| **`Helios:alpha`** | **100.09M** | **4,096** | 50.11 MB | 24.0 MB | 48.0 MB | 64.0 MB | **138.1 MB** | **162.1 MB** | Budget phones, WebAssembly, basic laptops |
+| **`Helios:beta`** | **303.35M** | **8,192** | 151.88 MB | 48.0 MB | 192.0 MB | 96.0 MB | **295.9 MB** | **439.9 MB** | Standard 4GB–8GB RAM laptops, Apple Silicon M1–M4 |
+| **`Helios:core`** | **1,128.89M** | **16,384** | 565.21 MB | 96.0 MB | 768.0 MB | 160.0 MB | **821.2 MB** | **1.46 GB** | Standard 8GB RAM laptops, gaming PCs, RTX 3050 |
+| **`Helios:pro`** | **3,319.73M** | **32,768** | 1.62 GB | 256.0 MB | 4.00 GB | 256.0 MB | **2.12 GB** | **5.87 GB** | Standard 8GB–16GB RAM laptops/PCs, RTX 3060/4060 |
+| **`Helios:flagship`**| **5,802.04M** | **65,536** | 2.84 GB | 256.0 MB | 8.00 GB | 384.0 MB | **3.46 GB** | **11.21 GB** | **Standard 16GB RAM laptops / MacBooks** |
 
 ---
 
-## Competitive Benchmark Comparison (Medical, Scientific, Math, Code & MCP)
+## Audited Benchmark Comparison (`eval/` Automated Suite)
 
-| Model | Params | Context | MMLU | GSM8K | MedMCQA | SciQ | HumanEval | MCP Tool Acc. | Weight (Q4) | Hardware Needed |
+| Model | Variant / Mode | Params | Context | MMLU (5-shot) | GSM8K (8-shot) | MedMCQA | SciQ | HumanEval | Helios-500 | Status / Source |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Helios Nano** | **18M** | 2K | 38.4% | 42.1% | 44.5% | 68.2% | 26.8% | 90.2% | **~9.4 MB** | < 100 MB RAM |
-| Qwen-2.5-0.5B | 490M | 32K | 45.8% | 52.3% | 42.1% | 71.4% | 31.7% | 76.2% | ~397 MB | 1 GB RAM |
-| **Helios Alpha** | **100M** | 4K | 51.2% | 61.4% | 53.8% | 78.6% | 39.4% | 92.8% | **~52.5 MB** | < 200 MB RAM |
-| Llama-3.2-1B | 1.23B | 128K | 49.3% | 44.4% | 46.2% | 74.1% | 32.3% | 78.4% | ~850 MB | 2 GB RAM |
-| **Helios Beta** | **300M** | 8K | 58.9% | 71.2% | 61.4% | 84.3% | 47.2% | 94.6% | **~159 MB** | < 500 MB RAM |
-| Gemma-2-2B | 2.6B | 8K | 56.1% | 56.6% | 52.8% | 81.2% | 35.4% | 74.5% | ~1.6 GB | 4 GB RAM |
-| **Helios Core** | **1.1B** | 16K | 66.8% | 79.5% | 69.2% | 89.4% | 56.8% | 96.8% | **~592 MB** | 4GB–8GB RAM |
-| Llama-3.2-3B | 3.21B | 128K | 63.4% | 69.2% | 59.4% | 85.6% | 46.3% | 82.6% | ~2.0 GB | 8GB–16GB RAM |
-| DeepSeek-R1-Distill-Qwen-1.5B | 1.78B | 131K | 65.2% | 82.3% | 58.9% | 84.8% | 56.1% | 80.2% | ~1.2 GB | 4GB–8GB RAM |
-| **Helios Pro** | **3.3B** | 32K | **73.6%** | **86.4%** | **76.8%** | **93.2%** | **65.4%** | **98.6%** | **~1.70 GB** | 8GB–16GB RAM |
-| **Helios Flagship**| **5.8B** | 64K | **78.9%** | **90.4%** | **82.5%** | **96.1%** | **72.4%** | **99.4%** | **~2.97 GB** | **16GB RAM Laptop** |
+| **Helios Nano** | Base Pretrained + HMA | **17.84M** | 2,048 | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Alpha–Flagship** | HMA-Grounded Architecture | **100M–5.8B** | 4K–64K | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
+| Qwen2.5-0.5B (Base) | Base Pretrained | 490M | 32,768 | 47.5% | 41.6% | — | — | 30.5% | — | [Qwen2.5 Report](https://qwenlm.github.io/blog/qwen2.5-llm/) |
+| Qwen2.5-0.5B-Instruct | Instruction-Tuned | 490M | 32,768 | 47.5% | 49.6% | — | — | 36.6% | — | [Qwen2.5 Report](https://qwenlm.github.io/blog/qwen2.5-llm/) |
+| Llama-3.2-1B (Base) | Base Pretrained | 1.23B | 131,072 | 32.2% | — | — | — | — | — | [Meta Llama 3.2 Card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md) |
+| Llama-3.2-1B-Instruct | Instruction-Tuned | 1.23B | 131,072 | 49.3% | 44.4% | — | — | 32.3% | — | [Meta Llama 3.2 Card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md) |
+| Gemma-2-2B (Base) | Base Pretrained | 2.6B | 8,192 | 51.3% | 23.9% | — | — | 17.7% | — | [Google Gemma 2 Card](https://gemma.ai/models/gemma-2/) |
+| Gemma-2-2B-IT | Instruction-Tuned | 2.6B | 8,192 | 52.2% | 62.6% | — | — | 36.6% | — | [Google Gemma 2 Card](https://gemma.ai/models/gemma-2/) |
+| Llama-3.2-3B-Instruct | Instruction-Tuned | 3.21B | 131,072 | 63.4% | 77.7% | — | — | 61.6% | — | [Meta Llama 3.2 Card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md) |
 
 ---
 

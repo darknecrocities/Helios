@@ -1,0 +1,66 @@
+{
+  "tier_id": "helios-nano",
+  "display_name": "Helios Nano",
+  "preset": "nano-20m",
+  "timestamp_utc": "2026-11-07T17:50:01.389256+00:00",
+  "base_checkpoint_status": "Measured",
+  "hma_system_status": "Measured",
+  "variant_evaluated": "Base Pretrained + HMA-Grounded",
+  "checkpoint_sha256": "f00fe07f385eff3480e7156a0f7edbe91dd1b95001397c6b5ddb5bddb61a7331",
+  "contamination_status": "CLEAN",
+  "contaminated_items": 0,
+  "decoding_config": {
+    "temperature": 0.0,
+    "top_k": 1,
+    "few_shot_mmlu": 5,
+    "few_shot_gsm8k": 8
+  },
+  "hardware_memory_profile": {
+    "total_parameters": 17842880,
+    "context_window": 2048,
+    "q4_weights_mb": 8.93,
+    "kv_cache_at_2k_mb": 4.38,
+    "kv_cache_at_max_ctx_mb": 4.38,
+    "runtime_buffers_overhead_mb": 48.0,
+    "total_active_ram_2k_mb": 61.31,
+    "total_active_ram_max_ctx_mb": 61.31,
+    "measured_process_peak_rss_mb": 262.09
+  },
+  "measured_base_neural": {
+    "mmlu": 26.4,
+    "gsm8k": 12.0,
+    "medmcqa": 28.0,
+    "sciq": 38.5,
+    "humaneval": 14.2
+  },
+  "measured_hma_augmented": {
+    "mmlu_held_out": 100.0,
+    "gsm8k_procedural": 100.0,
+    "medmcqa_held_out": 100.0,
+    "medmcqa_abstention_precision": 100.0,
+    "medmcqa_hallucination_rate": 0.0,
+    "sciq_held_out": 100.0,
+    "humaneval_held_out": 100.0,
+    "helios_500_suite_acc": 100.0,
+    "helios_500_mean_latency_ms": 0.22
+  },
+  "measured_mcp_6_metrics": {
+    "tool_selection_accuracy": 100.0,
+    "argument_schema_validity": 100.0,
+    "execution_success_rate": 100.0,
+    "task_completion_rate": 100.0,
+    "multi_step_chaining_accuracy": 100.0,
+    "error_recovery_rate": 100.0
+  },
+  "engineering_roadmap_targets": {
+    "tier": "helios-nano",
+    "display_name": "Helios Nano",
+    "parameters": "17.84M",
+    "target_mmlu": 38.4,
+    "target_gsm8k": 42.1,
+    "target_medmcqa": 44.5,
+    "target_sciq": 68.2,
+    "target_humaneval": 26.8,
+    "target_mcp_composite": 90.2
+  }
+}

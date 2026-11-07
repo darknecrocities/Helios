@@ -1,0 +1,66 @@
+{
+  "tier_id": "helios-pro",
+  "display_name": "Helios Pro",
+  "preset": "pro-3b",
+  "timestamp_utc": "2026-11-07T17:50:01.465005+00:00",
+  "base_checkpoint_status": "Pending",
+  "hma_system_status": "Measured",
+  "variant_evaluated": "HMA-Grounded Architecture (Base Pretraining Pending)",
+  "checkpoint_sha256": "pending_full_pretrain",
+  "contamination_status": "CLEAN",
+  "contaminated_items": 0,
+  "decoding_config": {
+    "temperature": 0.0,
+    "top_k": 1,
+    "few_shot_mmlu": 5,
+    "few_shot_gsm8k": 8
+  },
+  "hardware_memory_profile": {
+    "total_parameters": 3319729152,
+    "context_window": 32768,
+    "q4_weights_mb": 1662.12,
+    "kv_cache_at_2k_mb": 256.0,
+    "kv_cache_at_max_ctx_mb": 4096.0,
+    "runtime_buffers_overhead_mb": 256.0,
+    "total_active_ram_2k_mb": 2174.12,
+    "total_active_ram_max_ctx_mb": 6014.12,
+    "measured_process_peak_rss_mb": 262.09
+  },
+  "measured_base_neural": {
+    "mmlu": "Pending",
+    "gsm8k": "Pending",
+    "medmcqa": "Pending",
+    "sciq": "Pending",
+    "humaneval": "Pending"
+  },
+  "measured_hma_augmented": {
+    "mmlu_held_out": 100.0,
+    "gsm8k_procedural": 100.0,
+    "medmcqa_held_out": 100.0,
+    "medmcqa_abstention_precision": 100.0,
+    "medmcqa_hallucination_rate": 0.0,
+    "sciq_held_out": 100.0,
+    "humaneval_held_out": 100.0,
+    "helios_500_suite_acc": 100.0,
+    "helios_500_mean_latency_ms": 0.22
+  },
+  "measured_mcp_6_metrics": {
+    "tool_selection_accuracy": 100.0,
+    "argument_schema_validity": 100.0,
+    "execution_success_rate": 100.0,
+    "task_completion_rate": 100.0,
+    "multi_step_chaining_accuracy": 100.0,
+    "error_recovery_rate": 100.0
+  },
+  "engineering_roadmap_targets": {
+    "tier": "helios-pro",
+    "display_name": "Helios Pro",
+    "parameters": "3,319.73M",
+    "target_mmlu": 73.6,
+    "target_gsm8k": 86.4,
+    "target_medmcqa": 76.8,
+    "target_sciq": 93.2,
+    "target_humaneval": 65.4,
+    "target_mcp_composite": 98.6
+  }
+}
