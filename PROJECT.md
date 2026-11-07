@@ -79,8 +79,8 @@ Every feature from the Phase 0 Survey is inventoried and assigned to a milestone
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | M1 | Repository Foundation, Packaging & Research Analysis | Git remote pairing (`https://github.com/darknecrocities/Helios`), `pyproject.toml`, open source governance (README, LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CITATION), CI pipeline, research model problems document | None | DONE |
-| M2 | Tokenizer Engine (Byte-Level BPE & Unigram) | `helios/tokenizer/`: Byte-level BPE, Unigram, special tokens contract, EN/Filipino/code fertility benchmarks, HF serialization formats | M1 | PLANNED |
-| M3 | Decoder-Only Transformer Architecture & Parameter Inspection | `helios/model/`: RoPE, Pre-RMSNorm, SwiGLU, GQA, KV Cache, `HeliosForCausalLM`, `HeliosConfig` (Nano 10M–40M), and `parameter_inspector.py` | M1 | PLANNED |
+| M2 | Tokenizer Engine (Byte-Level BPE & Unigram) | `helios/tokenizer/`: Byte-level BPE, Unigram, special tokens contract, EN/Filipino/code fertility benchmarks, HF serialization formats | M1 | DONE |
+| M3 | Decoder-Only Transformer Architecture & Parameter Inspection | `helios/model/`: RoPE, Pre-RMSNorm, SwiGLU, GQA, KV Cache, `HeliosForCausalLM`, `HeliosConfig` (Nano 10M–40M), and `parameter_inspector.py` | M1 | DONE |
 | M4 | Hierarchical Memory Architecture (HMA) & Hybrid Retrieval | `helios/memory/`: Working, Episodic (SQLite/WAL), Semantic (FAISS/BM25 + RRF), Procedural (Skills), external store controller & weight isolation | M1, M2 | PLANNED |
 | M5 | Training Controller & Interruption Fallback Engine | `helios/training/`: POSIX signal trapping (`SIGINT`/`SIGTERM`), atomic checkpointing, exact 6-state resumption, L2 grad clipping, overfit-one-batch smoke test | M1, M3 | PLANNED |
 | M6 | Final Milestone: 100% E2E Test Suite Pass & Adversarial Hardening | Phase 1: Pass 100% of Tiers 1-4 tests published in `TEST_READY.md`. Phase 2: Tier 5 adversarial coverage hardening with Challengers | M1, M2, M3, M4, M5, E2E | PLANNED |
