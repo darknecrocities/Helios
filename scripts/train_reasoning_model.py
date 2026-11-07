@@ -29,7 +29,10 @@ def prepare_training_records() -> list[str]:
     """Combine expanded reasoning corpus and curated MCP datasets."""
     sources = [
         Path("data/helios_expanded_reasoning_corpus.jsonl").resolve(),
-        Path("/Volumes/One Touch/Helios/data/curated_reasoning/helios_curated_mcp_and_reasoning.jsonl").resolve(),
+        Path("/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl").resolve(),
+        Path(
+            "/Volumes/One Touch/Helios/data/curated_reasoning/helios_curated_mcp_and_reasoning.jsonl"
+        ).resolve(),
     ]
 
     all_texts: list[str] = []
