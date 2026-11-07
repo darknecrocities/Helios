@@ -1,0 +1,829 @@
+{
+  "timestamp": "2026-11-07T13:21:25.781836+00:00",
+  "helios_version": "0.1.0",
+  "author": "Arron Kian Parejas <arronkianparejas@gmail.com>",
+  "device": "cpu",
+  "tier_filter": "all",
+  "total_tests": 97,
+  "passed_tests": 97,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "error_tests": 0,
+  "total_duration_seconds": 4.3239710330963135,
+  "tiers": {
+    "tier1": {
+      "tier_name": "Tier 1: Feature Equivalence",
+      "total": 37,
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration_seconds": 0.993648839648813
+    },
+    "tier2": {
+      "tier_name": "Tier 2: Boundary & Limits",
+      "total": 40,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration_seconds": 0.12195849802810699
+    },
+    "tier3": {
+      "tier_name": "Tier 3: Pairwise Combinations",
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration_seconds": 2.973778500338085
+    },
+    "tier4": {
+      "tier_name": "Tier 4: Real-World Scenarios",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "errors": 0,
+      "duration_seconds": 0.062003417988307774
+    }
+  },
+  "cases": [
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain1GovernanceAndPackaging::test_f1_git_remote_and_branch_setup",
+      "name": "TestDomain1GovernanceAndPackaging.test_f1_git_remote_and_branch_setup",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00014124996960163116,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain1GovernanceAndPackaging::test_f2_python_packaging_and_config",
+      "name": "TestDomain1GovernanceAndPackaging.test_f2_python_packaging_and_config",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00011770904529839754,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain1GovernanceAndPackaging::test_f3_open_source_governance_files",
+      "name": "TestDomain1GovernanceAndPackaging.test_f3_open_source_governance_files",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0003247500862926245,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain1GovernanceAndPackaging::test_f4_research_model_problem_analysis",
+      "name": "TestDomain1GovernanceAndPackaging.test_f4_research_model_problem_analysis",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00013929198030382395,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain1GovernanceAndPackaging::test_f5_github_actions_ci_pipeline",
+      "name": "TestDomain1GovernanceAndPackaging.test_f5_github_actions_ci_pipeline",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00012566696386784315,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain2TokenizerSubsystem::test_f6_byte_level_bpe_engine",
+      "name": "TestDomain2TokenizerSubsystem.test_f6_byte_level_bpe_engine",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00014091702178120613,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain2TokenizerSubsystem::test_f7_unigram_tokenizer_engine",
+      "name": "TestDomain2TokenizerSubsystem.test_f7_unigram_tokenizer_engine",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00013045792002230883,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain2TokenizerSubsystem::test_f8_special_tokens_contract",
+      "name": "TestDomain2TokenizerSubsystem.test_f8_special_tokens_contract",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 8.07089963927865e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain2TokenizerSubsystem::test_f9_multilingual_and_code_fertility",
+      "name": "TestDomain2TokenizerSubsystem.test_f9_multilingual_and_code_fertility",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00019991700537502766,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain2TokenizerSubsystem::test_f10_tokenizer_hf_serialization",
+      "name": "TestDomain2TokenizerSubsystem.test_f10_tokenizer_hf_serialization",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0011059589451178908,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f11_model_configuration",
+      "name": "TestDomain3TransformerArchitecture.test_f11_model_configuration",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 9.629200212657452e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f12_token_embeddings_and_weight_tying",
+      "name": "TestDomain3TransformerArchitecture.test_f12_token_embeddings_and_weight_tying",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00010733399540185928,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f13_rotary_position_embeddings",
+      "name": "TestDomain3TransformerArchitecture.test_f13_rotary_position_embeddings",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0003034590044990182,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f14_pre_rmsnorm_normalization",
+      "name": "TestDomain3TransformerArchitecture.test_f14_pre_rmsnorm_normalization",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0003023750614374876,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f15_gqa_and_dynamic_kv_cache",
+      "name": "TestDomain3TransformerArchitecture.test_f15_gqa_and_dynamic_kv_cache",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0009301250101998448,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f16_swiglu_gated_feed_forward",
+      "name": "TestDomain3TransformerArchitecture.test_f16_swiglu_gated_feed_forward",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00011833291500806808,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f17_decoder_only_transformer_lm",
+      "name": "TestDomain3TransformerArchitecture.test_f17_decoder_only_transformer_lm",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0008064160356298089,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f18_parameter_inspector_tool",
+      "name": "TestDomain3TransformerArchitecture.test_f18_parameter_inspector_tool",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0001460839994251728,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain3TransformerArchitecture::test_f19_nano_target_sizing_verification",
+      "name": "TestDomain3TransformerArchitecture.test_f19_nano_target_sizing_verification",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 9.062502067536116e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f20_working_memory_buffer",
+      "name": "TestDomain4HierarchicalMemory.test_f20_working_memory_buffer",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0005402920069172978,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f21_episodic_memory_store",
+      "name": "TestDomain4HierarchicalMemory.test_f21_episodic_memory_store",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00024029193446040154,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f22_semantic_memory_hybrid",
+      "name": "TestDomain4HierarchicalMemory.test_f22_semantic_memory_hybrid",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00015674997121095657,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f23_reciprocal_rank_fusion",
+      "name": "TestDomain4HierarchicalMemory.test_f23_reciprocal_rank_fusion",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00010216597001999617,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f24_procedural_memory_skill_registry",
+      "name": "TestDomain4HierarchicalMemory.test_f24_procedural_memory_skill_registry",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 8.691591210663319e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain4HierarchicalMemory::test_f25_memory_governance_weight_isolation",
+      "name": "TestDomain4HierarchicalMemory.test_f25_memory_governance_weight_isolation",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0014337919419631362,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f26_training_config_and_loss_tracking",
+      "name": "TestDomain5TrainingController.test_f26_training_config_and_loss_tracking",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 9.250000584870577e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f27_l2_gradient_clipping_and_loss_abort",
+      "name": "TestDomain5TrainingController.test_f27_l2_gradient_clipping_and_loss_abort",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.4950792919844389,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f28_atomic_checkpoint_management",
+      "name": "TestDomain5TrainingController.test_f28_atomic_checkpoint_management",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0037739170948043466,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f29_posix_signal_trapping",
+      "name": "TestDomain5TrainingController.test_f29_posix_signal_trapping",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00019995798356831074,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f30_exact_6_state_resumption_engine",
+      "name": "TestDomain5TrainingController.test_f30_exact_6_state_resumption_engine",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.006971874972805381,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain5TrainingController::test_f31_overfit_one_batch_smoke_test",
+      "name": "TestDomain5TrainingController.test_f31_overfit_one_batch_smoke_test",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.08668220893014222,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f32_opaque_box_e2e_suite_readiness",
+      "name": "TestDomain6DeploymentTooling.test_f32_opaque_box_e2e_suite_readiness",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0001105419360101223,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f33_adversarial_coverage_hardening_readiness",
+      "name": "TestDomain6DeploymentTooling.test_f33_adversarial_coverage_hardening_readiness",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00029729201924055815,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f34_ollama_deployment_modelfile_generation",
+      "name": "TestDomain6DeploymentTooling.test_f34_ollama_deployment_modelfile_generation",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.00049045798368752,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f35_huggingface_hub_export_workflow",
+      "name": "TestDomain6DeploymentTooling.test_f35_huggingface_hub_export_workflow",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0007905419915914536,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f36_interactive_live_testing_cli",
+      "name": "TestDomain6DeploymentTooling.test_f36_interactive_live_testing_cli",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.39081154204905033,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier1_features.py::TestDomain6DeploymentTooling::test_f37_onedrive_disk_preservation_mirroring",
+      "name": "TestDomain6DeploymentTooling.test_f37_onedrive_disk_preservation_mirroring",
+      "tier": "tier1",
+      "outcome": "passed",
+      "duration_seconds": 0.0003808339824900031,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_empty_string_roundtrip[ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_empty_string_roundtrip[ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004778329748660326,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_empty_string_roundtrip[UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_empty_string_roundtrip[UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00046666606795042753,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[a-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[a-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00045495806261897087,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[a-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[a-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004677079850807786,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[Z-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[Z-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0020764999790117145,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[Z-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[Z-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.001058334019035101,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[0-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[0-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004552919417619705,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[0-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[0-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0030779159860685468,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\xf1-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\xf1-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.001088084070943296,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\xf1-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\xf1-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0014265410136431456,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\u65e5-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\u65e5-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0014821660006418824,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\u65e5-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\u65e5-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0005263750208541751,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\U0001f680-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\U0001f680-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0010197910014539957,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\U0001f680-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\U0001f680-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0005179170984774828,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\U0001f468\\u200d\\U0001f469\\u200d\\U0001f467\\u200d\\U0001f466-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\U0001f468\\u200d\\U0001f469\\u200d\\U0001f467\\u200d\\U0001f466-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0005416659405454993,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\U0001f468\\u200d\\U0001f469\\u200d\\U0001f467\\u200d\\U0001f466-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\U0001f468\\u200d\\U0001f469\\u200d\\U0001f467\\u200d\\U0001f466-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004927499685436487,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\n-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\n-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00044366600923240185,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\n-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\n-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00045945902820676565,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\t-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\t-ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004389589885249734,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_single_characters_roundtrip[\\t-UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_single_characters_roundtrip[\\t-UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0007502920925617218,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_extreme_whitespace[ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_extreme_whitespace[ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0008141249418258667,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_extreme_whitespace[UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_extreme_whitespace[UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0026017919881269336,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_massive_repetitive_text[ByteLevelBPETokenizer]",
+      "name": "TestTokenizerBoundaries.test_massive_repetitive_text[ByteLevelBPETokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.012037334032356739,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTokenizerBoundaries::test_massive_repetitive_text[UnigramTokenizer]",
+      "name": "TestTokenizerBoundaries.test_massive_repetitive_text[UnigramTokenizer]",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.014683124958537519,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestModelBoundaries::test_single_token_sequence_forward",
+      "name": "TestModelBoundaries.test_single_token_sequence_forward",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0019878329476341605,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestModelBoundaries::test_maximum_context_length_forward",
+      "name": "TestModelBoundaries.test_maximum_context_length_forward",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0019232920603826642,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestModelBoundaries::test_extreme_batch_sizes",
+      "name": "TestModelBoundaries.test_extreme_batch_sizes",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0016294579254463315,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestModelBoundaries::test_rmsnorm_extreme_numerical_stability",
+      "name": "TestModelBoundaries.test_rmsnorm_extreme_numerical_stability",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00021845800802111626,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestModelBoundaries::test_kv_cache_capacity_boundary",
+      "name": "TestModelBoundaries.test_kv_cache_capacity_boundary",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0001949169673025608,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestMemoryBoundaries::test_working_memory_overflow_eviction",
+      "name": "TestMemoryBoundaries.test_working_memory_overflow_eviction",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.002366833039559424,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestMemoryBoundaries::test_episodic_memory_special_characters_and_large_payload",
+      "name": "TestMemoryBoundaries.test_episodic_memory_special_characters_and_large_payload",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0004533750470727682,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestMemoryBoundaries::test_semantic_memory_empty_and_unmatched_queries",
+      "name": "TestMemoryBoundaries.test_semantic_memory_empty_and_unmatched_queries",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0001079590292647481,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestMemoryBoundaries::test_reciprocal_rank_fusion_edge_cases",
+      "name": "TestMemoryBoundaries.test_reciprocal_rank_fusion_edge_cases",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 9.454204700887203e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestMemoryBoundaries::test_mass_memory_operations_strict_weight_isolation",
+      "name": "TestMemoryBoundaries.test_mass_memory_operations_strict_weight_isolation",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00790541700553149,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTrainingBoundaries::test_training_config_boundary_values",
+      "name": "TestTrainingBoundaries.test_training_config_boundary_values",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.00011495791841298342,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTrainingBoundaries::test_loss_spike_detector_triggers_rollback",
+      "name": "TestTrainingBoundaries.test_loss_spike_detector_triggers_rollback",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 9.341596160084009e-05,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTrainingBoundaries::test_checkpoint_corruption_detection",
+      "name": "TestTrainingBoundaries.test_checkpoint_corruption_detection",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.0033254160080105066,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestTrainingBoundaries::test_dataloader_cursor_file_boundary",
+      "name": "TestTrainingBoundaries.test_dataloader_cursor_file_boundary",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.007305582985281944,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestToolingBoundaries::test_parameter_inspector_minimal_configuration",
+      "name": "TestToolingBoundaries.test_parameter_inspector_minimal_configuration",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.000593957956880331,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier2_boundaries.py::TestToolingBoundaries::test_cli_invalid_arguments_exit_code_non_zero",
+      "name": "TestToolingBoundaries.test_cli_invalid_arguments_exit_code_non_zero",
+      "tier": "tier2",
+      "outcome": "passed",
+      "duration_seconds": 0.04578383394982666,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[Helios is an open-weight foundation model developed by Arron Kian Parejas.-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[Helios is an open-weight foundation model developed by Arron Kian Parejas.-ByteLevelBPETokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.0028301250422373414,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[Helios is an open-weight foundation model developed by Arron Kian Parejas.-UnigramTokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[Helios is an open-weight foundation model developed by Arron Kian Parejas.-UnigramTokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.0027694159653037786,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[Ang Helios ay may Hierarchical Memory Architecture para sa Tagalog at Ingles.-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[Ang Helios ay may Hierarchical Memory Architecture para sa Tagalog at Ingles.-ByteLevelBPETokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.002294750069268048,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[Ang Helios ay may Hierarchical Memory Architecture para sa Tagalog at Ingles.-UnigramTokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[Ang Helios ay may Hierarchical Memory Architecture para sa Tagalog at Ingles.-UnigramTokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.0024702089140191674,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[def train_step(batch): loss = model(batch['input_ids'])['loss']; return loss-ByteLevelBPETokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[def train_step(batch): loss = model(batch['input_ids'])['loss']; return loss-ByteLevelBPETokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.002432042034342885,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_tokenizer_encoding_to_model_forward_and_generate[def train_step(batch): loss = model(batch['input_ids'])['loss']; return loss-UnigramTokenizer]",
+      "name": "TestTokenizerModelCombinations.test_tokenizer_encoding_to_model_forward_and_generate[def train_step(batch): loss = model(batch['input_ids'])['loss']; return loss-UnigramTokenizer]",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.002372667076997459,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTokenizerModelCombinations::test_special_tokens_embedding_lookup",
+      "name": "TestTokenizerModelCombinations.test_special_tokens_embedding_lookup",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.0002127080224454403,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestModelAttentionCombinations::test_cached_decoding_step_equivalence",
+      "name": "TestModelAttentionCombinations.test_cached_decoding_step_equivalence",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.003108625067397952,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestModelAttentionCombinations::test_parameter_inspector_tied_weights_deduplication",
+      "name": "TestModelAttentionCombinations.test_parameter_inspector_tied_weights_deduplication",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 1.111492459080182,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestMemoryModelCombinations::test_retrieved_evidence_grounded_forward_pass",
+      "name": "TestMemoryModelCombinations.test_retrieved_evidence_grounded_forward_pass",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.0009185000089928508,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestMemoryModelCombinations::test_simultaneous_memory_writes_and_model_inference_weight_isolation",
+      "name": "TestMemoryModelCombinations.test_simultaneous_memory_writes_and_model_inference_weight_isolation",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.006401291000656784,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTrainingResumptionCombinations::test_dataloader_cursor_exact_checkpoint_resumption",
+      "name": "TestTrainingResumptionCombinations.test_dataloader_cursor_exact_checkpoint_resumption",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.02200583298690617,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestTrainingResumptionCombinations::test_signal_handler_emergency_checkpoint_creation",
+      "name": "TestTrainingResumptionCombinations.test_signal_handler_emergency_checkpoint_creation",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 0.008316750056110322,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier3_combinations.py::TestCliToolingCombinations::test_cli_inspect_and_roadmap_integration",
+      "name": "TestCliToolingCombinations.test_cli_inspect_and_roadmap_integration",
+      "tier": "tier3",
+      "outcome": "passed",
+      "duration_seconds": 1.8061531250132248,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario1_greenfield_project_and_governance_audit",
+      "name": "test_scenario1_greenfield_project_and_governance_audit",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.00046058406587690115,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario2_multilingual_code_prompt_pipeline",
+      "name": "test_scenario2_multilingual_code_prompt_pipeline",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.0012777919182553887,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario3_nano_causal_inference_autoregressive_generation",
+      "name": "test_scenario3_nano_causal_inference_autoregressive_generation",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.0057022919645532966,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario4_multiturn_bilingual_chat_with_hma_retrieval",
+      "name": "test_scenario4_multiturn_bilingual_chat_with_hma_retrieval",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.0012796249939128757,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario5_full_pretraining_interruption_and_bitwise_resumption",
+      "name": "test_scenario5_full_pretraining_interruption_and_bitwise_resumption",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.05197354103438556,
+      "error_message": null
+    },
+    {
+      "node_id": "tests/e2e/test_tier4_scenarios.py::test_scenario6_deployment_and_preservation_pipeline",
+      "name": "test_scenario6_deployment_and_preservation_pipeline",
+      "tier": "tier4",
+      "outcome": "passed",
+      "duration_seconds": 0.00130958401132375,
+      "error_message": null
+    }
+  ]
+}
