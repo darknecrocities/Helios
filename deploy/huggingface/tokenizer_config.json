@@ -1,0 +1,81 @@
+{
+  "tokenizer_class": "HeliosTokenizer",
+  "auto_map": {
+    "AutoTokenizer": [
+      "helios.tokenizer.base.HeliosTokenizer",
+      null
+    ]
+  },
+  "model_max_length": 1024,
+  "bos_token": "<|begin_of_text|>",
+  "eos_token": "<|end_of_text|>",
+  "pad_token": "<|pad|>",
+  "clean_up_tokenization_spaces": false,
+  "added_tokens_decoder": {
+    "256": {
+      "content": "<|begin_of_text|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "257": {
+      "content": "<|end_of_text|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "258": {
+      "content": "<|pad|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "259": {
+      "content": "<|start_header_id|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "260": {
+      "content": "<|end_header_id|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "261": {
+      "content": "<|call:tool|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "262": {
+      "content": "<|return:tool|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "263": {
+      "content": "<|refusal|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    }
+  },
+  "chat_template": "{% for message in messages %}{{ '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n' + message['content'] + '<|end_of_text|>' }}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{% endif %}"
+}

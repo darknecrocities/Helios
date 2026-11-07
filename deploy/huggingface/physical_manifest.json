@@ -1,0 +1,27 @@
+{
+  "model_family": "Helios",
+  "developer": "Arron Kian Parejas",
+  "output_directory": "/Users/arronkianparejas/helios/dist/physical_models",
+  "formats": {
+    "safetensors": {
+      "file": "/Users/arronkianparejas/helios/dist/physical_models/helios_model.safetensors",
+      "bytes": 112338432,
+      "sha256": "d2da61fff29f95ab9592a98196410dcc1c5f73ff0f95d792c879ad94aabf4b6f"
+    },
+    "torchscript": {
+      "file": "/Users/arronkianparejas/helios/dist/physical_models/helios_model.pt",
+      "bytes": 72729448,
+      "sha256": "673ce70ed9f3162c1311fa4bb695b3a9b417d4b2a7982e3b9091f3f1a50c229f"
+    },
+    "onnx": {
+      "file": "/Users/arronkianparejas/helios/dist/physical_models/helios_model.onnx",
+      "bytes": 906229,
+      "sha256": "964b8e0585778a8a7d728273bf83e4bc4cf4bb898acab09a4b4ac0abe4008a0b"
+    },
+    "tflite": {
+      "file": "/Users/arronkianparejas/helios/dist/physical_models/helios_model.tflite",
+      "bytes": 71384256,
+      "sha256": "4982c57ec7c55ea30de0492caa79d6569bd2253966de3aa60d1fd991a290ba32"
+    }
+  }
+}
