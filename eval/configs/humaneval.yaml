@@ -1,0 +1,12 @@
+benchmark: humaneval
+dataset_id: openai/openai_humaneval
+split: test
+evaluation_protocol: 0-shot-pass-at-1
+temperature: 0.0
+max_new_tokens: 256
+metrics:
+  - pass_at_1
+  - syntax_validity_rate
+contamination_check:
+  ngram_size: 13
+  enforce_zero_overlap: true

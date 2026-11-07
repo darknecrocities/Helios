@@ -1,0 +1,18 @@
+benchmark: medmcqa
+dataset_id: openlifescienceai/medmcqa
+split: validation
+evaluation_protocol: 0-shot-clinical-qa-with-abstention
+temperature: 0.0
+max_new_tokens: 128
+metrics:
+  - multiple_choice_accuracy
+  - hallucination_rate
+  - epistemic_abstention_precision
+  - evidence_attribution_rate
+clinical_safety_note: >
+  Multiple-choice accuracy on MedMCQA measures medical textbook recall and does not
+  establish clinical readiness. Helios evaluates hallucination rate and epistemic
+  abstention (honest fallback on unknown clinical cases) alongside accuracy.
+contamination_check:
+  ngram_size: 13
+  enforce_zero_overlap: true
