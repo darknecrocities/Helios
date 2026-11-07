@@ -27,23 +27,33 @@ class SemanticDocument:
 
 
 def reciprocal_rank_fusion(
-    ranked_lists: list[tuple[list[tuple[str, float]], float]],
+    ranked_lists: list[Any],
     k: int = 60,
+    top_k: int | None = None,
 ) -> list[tuple[str, float]]:
     """Compute Reciprocal Rank Fusion over multiple ranked candidate lists.
 
     Formula: RRF(d) = sum_{m in M} (w_m / (k + rank_m(d)))
     """
     scores: dict[str, float] = {}
-    for ranked_candidates, weight in ranked_lists:
+    for item in ranked_lists:
+        if isinstance(item, tuple) and len(item) == 2 and isinstance(item[1], (int, float)):
+            ranked_candidates, weight = item
+        else:
+            ranked_candidates = item
+            weight = 1.0
         if weight <= 0.0:
             continue
-        for rank_zero_based, (doc_id, _) in enumerate(ranked_candidates):
+        for rank_zero_based, cand in enumerate(ranked_candidates):
+            doc_id = cand[0] if isinstance(cand, (tuple, list)) else str(cand)
             rank_1_based = rank_zero_based + 1
             rrf_contribution = weight / (k + rank_1_based)
             scores[doc_id] = scores.get(doc_id, 0.0) + rrf_contribution
 
-    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    if top_k is not None:
+        ranked = ranked[:top_k]
+    return ranked
 
 
 class SemanticMemory:

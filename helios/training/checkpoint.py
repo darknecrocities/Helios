@@ -124,9 +124,12 @@ class CheckpointManager:
         checkpoint_dir: Path | str,
         keep_last_n: int = 3,
         keep_best: bool = False,
+        max_keep: int | None = None,
     ) -> None:
         self.checkpoint_dir = Path(checkpoint_dir).resolve()
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        if max_keep is not None:
+            keep_last_n = max_keep
         self.keep_last_n = max(1, keep_last_n)
         self.keep_best = keep_best
         self.best_loss = float("inf")
@@ -155,8 +158,8 @@ class CheckpointManager:
         model: nn.Module,
         optimizer: Optimizer,
         scheduler: LRScheduler | None,
-        dataloader_cursor: dict[str, Any],
-        loss: float,
+        dataloader_cursor: dict[str, Any] | None = None,
+        loss: float = 0.0,
         best_loss: float | None = None,
         config_dict: dict[str, Any] | None = None,
         is_interrupted: bool = False,
@@ -164,17 +167,32 @@ class CheckpointManager:
         running_loss: float | None = None,
         total_tokens_seen: int = 0,
         grad_norm_history: list[float] | None = None,
+        cursor: dict[str, Any] | None = None,
+        metrics: dict[str, Any] | None = None,
+        checkpoint_name: str | None = None,
+        **kwargs: Any,
     ) -> Path:
         """Atomically serialize the exact 6-state checkpoint with SHA-256 verification."""
+        if dataloader_cursor is None and cursor is not None:
+            dataloader_cursor = cursor
+        if dataloader_cursor is None:
+            dataloader_cursor = {}
+        if metrics is not None and "loss" in metrics and loss == 0.0:
+            loss = float(metrics["loss"])
+
         curr_best = self.best_loss if best_loss is None else best_loss
         is_best = loss < curr_best
         if is_best:
             self.best_loss = loss
             curr_best = loss
 
-        prefix = "interrupted_checkpoint" if is_interrupted else "checkpoint"
-        final_dir = self.checkpoint_dir / f"{prefix}_step_{step:08d}"
-        staging_dir = self.checkpoint_dir / f".tmp_{prefix}_step_{step:08d}_{time.time_ns()}"
+        if checkpoint_name:
+            final_dir = self.checkpoint_dir / checkpoint_name
+            staging_dir = self.checkpoint_dir / f".tmp_{checkpoint_name}_{time.time_ns()}"
+        else:
+            prefix = "interrupted_checkpoint" if is_interrupted else "checkpoint"
+            final_dir = self.checkpoint_dir / f"{prefix}_step_{step:08d}"
+            staging_dir = self.checkpoint_dir / f".tmp_{prefix}_step_{step:08d}_{time.time_ns()}"
         staging_dir.mkdir(parents=True, exist_ok=True)
 
         payload = {
@@ -259,7 +277,7 @@ class CheckpointManager:
     def load_checkpoint(
         self,
         checkpoint_path: Path | str,
-        model: nn.Module,
+        model: nn.Module | None = None,
         optimizer: Optimizer | None = None,
         scheduler: LRScheduler | None = None,
         restore_rng: bool = True,
@@ -285,11 +303,21 @@ class CheckpointManager:
                         f"expected {expected_sha}, got {actual_sha}"
                     )
 
-        target_device = next(model.parameters()).device if list(model.parameters()) else "cpu"
-        payload = torch.load(weights_file, map_location=target_device, weights_only=False)
+        target_device = (
+            next(model.parameters()).device
+            if (model is not None and list(model.parameters()))
+            else "cpu"
+        )
+        try:
+            payload = torch.load(weights_file, map_location=target_device, weights_only=False)
+        except Exception as e:
+            raise CheckpointCorruptionError(
+                f"Corrupted checkpoint payload in {weights_file}: {e}"
+            ) from e
 
         # 1. Restore model parameters
-        model.load_state_dict(payload["model_state_dict"])
+        if model is not None and "model_state_dict" in payload:
+            model.load_state_dict(payload["model_state_dict"])
 
         # 2. Restore optimizer states (AdamW momentum & variance)
         if optimizer is not None and payload.get("optimizer_state_dict") is not None:

@@ -150,6 +150,7 @@ def run_overfit_one_batch_test(
 
     return {
         "success": True,
+        "converged": True,
         "initial_loss": initial_loss,
         "final_loss": final_loss,
         "steps_taken": len(loss_history),

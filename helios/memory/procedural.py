@@ -29,6 +29,7 @@ class ToolDefinition:
     description: str
     parameters: dict[str, Any]  # JSON Schema (type: object, properties: {...})
     returns: dict[str, Any] = field(default_factory=lambda: {"type": "string"})
+    required_parameters: list[str] = field(default_factory=list)
     capabilities: list[str] = field(default_factory=list)
     version: str = "1.0.0"
     author: str = "system"
@@ -67,7 +68,10 @@ def validate_parameter_schema(schema: dict[str, Any]) -> None:
     """Validate JSON Schema structure for tool parameters."""
     if not isinstance(schema, dict):
         raise ValueError("Parameter schema must be a dict.")
-    if schema.get("type") != "object":
+    if "type" in schema:
+        if schema.get("type") != "object":
+            raise ValueError("Top-level parameter schema type must be 'object'.")
+    elif not (schema and all(isinstance(v, (str, dict)) for v in schema.values())):
         raise ValueError("Top-level parameter schema type must be 'object'.")
     properties = schema.get("properties", {})
     if not isinstance(properties, dict):

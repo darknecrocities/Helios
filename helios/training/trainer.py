@@ -97,10 +97,19 @@ class LossSpikeDetector:
             cursor=dict(cursor),
         )
         self.consecutive_spikes = 0
-        if self.ema_loss is None:
-            self.ema_loss = loss
-        else:
-            self.ema_loss = self.ema_alpha * self.ema_loss + (1.0 - self.ema_alpha) * loss
+        self.record_loss(loss)
+
+    def record_loss(self, loss: float) -> None:
+        """Update running EMA loss baseline."""
+        self.ema_loss = (
+            loss
+            if self.ema_loss is None
+            else (self.ema_alpha * self.ema_loss + (1.0 - self.ema_alpha) * loss)
+        )
+
+    def check_spike(self, loss: float) -> bool:
+        """Check if given loss exceeds spike threshold relative to EMA."""
+        return bool(self.ema_loss is not None and loss > (self.spike_multiplier * self.ema_loss))
 
     def evaluate(self, step: int, loss: float, grad_norm: float) -> tuple[bool, str]:
         """Check if current step exhibits numerical anomaly (NaN/Inf, explosion, >3x EMA)."""
@@ -233,13 +242,11 @@ class Trainer:
             self.config.checkpoint_dir, self.config.keep_last_n_checkpoints
         )
 
-        if interruption_handler is None and self.config.save_on_interruption:
-            timeout = float(self.config.metadata.get("watchdog_timeout", 30.0))
-            self.interruption_handler: InterruptionHandler | None = InterruptionHandler(
-                watchdog_timeout=timeout
-            )
-        else:
-            self.interruption_handler = interruption_handler
+        timeout = float(self.config.metadata.get("watchdog_timeout", 30.0))
+        handler = interruption_handler
+        if handler is None and self.config.save_on_interruption:
+            handler = InterruptionHandler(watchdog_timeout=timeout)
+        self.interruption_handler = handler
 
         self.spike_detector = LossSpikeDetector(
             spike_multiplier=getattr(self.config, "loss_spike_threshold", 3.0),
@@ -248,20 +255,14 @@ class Trainer:
         num_trainable = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
         self.throughput_tracker = ThroughputTracker(num_trainable)
 
-        self.global_step: int = 0
-        self.micro_step: int = 0
-        self.last_loss: float = 0.0
-        self.last_grad_norm: float = 0.0
+        self.global_step = self.micro_step = 0
+        self.last_loss = self.last_grad_norm = self.accumulated_loss = 0.0
         self.last_cursor: dict[str, Any] = {"epoch": 0, "batch_idx": 0, "consumed_tokens": 0}
-        self.accumulated_loss: float = 0.0
         self._is_interrupted: bool = False
 
         self.amp_dtype = self._resolve_amp_dtype()
-        self.scaler = (
-            torch.amp.GradScaler("cuda")
-            if (self.device.type == "cuda" and self.amp_dtype == torch.float16)
-            else None
-        )
+        use_scaler = self.device.type == "cuda" and self.amp_dtype == torch.float16
+        self.scaler = torch.amp.GradScaler("cuda") if use_scaler else None
 
     def _resolve_amp_dtype(self) -> torch.dtype | None:
         if not self.config.mixed_precision:
@@ -442,19 +443,21 @@ class Trainer:
                     if step_res["status"] == "success":
                         losses.append(step_res["loss"])
                         total_tok = tokens_in_batch * accum_steps
-                        metrics = self.throughput_tracker.record_step(total_tok)
+                        tok_metrics = self.throughput_tracker.record_step(total_tok)
                         if self.global_step % 10 == 0:
+                            tok_s = tok_metrics["tokens_per_sec"]
                             logger.info(
                                 f"Step {self.global_step:06d} | Loss: {step_res['loss']:.4f} | "
-                                f"LR: {self.scheduler.get_last_lr()[0]:.2e} | "
-                                f"Norm: {step_res['grad_norm']:.2f} | "
-                                f"Tok/s: {metrics['tokens_per_sec']:.1f} | "
-                                f"TFLOPs: {metrics['tflops']:.2f}"
+                                f"Tok/s: {tok_s:.1f}"
                             )
         return losses
 
     def save_checkpoint(
-        self, dataloader_cursor: dict[str, Any] | None = None, is_interrupted: bool = False
+        self,
+        dataloader_cursor: dict[str, Any] | None = None,
+        is_interrupted: bool = False,
+        checkpoint_name: str | None = None,
+        **kwargs: Any,
     ) -> Path:
         """Atomically persist complete 6-state execution environment."""
         cur = dataloader_cursor or self.last_cursor
@@ -468,6 +471,8 @@ class Trainer:
             config_dict=self.config.to_dict(),
             is_interrupted=is_interrupted,
             micro_step=self.micro_step,
+            checkpoint_name=checkpoint_name,
+            **kwargs,
         )
 
     def load_checkpoint(self, checkpoint_path: Path | str) -> dict[str, Any]:

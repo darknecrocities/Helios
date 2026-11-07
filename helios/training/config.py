@@ -28,6 +28,7 @@ class TrainingConfig:
     beta2: float = 0.95
     eps: float = 1e-8
     grad_clip: float = 1.0
+    max_grad_norm: float | None = None
 
     # Batch and sequence dimensions
     batch_size: int = 4
@@ -55,6 +56,10 @@ class TrainingConfig:
     # Metadata and tracking
     experiment_name: str = "helios-nano-pretrain"
     metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.max_grad_norm is not None:
+            self.grad_clip = self.max_grad_norm
 
     def resolve_device(self) -> torch.device:
         """Resolve 'auto' device string to optimal available hardware backend."""

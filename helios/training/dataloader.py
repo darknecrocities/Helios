@@ -214,6 +214,10 @@ class CursorDataLoader:
         self.cursor.batch_idx = token_offset // self.tokens_per_batch
         self.cursor.sample_cursor = self.cursor.batch_idx
 
+    def set_cursor(self, token_offset: int, epoch: int = 0) -> None:
+        """Alias for seek() to position cursor at token_offset."""
+        self.seek(token_offset, epoch)
+
     def reset(self) -> None:
         """Reset cursor to beginning of epoch 0."""
         self.cursor = DataloaderCursor()
