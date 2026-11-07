@@ -15,6 +15,7 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from helios.cli.utils import MODEL_FAMILY_CATALOG, resolve_tier_key
 from helios.memory.bm25 import extract_content_tokens
 
 if TYPE_CHECKING:
@@ -155,8 +156,38 @@ def seed_hma_knowledge_base(hma: HMAController, valid_words: set[str]) -> int:
 def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | None:
     """Handle deterministic conversational greetings, model version, and creator queries."""
     q_lower = query.lower().strip().rstrip("?.!")
+    try:
+        tier_key = resolve_tier_key(preset)
+        tier_info = MODEL_FAMILY_CATALOG[tier_key]
+        display_name = tier_info["display_name"]
+        params = tier_info["params"]
+        context = tier_info["context"]
+    except KeyError:
+        display_name = f"Helios ({preset})"
+        params = "17.84M"
+        context = "2,048 tokens"
 
-    # 1. Model version queries
+    # 1. Origin of the name Helios / About Helios
+    origin_patterns = [
+        "what is helios",
+        "why is it named helios",
+        "origin of helios",
+        "meaning of helios",
+        "sun god",
+        "ano ang helios",
+    ]
+    if any(pat in q_lower for pat in origin_patterns):
+        return (
+            f"Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification "
+            f"of the Sun who drove his radiant chariot across the sky to bring light, clarity, and "
+            f"truth to the world. Personally engineered and developed from the ground up by AI Engineer "
+            f"Arron Kian Parejas (parejasarronkian@gmail.com), the Helios open-weight LLM family "
+            f"(currently active: {display_name}, {params} parameters, {context} context) brings "
+            f"transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), "
+            f"RoPE scaling, SwiGLU, and Hierarchical Memory Architecture (HMA)."
+        )
+
+    # 2. Model version queries
     version_patterns = [
         "model version",
         "what version",
@@ -166,11 +197,12 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     ]
     if any(pat in q_lower for pat in version_patterns):
         return (
-            f"I am running Helios v0.2.0 (Architecture Preset: {preset}) with Hierarchical Memory "
-            "Architecture (HMA) grounding, engineered by Arron Kian Parejas (parejasarronkian@gmail.com)."
+            f"I am running {display_name} v0.2.0 (Preset: {preset}, Parameters: {params}, "
+            f"Context: {context}) with Hierarchical Memory Architecture (HMA) grounding, "
+            f"personally engineered by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
         )
 
-    # 2. Model identity queries
+    # 3. Model identity queries
     identity_patterns = [
         "what model are you",
         "who are you",
@@ -183,15 +215,17 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     if any(pat in q_lower for pat in identity_patterns):
         if is_tagalog_text(q_lower):
             return (
-                f"Ako si Helios (Preset: {preset}, Bersyon: v0.2.0), isang open-weight foundation "
-                "language model na dinisenyo at binuo ni Arron Kian Parejas (parejasarronkian@gmail.com)."
+                f"Ako si {display_name} (Preset: {preset}, Parameters: {params}, Bersyon: v0.2.0), "
+                "isang open-weight foundation language model na personal na dinisenyo at binuo ni "
+                "AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
             )
         return (
-            f"I am Helios (Preset: {preset}, Version: v0.2.0), an open-weight foundation language "
-            "model engineered and developed by Arron Kian Parejas (parejasarronkian@gmail.com)."
+            f"I am {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, "
+            "Version: v0.2.0), an open-weight foundation language model personally engineered and "
+            "developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
         )
 
-    # 3. Creator / Developer queries
+    # 4. Creator / Developer queries
     creator_terms = [
         "who created you",
         "who made you",
@@ -207,10 +241,14 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     ]
     if any(term in q_lower for term in creator_terms):
         if is_tagalog_text(q_lower):
-            return "Ako ay nilikha at binuo ni Arron Kian Parejas (parejasarronkian@gmail.com)."
+            return (
+                "Ako ay personal na nilikha at binuo ni AI Engineer Arron Kian Parejas "
+                "(parejasarronkian@gmail.com)."
+            )
         return (
-            "I was designed and developed by Arron Kian Parejas (parejasarronkian@gmail.com), "
-            "who engineered my transformer architecture, tokenizer, training pipeline, and memory systems."
+            "I was personally designed and developed by AI Engineer Arron Kian Parejas "
+            "(parejasarronkian@gmail.com), who engineered my transformer architecture, tokenizer, "
+            "training pipeline, and Hierarchical Memory Architecture (HMA)."
         )
 
     # 4. Gratitude / Salamat

@@ -385,6 +385,7 @@ class HeliosConfig:
             "nano_15m": cls.nano_15m,
             "helios_nano_20m": cls.nano_20m,
             "nano_20m": cls.nano_20m,
+            "nano": cls.nano_20m,
             "helios_nano_25m": cls.nano_25m,
             "nano_25m": cls.nano_25m,
             "helios_nano_35m": cls.nano_35m,

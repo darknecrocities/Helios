@@ -1,7 +1,7 @@
 """Shared CLI utilities for Helios foundation ecosystem.
 
 Handles hardware device resolution, model instantiation, checkpoint loading,
-tokenizer initialization, and formatted console telemetry.
+model family catalog discovery, tokenizer initialization, and console telemetry.
 
 Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
@@ -18,6 +18,125 @@ from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
 from helios.tokenizer.base import BaseTokenizer, HeliosTokenizer
 from helios.tokenizer.bpe import ByteLevelBPETokenizer
+
+MODEL_FAMILY_CATALOG: dict[str, dict[str, str]] = {
+    "nano": {
+        "display_name": "Helios Nano",
+        "preset": "nano-20m",
+        "params": "17.84M",
+        "context": "2,048 tokens",
+        "q4_size": "9.4 MB",
+        "ram_target": "~13 MB RAM (Edge / Raspberry Pi / Any Laptop)",
+    },
+    "alpha": {
+        "display_name": "Helios Alpha",
+        "preset": "alpha-100m",
+        "params": "100.09M",
+        "context": "4,096 tokens",
+        "q4_size": "52.5 MB",
+        "ram_target": "~71 MB RAM (Everyday Chat & Bilingual QA)",
+    },
+    "beta": {
+        "display_name": "Helios Beta",
+        "preset": "beta-300m",
+        "params": "303.35M",
+        "context": "8,192 tokens",
+        "q4_size": "159.1 MB",
+        "ram_target": "~215 MB RAM (Math & Deductive Logic)",
+    },
+    "core": {
+        "display_name": "Helios Core",
+        "preset": "core-1b",
+        "params": "1,128.89M (1.13B)",
+        "context": "16,384 tokens",
+        "q4_size": "592.1 MB",
+        "ram_target": "~800 MB RAM (8GB RAM Laptops / Coding & Systems)",
+    },
+    "pro": {
+        "display_name": "Helios Pro",
+        "preset": "pro-3b",
+        "params": "3,319.73M (3.32B)",
+        "context": "32,768 tokens",
+        "q4_size": "1.70 GB",
+        "ram_target": "~2.35 GB RAM (8GB-16GB RAM Laptops / Medical & MCP)",
+    },
+    "flagship": {
+        "display_name": "Helios Flagship",
+        "preset": "flagship-6b",
+        "params": "5,802.04M (5.80B)",
+        "context": "65,536 tokens",
+        "q4_size": "2.97 GB",
+        "ram_target": "~4.11 GB RAM (16GB RAM Laptops / Deep Reasoning)",
+    },
+}
+
+PRESET_TO_TIER: dict[str, str] = {
+    "nano": "nano",
+    "nano-15m": "nano",
+    "nano-20m": "nano",
+    "nano-25m": "nano",
+    "nano-35m": "nano",
+    "helios-nano-20m": "nano",
+    "alpha": "alpha",
+    "alpha-100m": "alpha",
+    "helios-alpha-100m": "alpha",
+    "beta": "beta",
+    "beta-300m": "beta",
+    "helios-beta-300m": "beta",
+    "core": "core",
+    "core-1b": "core",
+    "helios-core-1b": "core",
+    "pro": "pro",
+    "pro-3b": "pro",
+    "helios-pro-3b": "pro",
+    "flagship": "flagship",
+    "flagship-6b": "flagship",
+    "helios-flagship-6b": "flagship",
+}
+
+
+def resolve_tier_key(name: str) -> str:
+    """Resolve user-supplied model tier or preset name into canonical family key."""
+    cleaned = name.strip().lower().replace("_", "-")
+    if cleaned.startswith("helios:"):
+        cleaned = cleaned.split(":", 1)[1]
+    if cleaned in PRESET_TO_TIER:
+        return PRESET_TO_TIER[cleaned]
+    raise KeyError(
+        f"Unknown Helios model '{name}'. Choose from: {', '.join(MODEL_FAMILY_CATALOG.keys())}"
+    )
+
+
+def format_models_catalog(active_preset: str) -> str:
+    """Format a structured table of all 6 Helios models for interactive selection."""
+    try:
+        active_key = resolve_tier_key(active_preset)
+    except KeyError:
+        active_key = "nano"
+
+    lines = [
+        "=" * 78,
+        " Helios Model Family — Interactive Model Switcher (/model <tier>)".center(78),
+        "=" * 78,
+        f"  {'Tier':<10} | {'Parameters':<18} | {'Context':<14} | {'Q4 Size':<9} | Status",
+        "-" * 78,
+    ]
+    for key, info in MODEL_FAMILY_CATALOG.items():
+        status = "* ACTIVE" if key == active_key else "Available"
+        lines.append(
+            f"  {key:<10} | {info['params']:<18} | {info['context']:<14} | "
+            f"{info['q4_size']:<9} | {status}"
+        )
+    lines.extend(
+        [
+            "-" * 78,
+            "  Switch anytime in chat : /model nano | /model alpha | /model beta",
+            "                           /model core | /model pro   | /model flagship",
+            "  Or launch from terminal: helios chat -m <tier>  (e.g. helios chat -m pro)",
+            "=" * 78,
+        ]
+    )
+    return "\n".join(lines)
 
 
 def resolve_device(device_str: str = "auto") -> torch.device:
@@ -53,8 +172,12 @@ def load_model_and_config(
 
     effective_path = model_path
     if effective_path is None:
+        # Check One Touch reasoning checkpoint first, then local pretrained checkpoint
+        ext_ckpt = Path("/Volumes/One Touch/Helios/checkpoints/helios_reasoning_trained")
         default_ckpt = Path("checkpoints/helios_core_pretrained").resolve()
-        if default_ckpt.is_dir() and (default_ckpt / "state.pt").exists():
+        if ext_ckpt.is_dir() and (ext_ckpt / "state.pt").exists():
+            effective_path = ext_ckpt
+        elif default_ckpt.is_dir() and (default_ckpt / "state.pt").exists():
             effective_path = default_ckpt
 
     if effective_path is not None:

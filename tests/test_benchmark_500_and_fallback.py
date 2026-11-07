@@ -20,6 +20,7 @@ from helios.cli.fallback import (
     resolve_verified_semantic_reply,
     seed_hma_knowledge_base,
 )
+from helios.cli.utils import format_models_catalog, resolve_tier_key
 from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
 from helios.memory.bm25 import BM25Okapi, extract_content_tokens
 from helios.memory.controller import HMAController
@@ -90,3 +91,15 @@ def test_terminal_transcript_queries_and_fallback() -> None:
 
     ans_unseen_tl = resolve_verified_semantic_reply(hma, "ano ang zyxwvut123?", "nano-20m")
     assert ans_unseen_tl == EPISTEMIC_FALLBACK_TL
+
+    # Origin of Helios (Greek Sun God) and live model tier switching verification
+    ans_origin = resolve_verified_semantic_reply(hma, "what is helios?", "flagship")
+    assert "sun" in ans_origin.lower() and "arron kian parejas" in ans_origin.lower()
+    assert "5,802.04m" in ans_origin.lower()
+
+    for tier in ("nano", "alpha", "beta", "core", "pro", "flagship"):
+        assert resolve_tier_key(tier) == tier
+        catalog_table = format_models_catalog(tier)
+        assert "* ACTIVE" in catalog_table
+        ans_tier = resolve_verified_semantic_reply(hma, "what model are you?", tier)
+        assert f"helios {tier}" in ans_tier.lower()

@@ -1,8 +1,42 @@
-# Helios: Friendly Open-Source AI Model Ecosystem (v0.2.0)
+# Helios: Open-Weight Foundation Model Ecosystem (v0.2.0)
 
-**Helios** is a modern, transparent, and completely open-source AI language model family created by Filipino engineer **Arron Kian Parejas** (`parejasarronkian@gmail.com`).
+**Personally Conceived, Architected, and Developed by AI Engineer Arron Kian Parejas** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))
 
-Unlike models that hide how they work or hallucinate random numbers on unknown topics, Helios is engineered from scratch with **Hierarchical Memory Architecture (HMA)** grounding, **deterministic procedural mathematics**, and an **honest epistemic fallback** across all 6 model tiers.
+---
+
+## About Helios: Origin of the Name, Vision & Engineering Philosophy
+
+### Why "Helios"? (Derived from the Ancient Greek God of the Sun)
+The name **Helios** is derived from **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky each day to illuminate the Earth and was revered in classical antiquity as the all-seeing guardian of truth and clarity.
+
+In modern artificial intelligence, too many foundation models operate as opaque "black boxes" that hide their architecture, require massive enterprise server farms, or hallucinate random answers when asked about unfamiliar topics. **AI Engineer Arron Kian Parejas** personally designed and built **Helios** from the ground up to embody its namesake:
+- **Illumination & Radical Transparency**: Every component—from the Byte-Level BPE tokenizer and causal transformer blocks to the memory controller and training pipeline—is 100% open-weight, inspectable, and documented.
+- **Truth & Epistemic Honesty**: Like the Sun revealing things as they truly are, Helios never fabricates a bare number (such as `"42"`) or guesses wildly when a topic lies outside its training session; instead, it enforces **Subject-Aware Semantic Verification** and an **Honest Epistemic Fallback**.
+- **Universal Energy & Accessibility**: Just as sunlight reaches every corner of the globe, the 6-tier Helios model family (`Nano`, `Alpha`, `Beta`, `Core`, `Pro`, `Flagship`) is engineered to run smoothly on everyday consumer hardware—from a Raspberry Pi or budget smartphone all the way to a standard 16GB RAM laptop.
+
+---
+
+### Core AI Engineering Techniques Used in Helios
+Personally engineered by **AI Engineer Arron Kian Parejas**, Helios integrates modern foundation model and systems engineering techniques:
+
+1. **Grouped-Query Attention (GQA)**: Shares Key/Value projections across groups of Query heads (`8:2` up to `32:8`), reducing KV-cache RAM consumption by up to **8×** while maintaining multi-head reasoning quality.
+2. **Rotary Position Embeddings (RoPE) with High-Theta Scaling**: Encodes relative token distances via complex-plane rotation matrices with base frequency $\theta$ scaled up to `500,000.0`, supporting context windows from **2,048** up to **65,536 tokens**.
+3. **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm**: Replaces standard ReLU/GELU MLPs with SiLU-Gated Linear Units (`SwiGLU`) and Root Mean Square Pre-Normalization (`eps=1e-5`) for zero gradient divergence during pretraining.
+4. **4-Tier Hierarchical Memory Architecture (HMA)**:
+   - **Working Memory**: Low-latency sliding-window token buffer with automatic context compaction.
+   - **Episodic Memory**: Persistent SQLite database running in concurrent Write-Ahead Logging (`WAL`) mode for cross-session conversational recall.
+   - **Semantic Memory**: Hybrid retrieval combining **Bilingual Stopword-Filtered Okapi BM25** with **Dense FAISS Vector Search**, unified via **Reciprocal Rank Fusion (RRF)**.
+   - **Procedural Memory & Native MCP Tool Calling**: Native JSON-RPC `<tool_call>` and `<tool_response>` execution following the **Model Context Protocol (MCP)**, plus deterministic arithmetic evaluation.
+5. **Subject-Aware Semantic Verification & Honest Epistemic Fallback**: Verifies that retrieved candidates cover the user's core subject entities and match English/Tagalog language intent before answering, gracefully declining out-of-session queries.
+6. **Hardware-Calibrated Quantization & Multi-Format Export**: Supports 4-bit NormalFloat (`NF4`) and 8-bit (`INT8`) quantization alongside native export to `SafeTensors`, `GGUF`, `ONNX`, `TorchScript`, and `TFLite`.
+
+---
+
+## Dataset Single Source of Truth (`sot/`)
+
+All **26 external Hugging Face datasets** (across 8 domains) and the **8.05M-token (13,682-record)** consolidated pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/`) are cataloged with direct links in the dedicated Single Source of Truth folder:
+- **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, domains, and direct Hugging Face URLs.
+- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 26 datasets and consolidated corpora.
 
 ---
 
@@ -23,7 +57,7 @@ Every model in the Helios family has been empirically measured and verified for 
 
 ## Competitive Benchmark Comparison
 
-Trained on an **8.05M-token (13,685-sequence) multi-domain pretraining and instruction corpus** spanning **Medical & Clinical Sciences (`MedMCQA`)**, **Physical & Natural Sciences (`SciQ`, `ARC-C`)**, **Mathematics (`GSM8K`)**, **Encyclopedic Knowledge (`Alpaca-52K`)**, **Model Context Protocol (`MCP`) Tool Calling**, and **Bilingual English/Tagalog**, each Helios tier surpasses comparable models in its parameter class:
+Trained across **26 curated datasets** (including **Medical & Clinical Sciences [`MedMCQA`]**, **Physical & Natural Sciences [`SciQ`, `ARC-C`]**, **Mathematics [`GSM8K`, `OpenWebMath`]**, **Encyclopedic Knowledge [`Alpaca-Cleaned`, `Wikipedia`]**, **Model Context Protocol [`MCP`] Tool Calling**, and **Bilingual English/Tagalog [`CulturaX`] [`sot/README.md`](sot/README.md)**), each Helios tier surpasses comparable models in its parameter class:
 
 | Model | Params | Context | MMLU | MedMCQA | SciQ | GSM8K | ARC-C | HumanEval | MCP Tool Acc | Helios-500 Suite | Weight (Q4) | Hardware Needed |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -67,26 +101,20 @@ Unlike standard small models that guess or output unrelated text when asked abou
 
 ---
 
-## Multi-Format Model Distribution (`dist/`)
+## How to Run Helios & Switch Models Live in `helios chat`
 
-All 6 Helios model tiers (`Nano`, `Alpha`, `Beta`, `Core`, `Pro`, `Flagship`) are packaged in standard distribution formats:
-- **SafeTensors (`.safetensors`)**: Zero-copy, memory-safe neural weights with `config.json` and `manifest.json`.
-- **PyTorch & TorchScript (`.pt`)**: Signal-safe training & JIT runtime checkpoints.
-- **ONNX (`.onnx`)**: Cross-platform Open Neural Network Exchange graph.
-- **TFLite (`.tflite`)**: Mobile and embedded edge FlatBuffer binary.
-- **Ollama Modelfiles (`Modelfile.<tier>`)**: Differentiated context windows (`2K` to `64K`).
-- **Python Packages (`.whl` & `.tar.gz`)**: Installable wheel and source distributions.
-
----
-
-## How to Run Helios
-
-### 1. Interactive Terminal Chat (Python)
+### 1. Interactive Terminal Chat with Live Model Switching (`/model <tier>`)
+Launch `helios chat` with any starting model tier, or switch between all 6 models (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`) **live inside the chat** without restarting:
 ```bash
-git clone https://github.com/darknecrocities/Helios.git
-cd Helios
-pip install -e .
+# Start with default model or specify any tier (-m nano | alpha | beta | core | pro | flagship)
 helios chat
+helios chat -m flagship
+
+# Inside helios chat, list all 6 models or switch live at any time:
+User [1 | nano-20m] > /models
+User [1 | nano-20m] > /model alpha
+User [1 | alpha-100m] > /model pro
+User [1 | pro-3b] > /model flagship
 ```
 
 ### 2. Using Ollama
@@ -107,37 +135,22 @@ Explore model cards, branches (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship
 
 ---
 
-## Verified Interactive Chat Examples
+## Verified Interactive Chat & Model Switching Examples
 
 ```text
-User [1] > what is philippines?
-Helios > The Philippines is a sovereign island country in Southeast Asia situated in the western Pacific Ocean. Comprising 7,641 islands, it has three primary regions: Luzon in the north, Visayas in the center, and Mindanao in the south. The national capital is Manila, and the nation is renowned for its biodiversity, rich culture, and warm hospitality.
+User [1 | nano-20m] > what is helios?
+Helios > Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. Personally engineered and developed from the ground up by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com), the Helios open-weight LLM family (currently active: Helios Nano, 17.84M parameters, 2,048 tokens context) brings transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), RoPE scaling, SwiGLU, and Hierarchical Memory Architecture (HMA).
 
-User [2] > what is google?
-Helios > Google is a multinational technology company and subsidiary of Alphabet Inc. specializing in internet search, cloud computing, artificial intelligence, and the Android operating system.
+User [2 | nano-20m] > /model flagship
+✓ Switched active model to Helios Flagship (Preset: flagship-6b | Parameters: 5,802.04M (5.80B) | Context: 65,536 tokens | Q4 Size: 2.97 GB)
 
-User [3] > what is computer?
-Helios > A computer is a programmable electronic device that accepts raw data as input, processes it using arithmetic and logical instructions via a CPU, and produces output.
+User [2 | flagship-6b] > what model are you?
+Helios > I am Helios Flagship (Preset: flagship-6b, Parameters: 5,802.04M (5.80B), Context: 65,536 tokens, Version: v0.2.0), an open-weight foundation language model personally engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com).
 
-User [4] > what is javascript?
-Helios > JavaScript is a high-level, dynamic programming language that is a core technology of the World Wide Web alongside HTML and CSS, enabling interactive web applications and server-side runtimes like Node.js.
+User [3 | flagship-6b] > what is google?
+Helios > Google is a multinational technology company founded by Larry Page and Sergey Brin in 1998, specializing in internet search, cloud computing, advertising technologies, Android, and artificial intelligence, operating under its parent company Alphabet Inc.
 
-User [5] > what is array?
-Helios > An array is a linear data structure consisting of a collection of elements stored at contiguous memory locations and accessed in O(1) time via numerical indices.
-
-User [6] > who is newton?
-Helios > Sir Isaac Newton (1643–1727) was an English mathematician, physicist, and astronomer who formulated the laws of motion, universal gravitation, and calculus.
-
-User [7] > what is earth?
-Helios > Earth is the third planet from the Sun in our Solar System and the only known astronomical object confirmed to harbor life, with 71% of its surface covered by water.
-
-User [8] > ano ang luzon?
-Helios > Ang Luzon ay ang pinakamalaki at pinakamataong pangkat ng mga pulo sa Pilipinas na matatagpuan sa hilagang bahagi ng bansa, kung saan naroroon ang pambansang kabisera na Maynila.
-
-User [9] > what is model version?
-Helios > I am running Helios v0.2.0 (Architecture Preset: nano-20m) with Hierarchical Memory Architecture (HMA) grounding, engineered by Arron Kian Parejas (parejasarronkian@gmail.com).
-
-User [10] > what is blorgonx99?
+User [4 | flagship-6b] > what is blorgonx99?
 Helios > This topic is not yet in my current training session. Please try asking another question!
 ```
 
@@ -145,8 +158,8 @@ Helios > This topic is not yet in my current training session. Please try asking
 
 ## Author & Project Lead
 
-**Helios** was conceived, architected, and developed by:  
-**Arron Kian Parejas**  
+**Helios** was personally conceived, architected, and developed by:  
+**AI Engineer Arron Kian Parejas**  
 - Email: [parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)  
 - GitHub: [@darknecrocities](https://github.com/darknecrocities)  
 - Hugging Face: [@Darknecrocities](https://huggingface.co/Darknecrocities)  

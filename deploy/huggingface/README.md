@@ -45,19 +45,20 @@ language:
 
 ---
 
-## 1. Overview & Architecture
+## 1. About Helios: Origin of the Name, Vision & Engineering Techniques
 
-Helios is a modular, transparent, open-weight foundation model ecosystem engineered for efficient inference on consumer edge hardware and standard laptops.
+**Helios** is named after **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky each day to illuminate the Earth and was revered as the all-seeing guardian of truth and clarity.
 
-### Core Architectural Specifications:
-- **Architecture**: Decoder-only Causal Transformer
-- **Parameters**: 6 Model Tiers from **17.84M (`Nano`)** to **5,802.04M (`Flagship`)**
-- **Attention**: Grouped-Query Attention (GQA)
-- **Position Representation**: Rotary Position Embeddings (RoPE, theta scaling up to 500,000.0)
-- **Normalization**: Pre-RMSNorm (`eps=1e-05`)
-- **Feed-Forward**: SwiGLU Gated MLP
-- **Context Length**: Up to **65,536 tokens**
-- **Memory & Grounding**: Hierarchical Memory Architecture (HMA) with stopword-filtered BM25, subject-entity verification, and an **Honest Epistemic Fallback** (never hallucinates or returns a bare number like `"42"` on out-of-session queries).
+Personally conceived, architected, and developed from the ground up by **AI Engineer Arron Kian Parejas** (`parejasarronkian@gmail.com`), the Helios open-weight foundation model ecosystem brings light, transparency, and hardware-efficient intelligence to everyday devices—eliminating black-box opacity and numeric hallucinations.
+
+### Core AI Engineering Techniques Used:
+- **Decoder-Only Causal Transformer**: 6 Model Tiers from **17.84M (`Nano`)** to **5,802.04M (`Flagship`)**.
+- **Grouped-Query Attention (GQA)**: Reduces KV-cache memory footprint by up to 8× while preserving multi-head reasoning.
+- **Rotary Position Embeddings (RoPE)**: High-theta context scaling (up to `500,000.0`) supporting context windows from **2,048** up to **65,536 tokens**.
+- **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm (`eps=1e-05`)**: Ensures zero gradient divergence and superior token representations.
+- **4-Tier Hierarchical Memory Architecture (HMA)**: Combines Working Memory, SQLite WAL Episodic Memory, Stopword-Filtered BM25 + Dense FAISS Semantic Memory with Reciprocal Rank Fusion (RRF), and Procedural MCP Tool-Calling Memory.
+- **Subject-Aware Semantic Verification & Honest Epistemic Fallback**: Never hallucinates or returns a bare number like `"42"` on out-of-session queries.
+- **Trained Across 26 Curated Datasets (`sot/README.md`)**: Including FineWeb-Edu, MedMCQA, SciQ, GSM8K, Alpaca-Cleaned, OpenWebMath, The Stack v2, CulturaX (Tagalog), and xLAM MCP Function Calling.
 
 ---
 

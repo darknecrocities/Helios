@@ -7,13 +7,13 @@
 
 ---
 
-## Overview
+## About Helios: Origin of the Name & Engineering Techniques
 
-**Helios** is a transparent, highly efficient open-weight foundation model ecosystem engineered with modern LLM innovations:
-- **Rotary Position Embeddings (RoPE)** with high theta scaling (up to 500k) for stable context extrapolation.
-- **SwiGLU Gated Feed-Forward Networks** for superior language representations.
-- **Root Mean Square Normalization (Pre-RMSNorm)** ensuring zero gradient divergence.
-- **Hierarchical Memory Architecture (HMA)** featuring long-term SQLite episodic memory (WAL mode), stopword-filtered BM25 + subject-entity verification, native **Model Context Protocol (MCP)** tool calling, and an **Honest Epistemic Fallback** (never hallucinates or outputs a bare number when asked out-of-session questions).
+**Helios** is named after **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky to illuminate the Earth with clarity and truth. Personally conceived, architected, and developed by **AI Engineer Arron Kian Parejas** (`parejasarronkian@gmail.com`), Helios brings transparent, open-weight intelligence to everyday hardware using:
+- **Grouped-Query Attention (GQA)** for up to 8× smaller KV-cache memory footprints.
+- **Rotary Position Embeddings (RoPE)** with high theta scaling (up to 500k) for stable context extrapolation up to 65,536 tokens.
+- **SwiGLU Gated Feed-Forward Networks** & **Pre-RMSNorm** ensuring zero gradient divergence.
+- **4-Tier Hierarchical Memory Architecture (HMA)** featuring SQLite WAL episodic memory, stopword-filtered BM25 + subject-entity verification, native **Model Context Protocol (MCP)** tool calling, and an **Honest Epistemic Fallback** trained across **26 open-source datasets** (`sot/README.md`).
 
 ---
 
