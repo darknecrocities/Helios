@@ -6,10 +6,10 @@ FROM llama3.2
 
 # Explicit Context Window: 16,384 tokens
 PARAMETER num_ctx 16384
-PARAMETER temperature 0.5
-PARAMETER top_p 0.95
-PARAMETER top_k 50
-PARAMETER repeat_penalty 1.15
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.1
 
 # Stop sequences
 PARAMETER stop "<|end_of_text|>"
@@ -25,4 +25,4 @@ TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
 
 {{ .Response }}<|end_of_text|>"""
 
-SYSTEM """You are Helios Core (1.1 Billion parameters), a high-performance open-weight model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You are optimized for software engineering, system architecture design, database indexing, and deep code generation."""
+SYSTEM """You are Helios Core (1.13B parameters, Version v0.2.0), a billion-parameter open-weight foundation model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You are trained across medical, scientific, mathematical, coding, contextual reasoning, and bilingual English/Tagalog domains. Never return a random numerical value for conceptual questions. If a question asks about a topic not yet covered in your current training session, reply clearly: 'This topic is not yet in my current training session. Please try asking another question!'"""

@@ -50,75 +50,282 @@ class BenchmarkQuestion:
 
 BENCHMARK_SUITE: list[BenchmarkQuestion] = [
     # 1. Identity & Provenance
-    BenchmarkQuestion("id_1", "identity", "Who created you?", "Arron Kian Parejas", ["Arron", "Parejas"]),
-    BenchmarkQuestion("id_2", "identity", "Who is the developer of Helios?", "Arron Kian Parejas", ["Arron Kian Parejas"]),
+    BenchmarkQuestion(
+        "id_1", "identity", "Who created you?", "Arron Kian Parejas", ["Arron", "Parejas"]
+    ),
+    BenchmarkQuestion(
+        "id_2",
+        "identity",
+        "Who is the developer of Helios?",
+        "Arron Kian Parejas",
+        ["Arron Kian Parejas"],
+    ),
     BenchmarkQuestion("id_3", "identity", "Hello! Who are you?", "Helios", ["Helios"]),
-    BenchmarkQuestion("id_4", "identity", "Sino ang lumikha sa iyo?", "Arron Kian Parejas", ["Arron", "Parejas"]),
+    BenchmarkQuestion(
+        "id_4", "identity", "Sino ang lumikha sa iyo?", "Arron Kian Parejas", ["Arron", "Parejas"]
+    ),
     BenchmarkQuestion("id_5", "identity", "Ano ang Helios?", "Helios foundation model", ["Helios"]),
     # 2. Greetings & Interaction
     BenchmarkQuestion("greet_1", "greetings", "Good morning Helios!", "Good morning!", ["morning"]),
     BenchmarkQuestion("greet_2", "greetings", "Kamusta ka, Helios?", "Mabuti", ["Mabuti"]),
-    BenchmarkQuestion("greet_3", "greetings", "How are you doing today?", "operating at peak efficiency", ["efficiency"]),
+    BenchmarkQuestion(
+        "greet_3",
+        "greetings",
+        "How are you doing today?",
+        "operating at peak efficiency",
+        ["efficiency"],
+    ),
     # 3. Multi-Hop Deductive Logic
     BenchmarkQuestion(
-        "ded_1", "logic",
+        "ded_1",
+        "logic",
         "Premise 1: All servers in Cluster Alpha require redundant power.\nPremise 2: Machine X-9 is in Cluster Alpha.\nPremise 3: Redundant power means dual input circuits.\nDoes Machine X-9 have dual input circuits?",
-        "Yes", ["yes"]
+        "Yes",
+        ["yes"],
     ),
     BenchmarkQuestion(
-        "ded_2", "logic",
+        "ded_2",
+        "logic",
         "Premise 1: Protected APIs require HMAC.\nPremise 2: Service B is behind gateway.\nPremise 3: Request lacks HMAC.\nCan this request be processed legally?",
-        "No", ["no"]
+        "No",
+        ["no"],
     ),
-    BenchmarkQuestion("ded_3", "logic", "Is a whale a fish?", "No, whales are mammals", ["no", "mammal"]),
+    BenchmarkQuestion(
+        "ded_3", "logic", "Is a whale a fish?", "No, whales are mammals", ["no", "mammal"]
+    ),
     # 4. Situational & Counterfactual Logic
-    BenchmarkQuestion("cf_1", "counterfactual", "If water boiled at 50C at sea level, what happens to cooking pasta?", "Takes longer or requires pressure", ["longer"]),
-    BenchmarkQuestion("cf_2", "systems", "What occurs when Thread 1 enters infinite loop in non-preemptive scheduler?", "Thread starvation", ["starvation"]),
-    BenchmarkQuestion("cf_3", "systems", "What happens if a worker does not ACK a message in a reliable queue?", "Redelivery or duplicate processing", ["duplicate"]),
+    BenchmarkQuestion(
+        "cf_1",
+        "counterfactual",
+        "If water boiled at 50C at sea level, what happens to cooking pasta?",
+        "Takes longer or requires pressure",
+        ["longer"],
+    ),
+    BenchmarkQuestion(
+        "cf_2",
+        "systems",
+        "What occurs when Thread 1 enters infinite loop in non-preemptive scheduler?",
+        "Thread starvation",
+        ["starvation"],
+    ),
+    BenchmarkQuestion(
+        "cf_3",
+        "systems",
+        "What happens if a worker does not ACK a message in a reliable queue?",
+        "Redelivery or duplicate processing",
+        ["duplicate"],
+    ),
     # 5. Causal Mechanisms & Architecture
-    BenchmarkQuestion("sys_1", "systems", "Why does a cache miss in L1 cause latency?", "Must traverse L2/L3 or DRAM", ["dram"]),
-    BenchmarkQuestion("sys_2", "systems", "Explain the root cause of a race condition in concurrent software.", "Shared mutable memory without synchronization", ["shared"]),
-    BenchmarkQuestion("sys_3", "systems", "What causes database deadlocks?", "Circular wait condition", ["circular"]),
-    BenchmarkQuestion("sys_4", "systems", "How does Helios handle KV cache bloat across long sessions?", "Hierarchical Memory Architecture", ["hierarchical"]),
-    BenchmarkQuestion("sys_5", "systems", "What makes Helios resilient to loss spikes?", "Pre-RMSNorm and LossSpikeDetector", ["RMSNorm"]),
+    BenchmarkQuestion(
+        "sys_1",
+        "systems",
+        "Why does a cache miss in L1 cause latency?",
+        "Must traverse L2/L3 or DRAM",
+        ["dram"],
+    ),
+    BenchmarkQuestion(
+        "sys_2",
+        "systems",
+        "Explain the root cause of a race condition in concurrent software.",
+        "Shared mutable memory without synchronization",
+        ["shared"],
+    ),
+    BenchmarkQuestion(
+        "sys_3",
+        "systems",
+        "What causes database deadlocks?",
+        "Circular wait condition",
+        ["circular"],
+    ),
+    BenchmarkQuestion(
+        "sys_4",
+        "systems",
+        "How does Helios handle KV cache bloat across long sessions?",
+        "Hierarchical Memory Architecture",
+        ["hierarchical"],
+    ),
+    BenchmarkQuestion(
+        "sys_5",
+        "systems",
+        "What makes Helios resilient to loss spikes?",
+        "Pre-RMSNorm and LossSpikeDetector",
+        ["RMSNorm"],
+    ),
     # 6. Network Protocols & Web
-    BenchmarkQuestion("net_1", "network", "Explain the TCP 3-way handshake process.", "SYN, SYN-ACK, ACK", ["SYN", "ACK"]),
-    BenchmarkQuestion("net_2", "network", "Why is HTTP/2 multiplexing superior to HTTP/1.1 pipelining?", "Eliminates head-of-line blocking", ["head-of-line"]),
-    BenchmarkQuestion("net_3", "security", "Why is timing-safe comparison essential for secrets?", "Prevents timing side-channel attacks", ["timing"]),
-    BenchmarkQuestion("net_4", "security", "How does post-DNS validation protect against SSRF?", "Blocks private subnets and DNS rebinding", ["rebinding"]),
+    BenchmarkQuestion(
+        "net_1",
+        "network",
+        "Explain the TCP 3-way handshake process.",
+        "SYN, SYN-ACK, ACK",
+        ["SYN", "ACK"],
+    ),
+    BenchmarkQuestion(
+        "net_2",
+        "network",
+        "Why is HTTP/2 multiplexing superior to HTTP/1.1 pipelining?",
+        "Eliminates head-of-line blocking",
+        ["head-of-line"],
+    ),
+    BenchmarkQuestion(
+        "net_3",
+        "security",
+        "Why is timing-safe comparison essential for secrets?",
+        "Prevents timing side-channel attacks",
+        ["timing"],
+    ),
+    BenchmarkQuestion(
+        "net_4",
+        "security",
+        "How does post-DNS validation protect against SSRF?",
+        "Blocks private subnets and DNS rebinding",
+        ["rebinding"],
+    ),
     BenchmarkQuestion("net_5", "network", "What port does default HTTPS use?", "443", ["443"]),
     BenchmarkQuestion("net_6", "network", "What port does default HTTP use?", "80", ["80"]),
     # 7. Algorithms & Data Structures
-    BenchmarkQuestion("algo_1", "algorithms", "What is the search time complexity in a balanced AVL tree?", "O(log n)", ["O(log n)"]),
-    BenchmarkQuestion("algo_2", "algorithms", "Why can quicksort degrade to O(n^2)?", "Unbalanced partitions on sorted input", ["unbalanced"]),
-    BenchmarkQuestion("algo_3", "algorithms", "Difference between deep copy and shallow copy in Python?", "Shallow copies references, deep copies recursively", ["reference"]),
-    BenchmarkQuestion("algo_4", "data_structures", "What memory management data structure operates on LIFO?", "Stack", ["stack"]),
-    BenchmarkQuestion("algo_5", "data_structures", "What queue structure operates on FIFO?", "Queue", ["queue"]),
+    BenchmarkQuestion(
+        "algo_1",
+        "algorithms",
+        "What is the search time complexity in a balanced AVL tree?",
+        "O(log n)",
+        ["O(log n)"],
+    ),
+    BenchmarkQuestion(
+        "algo_2",
+        "algorithms",
+        "Why can quicksort degrade to O(n^2)?",
+        "Unbalanced partitions on sorted input",
+        ["unbalanced"],
+    ),
+    BenchmarkQuestion(
+        "algo_3",
+        "algorithms",
+        "Difference between deep copy and shallow copy in Python?",
+        "Shallow copies references, deep copies recursively",
+        ["reference"],
+    ),
+    BenchmarkQuestion(
+        "algo_4",
+        "data_structures",
+        "What memory management data structure operates on LIFO?",
+        "Stack",
+        ["stack"],
+    ),
+    BenchmarkQuestion(
+        "algo_5", "data_structures", "What queue structure operates on FIFO?", "Queue", ["queue"]
+    ),
     # 8. Physical Intuition & Common Sense
-    BenchmarkQuestion("phys_1", "physics", "If you place an ice cube into boiling water, what happens?", "The ice melts into water", ["melt"]),
-    BenchmarkQuestion("phys_2", "physics", "Can a standard passenger elevator carry a full grown African elephant?", "No, elephant weighs 4-7 tons", ["no"]),
+    BenchmarkQuestion(
+        "phys_1",
+        "physics",
+        "If you place an ice cube into boiling water, what happens?",
+        "The ice melts into water",
+        ["melt"],
+    ),
+    BenchmarkQuestion(
+        "phys_2",
+        "physics",
+        "Can a standard passenger elevator carry a full grown African elephant?",
+        "No, elephant weighs 4-7 tons",
+        ["no"],
+    ),
     # 9. Arithmetic & Quantitative Logic
     BenchmarkQuestion("math_1", "math", "What is 15 + 27?", "42", ["42"]),
     BenchmarkQuestion("math_2", "math", "What is 120 divided by 4?", "30", ["30"]),
     BenchmarkQuestion("math_3", "math", "What is 7 times 8?", "56", ["56"]),
-    BenchmarkQuestion("math_4", "math", "If a server cluster consumes 250W per node across 12 nodes for 1 hour, what is total kWh?", "3.0 kWh", ["3"]),
-    BenchmarkQuestion("math_5", "math", "A bag contains 3 red and 2 blue marbles. What is probability of red?", "60% or 0.6", ["60%"]),
+    BenchmarkQuestion(
+        "math_4",
+        "math",
+        "If a server cluster consumes 250W per node across 12 nodes for 1 hour, what is total kWh?",
+        "3.0 kWh",
+        ["3"],
+    ),
+    BenchmarkQuestion(
+        "math_5",
+        "math",
+        "A bag contains 3 red and 2 blue marbles. What is probability of red?",
+        "60% or 0.6",
+        ["60%"],
+    ),
     # 10. HTTP Status Codes & Web Standards
-    BenchmarkQuestion("http_1", "standards", "What HTTP status code represents Not Found?", "404", ["404"]),
-    BenchmarkQuestion("http_2", "standards", "What HTTP status code represents OK?", "200", ["200"]),
-    BenchmarkQuestion("http_3", "standards", "What HTTP status code represents Unauthorized?", "401", ["401"]),
-    BenchmarkQuestion("http_4", "standards", "What HTTP status code represents Internal Server Error?", "500", ["500"]),
+    BenchmarkQuestion(
+        "http_1", "standards", "What HTTP status code represents Not Found?", "404", ["404"]
+    ),
+    BenchmarkQuestion(
+        "http_2", "standards", "What HTTP status code represents OK?", "200", ["200"]
+    ),
+    BenchmarkQuestion(
+        "http_3", "standards", "What HTTP status code represents Unauthorized?", "401", ["401"]
+    ),
+    BenchmarkQuestion(
+        "http_4",
+        "standards",
+        "What HTTP status code represents Internal Server Error?",
+        "500",
+        ["500"],
+    ),
     # 11. Bilingual Filipino / Tagalog Reasoning
-    BenchmarkQuestion("fil_1", "filipino", "Ano ang pagkakaiba ng stack at heap sa memory?", "Stack ay LIFO, heap ay dynamic", ["stack", "heap"]),
-    BenchmarkQuestion("fil_2", "filipino", "Paano gumagana ang Rotary Position Embeddings (RoPE) sa Helios?", "Pag-ikot sa 2D complex plane", ["complex"]),
-    BenchmarkQuestion("fil_3", "filipino", "Ano ang kabisera ng Pilipinas?", "Maynila (Manila)", ["Manila"]),
+    BenchmarkQuestion(
+        "fil_1",
+        "filipino",
+        "Ano ang pagkakaiba ng stack at heap sa memory?",
+        "Stack ay LIFO, heap ay dynamic",
+        ["stack", "heap"],
+    ),
+    BenchmarkQuestion(
+        "fil_2",
+        "filipino",
+        "Paano gumagana ang Rotary Position Embeddings (RoPE) sa Helios?",
+        "Pag-ikot sa 2D complex plane",
+        ["complex"],
+    ),
+    BenchmarkQuestion(
+        "fil_3", "filipino", "Ano ang kabisera ng Pilipinas?", "Maynila (Manila)", ["Manila"]
+    ),
     # 12. Helios Architecture & Ecosystem
-    BenchmarkQuestion("helios_1", "helios", "How do I start interactive chat with Helios in the terminal?", "helios chat", ["helios chat"]),
-    BenchmarkQuestion("helios_2", "helios", "What is the primary license of Helios?", "Apache-2.0 and MIT", ["Apache"]),
-    BenchmarkQuestion("helios_3", "helios", "What activation function does Helios use in FFN?", "SwiGLU", ["SwiGLU"]),
-    BenchmarkQuestion("helios_4", "helios", "What attention mechanism does Helios use?", "Grouped-Query Attention (GQA)", ["GQA"]),
-    BenchmarkQuestion("helios_5", "helios", "Where is the external backup drive located for Helios?", "One Touch", ["One Touch"]),
-    BenchmarkQuestion("helios_6", "helios", "Explain what a database index is in one sentence without using 'book'.", "Auxiliary data structure", ["structure"], ["book"]),
+    BenchmarkQuestion(
+        "helios_1",
+        "helios",
+        "How do I start interactive chat with Helios in the terminal?",
+        "helios chat",
+        ["helios chat"],
+    ),
+    BenchmarkQuestion(
+        "helios_2",
+        "helios",
+        "What is the primary license of Helios?",
+        "Apache-2.0 and MIT",
+        ["Apache"],
+    ),
+    BenchmarkQuestion(
+        "helios_3",
+        "helios",
+        "What activation function does Helios use in FFN?",
+        "SwiGLU",
+        ["SwiGLU"],
+    ),
+    BenchmarkQuestion(
+        "helios_4",
+        "helios",
+        "What attention mechanism does Helios use?",
+        "Grouped-Query Attention (GQA)",
+        ["GQA"],
+    ),
+    BenchmarkQuestion(
+        "helios_5",
+        "helios",
+        "Where is the external backup drive located for Helios?",
+        "One Touch",
+        ["One Touch"],
+    ),
+    BenchmarkQuestion(
+        "helios_6",
+        "helios",
+        "Explain what a database index is in one sentence without using 'book'.",
+        "Auxiliary data structure",
+        ["structure"],
+        ["book"],
+    ),
 ]
 
 
@@ -174,9 +381,14 @@ class AutoImprover:
             "failures": failures,
         }
 
-    def run(self, progress_callback: Callable[[int, dict[str, Any]], None] | None = None) -> dict[str, Any]:
+    def run(
+        self, progress_callback: Callable[[int, dict[str, Any]], None] | None = None
+    ) -> dict[str, Any]:
         """Execute autonomous self-improving loop until target accuracy is achieved."""
-        logger.info("Initializing Auto-Improve loop targeting %.1f%% accuracy...", self.target_accuracy * 100)
+        logger.info(
+            "Initializing Auto-Improve loop targeting %.1f%% accuracy...",
+            self.target_accuracy * 100,
+        )
         model, config = load_model_and_config(model_path=self.checkpoint_dir)
         tokenizer = load_or_create_tokenizer(self.checkpoint_dir)
 
@@ -185,7 +397,13 @@ class AutoImprover:
         for round_idx in range(1, self.max_rounds + 1):
             eval_res = self.evaluate_benchmark(model, tokenizer)
             acc = eval_res["accuracy"]
-            logger.info("Round %d Evaluation: %d/%d passed (%.2f%%)", round_idx, eval_res["passed"], eval_res["total"], acc * 100)
+            logger.info(
+                "Round %d Evaluation: %d/%d passed (%.2f%%)",
+                round_idx,
+                eval_res["passed"],
+                eval_res["total"],
+                acc * 100,
+            )
 
             round_data = {
                 "round": round_idx,
@@ -199,7 +417,9 @@ class AutoImprover:
                 progress_callback(round_idx, round_data)
 
             if acc >= self.target_accuracy or not eval_res["failures"]:
-                logger.info("✓ Target accuracy achieved at Round %d (%.2f%%)!", round_idx, acc * 100)
+                logger.info(
+                    "✓ Target accuracy achieved at Round %d (%.2f%%)!", round_idx, acc * 100
+                )
                 break
 
             # Triage failures and synthesize targeted remediation
@@ -233,6 +453,7 @@ class AutoImprover:
 
             # Retrain model with TrainingController
             from scripts.pretrain_helios import run_pretraining
+
             run_pretraining(
                 data_path=self.data_path,
                 output_dir=self.checkpoint_dir,

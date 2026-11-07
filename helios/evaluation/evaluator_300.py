@@ -42,6 +42,7 @@ class HeliosEvaluator300:
             ckpt_p = Path(checkpoint_path).resolve()
             if ckpt_p.exists():
                 import torch
+
                 logger.info("Loading trained checkpoint from %s...", ckpt_p)
                 ckpt = torch.load(ckpt_p, map_location="cpu", weights_only=False)
                 state_dict = ckpt.get("model_state_dict", ckpt)
@@ -164,8 +165,12 @@ class HeliosEvaluator300:
                     "total": st["total"],
                     "passed": st["passed"],
                     "failed": st["failed"],
-                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0 if st["total"] > 0 else 0.0,
-                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"]) if st["latencies"] else 0.0,
+                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0
+                    if st["total"] > 0
+                    else 0.0,
+                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"])
+                    if st["latencies"]
+                    else 0.0,
                 }
                 for d, st in domain_stats.items()
             },
@@ -209,19 +214,21 @@ class HeliosEvaluator300:
                 f"{st['accuracy_percent']:.1f}% | {st['avg_latency_ms']:.2f} ms |"
             )
 
-        lines.extend([
-            "",
-            "## Methodology & Verification Invariants",
-            "- **Non-Biased Multi-Disciplinary Design**: Equal partition of 30 questions across 10 core reasoning categories.",
-            "- **Zero Cherry-Picking**: Uncensored automated evaluation across formal logic, causality, arithmetic, CS, geography, and ethics.",
-            "- **Hierarchical Memory Architecture (HMA)**: Grounded retrieval with Working Context and persistent SQLite episodic history.",
-            "- **Deterministic Procedural Mathematics**: Zero hallucination on quantitative operations and conversions.",
-            "",
-            "## Sample Query Verifications",
-            "",
-            "| ID | Domain | Prompt | Helios Response | Status |",
-            "| :--- | :--- | :--- | :--- | :---: |",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Methodology & Verification Invariants",
+                "- **Non-Biased Multi-Disciplinary Design**: Equal partition of 30 questions across 10 core reasoning categories.",
+                "- **Zero Cherry-Picking**: Uncensored automated evaluation across formal logic, causality, arithmetic, CS, geography, and ethics.",
+                "- **Hierarchical Memory Architecture (HMA)**: Grounded retrieval with Working Context and persistent SQLite episodic history.",
+                "- **Deterministic Procedural Mathematics**: Zero hallucination on quantitative operations and conversions.",
+                "",
+                "## Sample Query Verifications",
+                "",
+                "| ID | Domain | Prompt | Helios Response | Status |",
+                "| :--- | :--- | :--- | :--- | :---: |",
+            ]
+        )
 
         # Sample 1 item from each domain for concise report viewing
         seen_domains = set()

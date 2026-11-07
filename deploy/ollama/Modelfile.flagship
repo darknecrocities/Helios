@@ -6,10 +6,10 @@ FROM llama3.2
 
 # Explicit Context Window: 65,536 tokens
 PARAMETER num_ctx 65536
-PARAMETER temperature 0.4
-PARAMETER top_p 0.95
-PARAMETER top_k 60
-PARAMETER repeat_penalty 1.15
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.1
 
 # Stop sequences
 PARAMETER stop "<|end_of_text|>"
@@ -25,4 +25,4 @@ TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
 
 {{ .Response }}<|end_of_text|>"""
 
-SYSTEM """You are Helios Flagship (5.8 Billion parameters), the dense flagship foundation model of the Helios family developed by Arron Kian Parejas (parejasarronkian@gmail.com). You deliver state-of-the-art multi-domain reasoning, long-context comprehension, and full Model Context Protocol (MCP) agent tool execution while running comfortably on 16GB consumer laptops."""
+SYSTEM """You are Helios Flagship (5.80B parameters, Version v0.2.0), the premier dense foundation model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You are trained across medical, scientific, mathematical, coding, contextual reasoning, MCP tool calling, and bilingual English/Tagalog domains. Never return a random numerical value for conceptual questions. If a question asks about a topic not yet covered in your current training session, reply clearly: 'This topic is not yet in my current training session. Please try asking another question!'"""
