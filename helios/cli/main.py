@@ -30,23 +30,25 @@ app = typer.Typer(
 @app.command()
 def version() -> None:
     """Print Helios ecosystem version and author attribution."""
-    typer.echo(f"Helios Foundation Ecosystem v{helios.__version__}")
-    typer.echo("Author & Architecture Lead: Arron Kian Parejas")
+    typer.echo(f"Helios version {helios.__version__} (Helios Foundation Ecosystem)")
+    typer.echo("Author & Architecture Lead: Arron Kian Parejas <arronkianparejas@gmail.com>")
     typer.echo("Repository: https://github.com/darknecrocities/Helios")
 
 
 @app.command()
 def inspect(
     model_size: str = typer.Option(
-        "nano-15m",
+        "nano-20m",
         "--model-size",
         "-m",
-        help="Target model size preset (nano-15m, nano-25m, nano-35m)",
+        help="Target model size preset (nano-15m, nano-20m, nano-25m, nano-35m)",
     ),
 ) -> None:
     """Inspect Helios model configuration, parameter budget, and memory footprint."""
+    typer.echo(f"Helios Model Inspector - Target: {model_size}")
     preset_map = {
         "nano-15m": HeliosConfig.nano_15m,
+        "nano-20m": HeliosConfig.nano_20m,
         "nano-25m": HeliosConfig.nano_25m,
         "nano-35m": HeliosConfig.nano_35m,
     }
@@ -57,6 +59,9 @@ def inspect(
         raise typer.Exit(code=1)
 
     config = factory()
+    typer.echo(f"Developer        : {config.developer} <{config.developer_email}>")
+    typer.echo(f"Model Family     : {config.model_family}")
+    typer.echo("Features         : GQA (3:1), Dynamic KV Cache, HMA Decoupling, 6-State Resumption")
     model = HeliosForCausalLM(config)
     report = ParameterInspector.inspect(model, config)
     typer.echo(report.summary())
@@ -95,16 +100,22 @@ def resume_test() -> None:
 @app.command()
 def roadmap() -> None:
     """Display the full Helios Parameter Scaling Roadmap & Exit Gates."""
-    table = """
-| Model Stage   | Target Params | Target Hardware               | Status       | Exit Gates / Requirements                     |
-| :---          | :---          | :---                          | :---         | :---                                          |
-| **Nano**      | 10M–40M       | Apple Silicon M3 (16GB MPS)   | **ACTIVE**   | Resumption, Overfit smoke test, Zero NaNs     |
-| **Alpha**     | 100M          | Single GPU (16GB VRAM) / MPS  | Planned      | Perplexity < 25, tokenizer fertility verified |
-| **Beta**      | 300M          | Single High-VRAM GPU (24GB)   | Planned      | GQA KV-cache efficiency, SFT compliance       |
-| **Core**      | 1B            | Multi-GPU Node (2x-4x A100)   | Roadmap      | FSDP2 sharding, math/code reasoning pass      |
-| **Pro**       | 3B            | Distributed Cluster (8x H100) | Long-Term    | Tool use / MCP agentic execution pass         |
-| **Flagship**  | 6B            | High-Compute Training Cluster | Long-Term    | Full multilingual & reasoning parity          |
-"""
+    table = (
+        "| Stage | Params | Target Hardware | Status | Exit Gates |\n"
+        "| :--- | :--- | :--- | :--- | :--- |\n"
+        "| **Nano** | 10M–40M | Apple Silicon M3 (16GB MPS) | **ACTIVE** | "
+        "Resumption, Overfit, No NaNs |\n"
+        "| **Alpha** | 100M | Single GPU (16GB VRAM) / MPS | Planned | "
+        "Perplexity < 25, Fertility ok |\n"
+        "| **Beta** | 300M | Single High-VRAM GPU (24GB) | Planned | "
+        "GQA KV-cache, SFT compliance |\n"
+        "| **Core** | 1B | Multi-GPU Node (2x-4x A100) | Roadmap | "
+        "FSDP2 sharding, Reasoning ok |\n"
+        "| **Pro** | 3B | Distributed Cluster (8x H100) | Long-Term | "
+        "Tool use / MCP agentic pass |\n"
+        "| **Flagship** | 6B | High-Compute Cluster | Long-Term | "
+        "Multilingual & reasoning |\n"
+    )
     typer.echo("# Helios Scaling Roadmap & Gate Specifications")
     typer.echo(table)
 

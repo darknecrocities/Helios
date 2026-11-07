@@ -127,6 +127,13 @@ helios --help
 
 ---
 
+## Author & Development Leadership
+
+**Helios** was conceived, architected, and developed by **Arron Kian Parejas** ([arronkianparejas@gmail.com](mailto:arronkianparejas@gmail.com)).  
+GitHub: [@darknecrocities](https://github.com/darknecrocities)
+
+---
+
 ## License & Citation
 
 Helios source code is dual-licensed under the **Apache License, Version 2.0** or the **MIT License**. See [LICENSE](LICENSE) for details. Pretrained model checkpoints and curated datasets maintain independent licensing and model cards.
@@ -134,8 +141,8 @@ Helios source code is dual-licensed under the **Apache License, Version 2.0** or
 If you use Helios in your research, please cite:
 
 ```bibtex
-@software{helios_llm_2026,
-  author = {Helios Open Source Contributors},
+@software{parejas_helios_2026,
+  author = {Parejas, Arron Kian},
   title = {Helios: An Open-Weight Foundation Model Ecosystem with Decoupled Hierarchical Memory},
   url = {https://github.com/darknecrocities/Helios},
   version = {0.1.0},

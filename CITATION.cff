@@ -1,9 +1,10 @@
 cff-version: 1.2.0
-message: "If you use Helios in your research or software, please cite it as below."
+message: "If you use Helios models or architecture in your research or applications, please cite Arron Kian Parejas as below."
 title: "Helios: An Open-Weight Foundation Model Ecosystem with Decoupled Hierarchical Memory"
 authors:
-  - name: "Helios Contributors"
-    email: "contributors@helios.ai"
+  - family-names: "Parejas"
+    given-names: "Arron Kian"
+    email: "arronkianparejas@gmail.com"
 repository-code: "https://github.com/darknecrocities/Helios"
 url: "https://github.com/darknecrocities/Helios"
 version: "0.1.0"

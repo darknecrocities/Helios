@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "helios"
 version = "0.1.0"
-description = "Helios Open-Weight LLM: Modular, transparent foundation model ecosystem with Hierarchical Memory Architecture (HMA) and robust interruption fallback."
+description = "Helios Open-Weight LLM developed by Arron Kian Parejas: Modular, transparent foundation model ecosystem with Hierarchical Memory Architecture (HMA) and robust interruption fallback."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0 OR MIT" }
 authors = [
-    { name = "Helios Open Source Contributors", email = "oss@helios.org" },
+    { name = "Arron Kian Parejas", email = "arronkianparejas@gmail.com" },
 ]
 keywords = [
     "deep-learning",

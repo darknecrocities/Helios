@@ -42,6 +42,9 @@ class HeliosConfig:
     tie_word_embeddings: bool = True
     initializer_range: float = 0.02
     dropout: float = 0.0
+    model_family: str = "Helios"
+    developer: str = "Arron Kian Parejas"
+    developer_email: str = "arronkianparejas@gmail.com"
 
     def __post_init__(self) -> None:
         if self.vocab_size <= 0:
@@ -261,12 +264,37 @@ class HeliosConfig:
         return cls.nano_35m(**overrides)
 
     @classmethod
+    def nano_20m(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Nano 20M target preset (~19.4M tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 320,
+            "n_layers": 7,
+            "n_heads": 8,
+            "n_kv_heads": 2,
+            "d_ffn": 864,
+            "max_seq_len": 2048,
+            "rope_theta": 10000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
+    def helios_nano_20m(cls, **overrides: Any) -> HeliosConfig:
+        """Alias for nano_20m."""
+        return cls.nano_20m(**overrides)
+
+    @classmethod
     def from_preset(cls, preset_name: str, **overrides: Any) -> HeliosConfig:
         """Retrieve HeliosConfig by preset name."""
         name = preset_name.lower().replace("-", "_")
         presets = {
             "helios_nano_15m": cls.nano_15m,
             "nano_15m": cls.nano_15m,
+            "helios_nano_20m": cls.nano_20m,
+            "nano_20m": cls.nano_20m,
             "helios_nano_25m": cls.nano_25m,
             "nano_25m": cls.nano_25m,
             "helios_nano_35m": cls.nano_35m,
