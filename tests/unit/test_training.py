@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 import torch
+import torch.nn as nn
 
 from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
@@ -161,3 +162,80 @@ def test_gradient_accumulation_and_clipping() -> None:
     controller.train_step(batch)
     assert controller.micro_step == 2
     assert controller.global_step == 1
+
+
+def test_loss_spike_detector_and_rollback() -> None:
+    """Verify EMA tracking, loss spike detection, and automatic rollback with LR decay."""
+    from helios.training.trainer import (
+        LossSpikeDetector,
+        LossSpikeDivergenceError,
+    )
+
+    detector = LossSpikeDetector(
+        spike_multiplier=3.0,
+        ema_alpha=0.9,
+        warmup_steps=2,
+        max_consecutive_spikes=2,
+        lr_decay_on_rollback=0.5,
+    )
+
+    model = nn.Linear(4, 2)
+    opt = torch.optim.SGD(model.parameters(), lr=0.1)
+
+    # Clean step 1 & 2 (warmup)
+    detector.record_clean_snapshot(1, 1, 1.0, model, opt, None, {"step": 1})
+    is_spike, _ = detector.evaluate(1, 1.0, 0.5)
+    assert not is_spike
+
+    detector.record_clean_snapshot(2, 2, 0.9, model, opt, None, {"step": 2})
+    is_spike, _ = detector.evaluate(2, 0.9, 0.4)
+    assert not is_spike
+
+    # Step 3: Massive loss spike (> 3x EMA)
+    is_spike, reason = detector.evaluate(3, 5.0, 0.5)
+    assert is_spike
+    assert "Loss exploded" in reason
+
+    # Trigger rollback
+    snap = detector.rollback(model, opt, None, torch.device("cpu"))
+    assert snap.step == 2
+    assert opt.param_groups[0]["lr"] == 0.05  # 0.1 * 0.5
+
+    # Trigger second consecutive spike -> should raise LossSpikeDivergenceError on 3rd attempt
+    detector.consecutive_spikes = 2
+    with pytest.raises(LossSpikeDivergenceError, match="Exceeded maximum consecutive spikes"):
+        detector.rollback(model, opt, None, torch.device("cpu"))
+
+
+def test_throughput_tracker() -> None:
+    """Verify token throughput and theoretical TFLOPs calculation."""
+    from helios.training.trainer import ThroughputTracker
+
+    tracker = ThroughputTracker(model_param_count=10_000_000, window_size=5)
+    metrics1 = tracker.record_step(tokens_in_step=2048)
+    assert metrics1["total_tokens"] == 2048.0
+    assert "tokens_per_sec" in metrics1
+    assert "tflops" in metrics1
+
+
+def test_trainer_fit_lifecycle() -> None:
+    """Verify Trainer.fit processes batches, respects max_steps, and returns step losses."""
+    from helios.training.trainer import Trainer
+
+    model_cfg = HeliosConfig(vocab_size=100, d_model=32, n_layers=1, n_heads=1, n_kv_heads=1)
+    model = HeliosForCausalLM(model_cfg)
+    train_cfg = TrainingConfig(
+        device="cpu",
+        gradient_accumulation_steps=1,
+        max_steps=3,
+        save_interval_steps=0,
+        save_on_interruption=False,
+    )
+    trainer = Trainer(model, train_cfg)
+
+    dataloader = [
+        build_synthetic_batch(vocab_size=100, seq_len=8, batch_size=2, seed=i) for i in range(5)
+    ]
+    losses = trainer.fit(dataloader, max_steps=3)
+    assert len(losses) == 3
+    assert trainer.global_step == 3
