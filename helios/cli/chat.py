@@ -38,6 +38,20 @@ def solve_arithmetic_query(text: str) -> str | None:
         if cleaned.startswith(prefix):
             cleaned = cleaned[len(prefix):].strip()
 
+    # Percentage evaluation: e.g. 20% of 150
+    m_pct = re.fullmatch(r"(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned)
+    if m_pct:
+        p, tot = float(m_pct.group(1)), float(m_pct.group(2))
+        res = (p / 100.0) * tot
+        return f"{cleaned} = {int(res) if res.is_integer() else res}"
+
+    # Fraction evaluation: e.g. 1/4 of 80
+    m_frac = re.fullmatch(r"(\d+)\s*/\s*(\d+)\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned)
+    if m_frac:
+        num, den, tot = float(m_frac.group(1)), float(m_frac.group(2)), float(m_frac.group(3))
+        res = (num / den) * tot
+        return f"{cleaned} = {int(res) if res.is_integer() else res}"
+
     expr = (
         cleaned.replace("^", "**")
         .replace("x", "*")
