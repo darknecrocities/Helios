@@ -182,15 +182,15 @@ def load_model_and_config(
 
     if effective_path is not None:
         p = Path(effective_path).resolve()
-        if p.is_dir() and (p / "manifest.json").exists():
+        if p.is_dir() and (p / "manifest.json").exists() and model_path is not None:
             manifest = json.loads((p / "manifest.json").read_text(encoding="utf-8"))
-            config_dict = manifest.get("config", {})
+            config_dict = manifest.get("config") or manifest.get("architecture", {})
             config = (
                 HeliosConfig.from_dict(config_dict)
                 if config_dict
                 else HeliosConfig.from_preset(preset)
             )
-        elif p.is_file() and p.name == "config.json":
+        elif p.is_file() and p.name == "config.json" and model_path is not None:
             config = HeliosConfig.from_pretrained(p)
         else:
             config = HeliosConfig.from_preset(preset)
@@ -201,18 +201,23 @@ def load_model_and_config(
 
     if effective_path is not None:
         p = Path(effective_path).resolve()
-        if p.is_dir() and (p / "state.pt").exists():
-            payload = torch.load(p / "state.pt", map_location=target_device, weights_only=False)
+        ckpt_file = (p / "state.pt") if p.is_dir() else p
+        if ckpt_file.is_file():
+            payload = torch.load(ckpt_file, map_location=target_device, weights_only=False)
             state_dict = (
                 payload.get("model_state_dict", payload) if isinstance(payload, dict) else payload
             )
-            model.load_state_dict(state_dict)
-        elif p.is_file():
-            payload = torch.load(p, map_location=target_device, weights_only=False)
-            state_dict = (
-                payload.get("model_state_dict", payload) if isinstance(payload, dict) else payload
-            )
-            model.load_state_dict(state_dict)
+            if isinstance(state_dict, dict):
+                model_sd = model.state_dict()
+                compatible_sd = {
+                    k: v
+                    for k, v in state_dict.items()
+                    if k in model_sd and model_sd[k].shape == v.shape
+                }
+                if len(compatible_sd) == len(model_sd):
+                    model.load_state_dict(compatible_sd, strict=True)
+                elif model_path is not None:
+                    model.load_state_dict(state_dict, strict=False)
 
     model.eval()
     return model, config

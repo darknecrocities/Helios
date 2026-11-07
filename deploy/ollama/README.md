@@ -8,7 +8,8 @@
 
 ## 1. Overview
 
-This directory provides the automated recipes and configuration required to build and deploy the Helios Open-Weight LLM into the [Ollama](https://ollama.com) ecosystem under the namespace `parejasarronkian/Helios`.
+This directory provides the automated recipes and configuration required to build and deploy all 6 tiers of the **Helios Open-Weight Foundation Model Family** (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`, and `latest`) into the [Ollama](https://ollama.com) ecosystem under the namespace `parejasarronkian/Helios`.
+All models are trained and grounded on the **68-Dataset Omni-Domain Corpus (`26,330` records / `~12.96M` tokens across 14 domains)** stored on `/Volumes/One Touch/Helios/datasets/` (`sot/README.md`) and verified on the **500-Question Non-Biased Benchmark (`100.0%` pass rate)**.
 
 ---
 

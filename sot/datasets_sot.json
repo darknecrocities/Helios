@@ -3,220 +3,112 @@
   "version": "0.2.0",
   "developer": "AI Engineer Arron Kian Parejas",
   "developer_email": "parejasarronkian@gmail.com",
-  "total_external_datasets": 26,
+  "total_external_datasets": 68,
+  "total_domains": 14,
   "reference_collections": [
     {
       "name": "LLM Reasoning Dataset Collection (Mahadih534)",
       "url": "https://huggingface.co/collections/Mahadih534/llm-reasoning-dataset"
+    },
+    {
+      "name": "AllenAI Open Scientific Corpus (PeS2o / SciRIFF / ARC / SciQ)",
+      "url": "https://huggingface.co/allenai"
+    },
+    {
+      "name": "BigCode Open Code & Documentation Ecosystem (The Stack v2 / StarCoderData)",
+      "url": "https://huggingface.co/bigcode"
     }
   ],
   "consolidated_corpora": [
     {
-      "name": "Helios Massive Multi-Category Pretraining Corpus",
+      "name": "Helios Massive Multi-Category Omni-Domain Pretraining Corpus",
       "path": "/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl",
-      "records": 13682,
-      "tokens": 8054392,
+      "records": 26330,
+      "tokens": 12963695,
       "breakdown": {
-        "core_multi_domain_knowledge": 1178,
-        "medical_clinical_science": 2500,
-        "scientific_reasoning_sciq": 3500,
-        "encyclopedic_alpaca": 4000,
-        "mathematical_gsm8k": 2500,
-        "mcp_tool_calling": 4
+        "core_omni_domain_knowledge": 1226,
+        "mcp_and_agentic_skills": 4,
+        "biology_genetics_medical_science": 5000,
+        "nature_ecology_earth_science": 6000,
+        "tech_history_places_coding_documentation": 8000,
+        "complex_mathematical_reasoning": 5000,
+        "scientific_research_and_reasoning": 1100
       }
     },
     {
-      "name": "Helios In-Repository Grounding Seed Corpus",
+      "name": "Helios In-Repository Omni-Domain Grounding Seed Corpus",
       "path": "data/helios_expanded_reasoning_corpus.jsonl",
-      "records": 678
+      "records": 1226
     }
   ],
   "datasets": [
-    {
-      "index": 1,
-      "name": "FineWeb-Edu",
-      "hf_id": "HuggingFaceFW/fineweb-edu",
-      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu",
-      "category": "Foundational Pretraining & Educational Web"
-    },
-    {
-      "index": 2,
-      "name": "FineWeb",
-      "hf_id": "HuggingFaceFW/fineweb",
-      "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb",
-      "category": "Foundational Pretraining & Educational Web"
-    },
-    {
-      "index": 3,
-      "name": "DCLM-Baseline",
-      "hf_id": "mlfoundations/dCLM-baseline",
-      "url": "https://huggingface.co/datasets/mlfoundations/dCLM-baseline",
-      "category": "Foundational Pretraining & Educational Web"
-    },
-    {
-      "index": 4,
-      "name": "Cosmopedia v2",
-      "hf_id": "HuggingFaceTB/cosmopedia-v2",
-      "url": "https://huggingface.co/datasets/HuggingFaceTB/cosmopedia-v2",
-      "category": "Foundational Pretraining & Educational Web"
-    },
-    {
-      "index": 5,
-      "name": "MedMCQA",
-      "hf_id": "openlifescienceai/medmcqa",
-      "url": "https://huggingface.co/datasets/openlifescienceai/medmcqa",
-      "category": "Medical, Clinical & Life Sciences",
-      "harvested_records": 2500
-    },
-    {
-      "index": 6,
-      "name": "PubMedQA",
-      "hf_id": "qiaojin/PubMedQA",
-      "url": "https://huggingface.co/datasets/qiaojin/PubMedQA",
-      "category": "Medical, Clinical & Life Sciences"
-    },
-    {
-      "index": 7,
-      "name": "SciQ",
-      "hf_id": "allenai/sciq",
-      "url": "https://huggingface.co/datasets/allenai/sciq",
-      "category": "Physical, Chemical, Earth & Natural Sciences",
-      "harvested_records": 3500
-    },
-    {
-      "index": 8,
-      "name": "AI2 ARC",
-      "hf_id": "allenai/ai2_arc",
-      "url": "https://huggingface.co/datasets/allenai/ai2_arc",
-      "category": "Physical, Chemical, Earth & Natural Sciences"
-    },
-    {
-      "index": 9,
-      "name": "GSM8K",
-      "hf_id": "openai/gsm8k",
-      "url": "https://huggingface.co/datasets/openai/gsm8k",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning",
-      "harvested_records": 2500
-    },
-    {
-      "index": 10,
-      "name": "OpenWebMath",
-      "hf_id": "open-web-math/open-web-math",
-      "url": "https://huggingface.co/datasets/open-web-math/open-web-math",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 11,
-      "name": "Proof-Pile-2",
-      "hf_id": "EleutherAI/proof-pile-2",
-      "url": "https://huggingface.co/datasets/EleutherAI/proof-pile-2",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 12,
-      "name": "OpenThoughts-114k",
-      "hf_id": "open-thoughts/OpenThoughts-114k",
-      "url": "https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 13,
-      "name": "Bespoke-Stratos-17k",
-      "hf_id": "bespokelabs/Bespoke-Stratos-17k",
-      "url": "https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 14,
-      "name": "NuminaMath-CoT",
-      "hf_id": "AI-MO/NuminaMath-CoT",
-      "url": "https://huggingface.co/datasets/AI-MO/NuminaMath-CoT",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 15,
-      "name": "DeepSeek-R1-Distilled-Reasoning",
-      "hf_id": "ServiceNow-AI/R1-Distill-SFT",
-      "url": "https://huggingface.co/datasets/ServiceNow-AI/R1-Distill-SFT",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 16,
-      "name": "Magpie-Reasoning-V2",
-      "hf_id": "Magpie-Align/Magpie-Reasoning-V2-250K-CoT-Deepseek-R1-Llama-70B",
-      "url": "https://huggingface.co/datasets/Magpie-Align/Magpie-Reasoning-V2-250K-CoT-Deepseek-R1-Llama-70B",
-      "category": "Mathematical, Deductive & Chain-of-Thought Reasoning"
-    },
-    {
-      "index": 17,
-      "name": "Alpaca-Cleaned",
-      "hf_id": "yahma/alpaca-cleaned",
-      "url": "https://huggingface.co/datasets/yahma/alpaca-cleaned",
-      "category": "General Encyclopedic Instructions",
-      "harvested_records": 4000
-    },
-    {
-      "index": 18,
-      "name": "Wikipedia (EN & TL)",
-      "hf_id": "wikimedia/wikipedia",
-      "url": "https://huggingface.co/datasets/wikimedia/wikipedia",
-      "category": "General Encyclopedic Instructions"
-    },
-    {
-      "index": 19,
-      "name": "SlimOrca",
-      "hf_id": "Open-Orca/SlimOrca",
-      "url": "https://huggingface.co/datasets/Open-Orca/SlimOrca",
-      "category": "General Encyclopedic Instructions"
-    },
-    {
-      "index": 20,
-      "name": "The Stack v2",
-      "hf_id": "bigcode/the-stack-v2",
-      "url": "https://huggingface.co/datasets/bigcode/the-stack-v2",
-      "category": "Computer Science & Code"
-    },
-    {
-      "index": 21,
-      "name": "StarCoderData",
-      "hf_id": "bigcode/starcoderdata",
-      "url": "https://huggingface.co/datasets/bigcode/starcoderdata",
-      "category": "Computer Science & Code"
-    },
-    {
-      "index": 22,
-      "name": "xlam-function-calling-60k",
-      "hf_id": "Salesforce/xlam-function-calling-60k",
-      "url": "https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k",
-      "category": "Model Context Protocol (MCP) & Function Calling"
-    },
-    {
-      "index": 23,
-      "name": "glaive-function-calling-v2",
-      "hf_id": "glaiveai/glaive-function-calling-v2",
-      "url": "https://huggingface.co/datasets/glaiveai/glaive-function-calling-v2",
-      "category": "Model Context Protocol (MCP) & Function Calling"
-    },
-    {
-      "index": 24,
-      "name": "CulturaX (Tagalog)",
-      "hf_id": "uonlp/CulturaX",
-      "url": "https://huggingface.co/datasets/uonlp/CulturaX",
-      "category": "Filipino / Tagalog Bilingual & Cultural"
-    },
-    {
-      "index": 25,
-      "name": "OSCAR-2301 (Tagalog)",
-      "hf_id": "oscar-corpus/OSCAR-2301",
-      "url": "https://huggingface.co/datasets/oscar-corpus/OSCAR-2301",
-      "category": "Filipino / Tagalog Bilingual & Cultural"
-    },
-    {
-      "index": 26,
-      "name": "CC-100 (Tagalog)",
-      "hf_id": "statmt/cc-100",
-      "url": "https://huggingface.co/datasets/statmt/cc-100",
-      "category": "Filipino / Tagalog Bilingual & Cultural"
-    }
+    {"index": 1, "name": "FineWeb-Edu (1.3T Tokens)", "hf_id": "HuggingFaceFW/fineweb-edu", "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 2, "name": "FineWeb (15T Tokens)", "hf_id": "HuggingFaceFW/fineweb", "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 3, "name": "DCLM-Baseline (4T Tokens)", "hf_id": "mlfoundations/dCLM-baseline", "url": "https://huggingface.co/datasets/mlfoundations/dCLM-baseline", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 4, "name": "Cosmopedia v2", "hf_id": "HuggingFaceTB/cosmopedia-v2", "url": "https://huggingface.co/datasets/HuggingFaceTB/cosmopedia-v2", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 5, "name": "Wikipedia Multi-Domain Dump", "hf_id": "wikimedia/wikipedia", "url": "https://huggingface.co/datasets/wikimedia/wikipedia", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 6, "name": "Wikidata Knowledge Graph Triples", "hf_id": "wikidata/wikidata", "url": "https://www.wikidata.org", "category": "1. Foundational Web & Encyclopedic"},
+    {"index": 7, "name": "SmolLM Systems & CS Corpus", "hf_id": "HuggingFaceTB/smollm-corpus", "url": "https://huggingface.co/datasets/HuggingFaceTB/smollm-corpus", "category": "2. Technology, Systems & Cloud"},
+    {"index": 8, "name": "SecQA Cybersecurity & Network Security", "hf_id": "zefang-liu/secqa", "url": "https://huggingface.co/datasets/zefang-liu/secqa", "category": "2. Technology, Systems & Cloud"},
+    {"index": 9, "name": "OpenHermes-2.5 Tech & Systems", "hf_id": "teknium/OpenHermes-2.5", "url": "https://huggingface.co/datasets/teknium/OpenHermes-2.5", "category": "2. Technology, Systems & Cloud"},
+    {"index": 10, "name": "IETF RFC Technical Standards Archive", "hf_id": "ietf-tools/rfc-archive", "url": "https://www.rfc-editor.org", "category": "2. Technology, Systems & Cloud"},
+    {"index": 11, "name": "Encyclopaedia Britannica Historical Editions", "hf_id": "Vintage-LLM/Britannica", "url": "https://huggingface.co/datasets/Vintage-LLM/Britannica", "category": "3. World History & Timelines"},
+    {"index": 12, "name": "VDR Academic History & Geography", "hf_id": "racineai/VDR_History_Geography", "url": "https://huggingface.co/datasets/racineai/VDR_History_Geography", "category": "3. World History & Timelines"},
+    {"index": 13, "name": "Project Gutenberg Historical Library", "hf_id": "manu/project_gutenberg", "url": "https://huggingface.co/datasets/manu/project_gutenberg", "category": "3. World History & Timelines"},
+    {"index": 14, "name": "BigScience Historical Texts", "hf_id": "bigscience-historical-texts", "url": "https://huggingface.co/bigscience-historical-texts", "category": "3. World History & Timelines"},
+    {"index": 15, "name": "MMLU World, European & US History", "hf_id": "cais/mmlu", "url": "https://huggingface.co/datasets/cais/mmlu", "category": "3. World History & Timelines"},
+    {"index": 16, "name": "CoT Reasoning: The Ancient Past", "hf_id": "mattwesney/CoT_Reasoning_The_Ancient_Past", "url": "https://huggingface.co/datasets/mattwesney/CoT_Reasoning_The_Ancient_Past", "category": "4. Ancient Civilizations & Archaeology"},
+    {"index": 17, "name": "Ancient Languages & Epigraphy", "hf_id": "AncientLanguages", "url": "https://huggingface.co/AncientLanguages", "category": "4. Ancient Civilizations & Archaeology"},
+    {"index": 18, "name": "CATMuS Classical & Medieval Manuscripts", "hf_id": "CATMuS/medieval", "url": "https://huggingface.co/datasets/CATMuS/medieval", "category": "4. Ancient Civilizations & Archaeology"},
+    {"index": 19, "name": "Perseus Digital Library (Classical Greece & Rome)", "hf_id": "perseus-digital-library", "url": "https://www.perseus.tufts.edu", "category": "4. Ancient Civilizations & Archaeology"},
+    {"index": 20, "name": "NuminaMath-CoT (860K Olympiad Math)", "hf_id": "AI-MO/NuminaMath-CoT", "url": "https://huggingface.co/datasets/AI-MO/NuminaMath-CoT", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 21, "name": "NVIDIA OpenMathInstruct-2 (14M Math)", "hf_id": "nvidia/OpenMathInstruct-2", "url": "https://huggingface.co/datasets/nvidia/OpenMathInstruct-2", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 22, "name": "OpenWebMath (14.7B Tokens)", "hf_id": "open-web-math/open-web-math", "url": "https://huggingface.co/datasets/open-web-math/open-web-math", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 23, "name": "Proof-Pile-2 (Algebraic Stack & Formal Proofs)", "hf_id": "EleutherAI/proof-pile-2", "url": "https://huggingface.co/datasets/EleutherAI/proof-pile-2", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 24, "name": "MathCode-Pile (Program-of-Thought Math)", "hf_id": "MathGenie/MathCode-Pile", "url": "https://huggingface.co/datasets/MathGenie/MathCode-Pile", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 25, "name": "GSM8K Multi-Step Quantitative Reasoning", "hf_id": "openai/gsm8k", "url": "https://huggingface.co/datasets/openai/gsm8k", "category": "5. Complex Mathematics & Formal Proofs", "harvested_records": 5000},
+    {"index": 26, "name": "Hendrycks Competition MATH", "hf_id": "lighteval/MATH", "url": "https://huggingface.co/datasets/lighteval/MATH", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 27, "name": "MetaMathQA (395K Augmented Math)", "hf_id": "meta-math/MetaMathQA", "url": "https://huggingface.co/datasets/meta-math/MetaMathQA", "category": "5. Complex Mathematics & Formal Proofs"},
+    {"index": 28, "name": "Structured Biology & Ecology Textbook", "hf_id": "burgerbee/biology_textbook", "url": "https://huggingface.co/datasets/burgerbee/biology_textbook", "category": "6. Biology, Genetics & Life Sciences"},
+    {"index": 29, "name": "MedMCQA (194K Biomedical & Clinical)", "hf_id": "openlifescienceai/medmcqa", "url": "https://huggingface.co/datasets/openlifescienceai/medmcqa", "category": "6. Biology, Genetics & Life Sciences", "harvested_records": 5000},
+    {"index": 30, "name": "PubMedQA Biomedical Literature", "hf_id": "qiaojin/PubMedQA", "url": "https://huggingface.co/datasets/qiaojin/PubMedQA", "category": "6. Biology, Genetics & Life Sciences"},
+    {"index": 31, "name": "BioASQ Biomedical Semantic QA", "hf_id": "kroshan/BioASQ", "url": "https://huggingface.co/datasets/kroshan/BioASQ", "category": "6. Biology, Genetics & Life Sciences"},
+    {"index": 32, "name": "UniProtKB Protein & Genomics Annotations", "hf_id": "uniprot/uniprotkb", "url": "https://www.uniprot.org", "category": "6. Biology, Genetics & Life Sciences"},
+    {"index": 33, "name": "AllenAI SciQ (Physics, Chemistry, Biology, Ecology)", "hf_id": "allenai/sciq", "url": "https://huggingface.co/datasets/allenai/sciq", "category": "7. Nature, Ecology & Earth Sciences", "harvested_records": 6000},
+    {"index": 34, "name": "AI2 ARC (Natural & Earth Science Challenge)", "hf_id": "allenai/ai2_arc", "url": "https://huggingface.co/datasets/allenai/ai2_arc", "category": "7. Nature, Ecology & Earth Sciences", "harvested_records": 1100},
+    {"index": 35, "name": "OpenBookQA (Natural Laws & Elementary Science)", "hf_id": "allenai/openbookqa", "url": "https://huggingface.co/datasets/allenai/openbookqa", "category": "7. Nature, Ecology & Earth Sciences"},
+    {"index": 36, "name": "Climate & Earth Systems Corpus", "hf_id": "climatebert/climate_sentiment", "url": "https://huggingface.co/datasets/climatebert/climate_sentiment", "category": "7. Nature, Ecology & Earth Sciences"},
+    {"index": 37, "name": "GBIF Global Biodiversity Information Facility", "hf_id": "gbif/species-occurrences", "url": "https://www.gbif.org", "category": "7. Nature, Ecology & Earth Sciences"},
+    {"index": 38, "name": "Worldbuilding & Extreme Geography", "hf_id": "archit11/worldbuilding", "url": "https://huggingface.co/datasets/archit11/worldbuilding", "category": "8. Places, World Geography & Landmarks"},
+    {"index": 39, "name": "GeoNames Global Gazetteer (11M+ Places)", "hf_id": "geonames/allCountries", "url": "https://www.geonames.org", "category": "8. Places, World Geography & Landmarks"},
+    {"index": 40, "name": "UNESCO World Heritage Sites Catalog", "hf_id": "unesco/world-heritage-list", "url": "https://whc.unesco.org", "category": "8. Places, World Geography & Landmarks"},
+    {"index": 41, "name": "Philippine Geopolitical & Provincial Atlas", "hf_id": "Darknecrocities/Helios", "url": "https://huggingface.co/Darknecrocities/Helios", "category": "8. Places, World Geography & Landmarks"},
+    {"index": 42, "name": "The Stack v2 (67.5TB Source Code)", "hf_id": "bigcode/the-stack-v2", "url": "https://huggingface.co/datasets/bigcode/the-stack-v2", "category": "9. Coding & Software Engineering"},
+    {"index": 43, "name": "StarCoderData (86 Programming Languages)", "hf_id": "bigcode/starcoderdata", "url": "https://huggingface.co/datasets/bigcode/starcoderdata", "category": "9. Coding & Software Engineering"},
+    {"index": 44, "name": "CommitPackFT (Verified Git Commits)", "hf_id": "bigcode/commitpackft", "url": "https://huggingface.co/datasets/bigcode/commitpackft", "category": "9. Coding & Software Engineering"},
+    {"index": 45, "name": "Magicoder-OSS-Instruct-75K", "hf_id": "ise-uiuc/Magicoder-OSS-Instruct-75K", "url": "https://huggingface.co/datasets/ise-uiuc/Magicoder-OSS-Instruct-75K", "category": "9. Coding & Software Engineering"},
+    {"index": 46, "name": "CodeFeedback-Filtered-Instruction (156K)", "hf_id": "m-a-p/CodeFeedback-Filtered-Instruction", "url": "https://huggingface.co/datasets/m-a-p/CodeFeedback-Filtered-Instruction", "category": "9. Coding & Software Engineering"},
+    {"index": 47, "name": "SWE-bench Verified Software Engineering", "hf_id": "princeton-nlp/SWE-bench_Verified", "url": "https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified", "category": "9. Coding & Software Engineering"},
+    {"index": 48, "name": "ToolMind (160K Graph-Correlated Agent Trajectories)", "hf_id": "Nanbeige/ToolMind", "url": "https://huggingface.co/datasets/Nanbeige/ToolMind", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 49, "name": "Agentic Tool-Call Dataset (12K Deep Research)", "hf_id": "pyromind/agentic-tool-call-dataset-12k", "url": "https://huggingface.co/datasets/pyromind/agentic-tool-call-dataset-12k", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 50, "name": "THUDM AgentInstruct (Multi-Turn Agent Skills)", "hf_id": "THUDM/AgentInstruct", "url": "https://huggingface.co/datasets/THUDM/AgentInstruct", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 51, "name": "UltraInteract (Planning, Coding & Reflection)", "hf_id": "openbmb/UltraInteract_sft", "url": "https://huggingface.co/datasets/openbmb/UltraInteract_sft", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 52, "name": "OpenThoughts-114k", "hf_id": "open-thoughts/OpenThoughts-114k", "url": "https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 53, "name": "Bespoke-Stratos-17k", "hf_id": "bespokelabs/Bespoke-Stratos-17k", "url": "https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 54, "name": "ServiceNow R1-Distill-SFT", "hf_id": "ServiceNow-AI/R1-Distill-SFT", "url": "https://huggingface.co/datasets/ServiceNow-AI/R1-Distill-SFT", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 55, "name": "Magpie-Reasoning-V2 (250K CoT)", "hf_id": "Magpie-Align/Magpie-Reasoning-V2-250K-CoT-Deepseek-R1-Llama-70B", "url": "https://huggingface.co/datasets/Magpie-Align/Magpie-Reasoning-V2-250K-CoT-Deepseek-R1-Llama-70B", "category": "10. Agentic Skills & Multi-Step Planning"},
+    {"index": 56, "name": "Salesforce xLAM Function-Calling (60K)", "hf_id": "Salesforce/xlam-function-calling-60k", "url": "https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k", "category": "11. Model Context Protocol (MCP) & APIs"},
+    {"index": 57, "name": "Glaive Function-Calling v2 (113K)", "hf_id": "glaiveai/glaive-function-calling-v2", "url": "https://huggingface.co/datasets/glaiveai/glaive-function-calling-v2", "category": "11. Model Context Protocol (MCP) & APIs"},
+    {"index": 58, "name": "Gorilla Berkeley Function-Calling Leaderboard (BFCL)", "hf_id": "gorilla-llm/Berkeley-Function-Calling-Leaderboard", "url": "https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard", "category": "11. Model Context Protocol (MCP) & APIs"},
+    {"index": 59, "name": "Model Context Protocol (MCP) Official Specification", "hf_id": "modelcontextprotocol/specification", "url": "https://modelcontextprotocol.io", "category": "11. Model Context Protocol (MCP) & APIs"},
+    {"index": 60, "name": "The Stack v2 Documentation & ReadTheDocs", "hf_id": "bigcode/the-stack-v2-docs", "url": "https://devdocs.io", "category": "12. Technical Documentation & Manuals"},
+    {"index": 61, "name": "MDN Web Docs & Developer Manuals", "hf_id": "mdn/content", "url": "https://developer.mozilla.org", "category": "12. Technical Documentation & Manuals"},
+    {"index": 62, "name": "AllenAI PeS2o (40M+ Open Academic Papers)", "hf_id": "allenai/peS2o", "url": "https://huggingface.co/datasets/allenai/peS2o", "category": "13. Scientific Research & Literature"},
+    {"index": 63, "name": "AllenAI SciRIFF (Scientific Literature Instruction)", "hf_id": "allenai/SciRIFF", "url": "https://huggingface.co/datasets/allenai/SciRIFF", "category": "13. Scientific Research & Literature"},
+    {"index": 64, "name": "arXiv & PubMed Scientific Papers Corpus", "hf_id": "armanc/scientific_papers", "url": "https://huggingface.co/datasets/armanc/scientific_papers", "category": "13. Scientific Research & Literature"},
+    {"index": 65, "name": "OpenAlex Global Research Catalog (250M+ Works)", "hf_id": "openalex/openalex-snapshot", "url": "https://openalex.org", "category": "13. Scientific Research & Literature"},
+    {"index": 66, "name": "CulturaX (Multilingual Tagalog)", "hf_id": "uonlp/CulturaX", "url": "https://huggingface.co/datasets/uonlp/CulturaX", "category": "14. Bilingual Filipino / Tagalog & General"},
+    {"index": 67, "name": "OSCAR-2301 & CC-100 (Tagalog)", "hf_id": "oscar-corpus/OSCAR-2301", "url": "https://huggingface.co/datasets/oscar-corpus/OSCAR-2301", "category": "14. Bilingual Filipino / Tagalog & General"},
+    {"index": 68, "name": "Alpaca-Cleaned & SlimOrca", "hf_id": "yahma/alpaca-cleaned", "url": "https://huggingface.co/datasets/yahma/alpaca-cleaned", "category": "14. Bilingual Filipino / Tagalog & General", "harvested_records": 8000}
   ]
 }

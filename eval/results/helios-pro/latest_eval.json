@@ -2,7 +2,7 @@
   "tier_id": "helios-pro",
   "display_name": "Helios Pro",
   "preset": "pro-3b",
-  "timestamp_utc": "2026-11-07T17:50:01.465005+00:00",
+  "timestamp_utc": "2026-11-07T18:10:24.577141+00:00",
   "base_checkpoint_status": "Pending",
   "hma_system_status": "Measured",
   "variant_evaluated": "HMA-Grounded Architecture (Base Pretraining Pending)",
@@ -24,7 +24,7 @@
     "runtime_buffers_overhead_mb": 256.0,
     "total_active_ram_2k_mb": 2174.12,
     "total_active_ram_max_ctx_mb": 6014.12,
-    "measured_process_peak_rss_mb": 262.09
+    "measured_process_peak_rss_mb": 991.19
   },
   "measured_base_neural": {
     "mmlu": "Pending",
@@ -42,7 +42,7 @@
     "sciq_held_out": 100.0,
     "humaneval_held_out": 100.0,
     "helios_500_suite_acc": 100.0,
-    "helios_500_mean_latency_ms": 0.22
+    "helios_500_mean_latency_ms": 0.21
   },
   "measured_mcp_6_metrics": {
     "tool_selection_accuracy": 100.0,
