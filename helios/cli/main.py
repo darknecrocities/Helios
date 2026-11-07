@@ -1,6 +1,10 @@
 """Helios CLI entry point.
 
-Provides inspection, training smoke tests, resumption verification, and roadmap display.
+Provides inspection, training smoke tests, resumption verification, roadmap display,
+live code generation, interactive chat, performance/perplexity evaluation, and
+deployment export commands.
+
+Author: Arron Kian Parejas <arronkianparejas@gmail.com>
 """
 
 from __future__ import annotations
@@ -11,6 +15,10 @@ from pathlib import Path
 import typer
 
 import helios
+from helios.cli.chat import run_chat
+from helios.cli.eval import run_eval
+from helios.cli.export_commands import export_app
+from helios.cli.generate import run_generate
 from helios.model.config import HeliosConfig
 from helios.model.parameter_inspector import ParameterInspector
 from helios.model.transformer import HeliosForCausalLM
@@ -22,7 +30,7 @@ from helios.training.smoke_test import (
 
 app = typer.Typer(
     name="helios",
-    help="Helios Open-Weight LLM CLI: inspection, training, and memory management.",
+    help="Helios Open-Weight LLM CLI: inspection, generation, chat, evaluation, and training.",
     add_completion=False,
 )
 
@@ -118,6 +126,19 @@ def roadmap() -> None:
     )
     typer.echo("# Helios Scaling Roadmap & Gate Specifications")
     typer.echo(table)
+
+
+# Live Interactive Commands
+app.command(
+    name="generate", help="Autoregressive text and code generation with KV cache streaming."
+)(run_generate)
+app.command(name="chat", help="Interactive terminal chat loop with HMA memory grounding.")(run_chat)
+app.command(name="eval", help="Benchmark generation speed, KV cache footprint, and perplexity.")(
+    run_eval
+)
+
+# Subcommand Groups
+app.add_typer(export_app, name="export")
 
 
 if __name__ == "__main__":
