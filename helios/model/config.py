@@ -287,6 +287,96 @@ class HeliosConfig:
         return cls.nano_20m(**overrides)
 
     @classmethod
+    def alpha_100m(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Alpha 100M stage preset (~100.1M tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 768,
+            "n_layers": 12,
+            "n_heads": 12,
+            "n_kv_heads": 4,
+            "d_ffn": 2048,
+            "max_seq_len": 2048,
+            "rope_theta": 10000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
+    def beta_300m(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Beta 300M stage preset (~302M tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 1024,
+            "n_layers": 24,
+            "n_heads": 16,
+            "n_kv_heads": 4,
+            "d_ffn": 2816,
+            "max_seq_len": 2048,
+            "rope_theta": 10000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
+    def core_1b(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Core 1B milestone preset (~1.06B tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 2048,
+            "n_layers": 24,
+            "n_heads": 16,
+            "n_kv_heads": 4,
+            "d_ffn": 5504,
+            "max_seq_len": 4096,
+            "rope_theta": 500000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
+    def pro_3b(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Pro 3B milestone preset (~3.1B tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 3072,
+            "n_layers": 32,
+            "n_heads": 24,
+            "n_kv_heads": 8,
+            "d_ffn": 8192,
+            "max_seq_len": 4096,
+            "rope_theta": 500000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
+    def flagship_6b(cls, **overrides: Any) -> HeliosConfig:
+        """Helios Flagship 6B flagship milestone preset (~6.2B tied parameters)."""
+        cfg = {
+            "vocab_size": 32000,
+            "d_model": 4096,
+            "n_layers": 32,
+            "n_heads": 32,
+            "n_kv_heads": 8,
+            "d_ffn": 11008,
+            "max_seq_len": 4096,
+            "rope_theta": 500000.0,
+            "rms_norm_eps": 1e-5,
+            "tie_word_embeddings": True,
+        }
+        cfg.update(overrides)
+        return cls(**cfg)
+
+    @classmethod
     def from_preset(cls, preset_name: str, **overrides: Any) -> HeliosConfig:
         """Retrieve HeliosConfig by preset name."""
         name = preset_name.lower().replace("-", "_")
@@ -299,6 +389,21 @@ class HeliosConfig:
             "nano_25m": cls.nano_25m,
             "helios_nano_35m": cls.nano_35m,
             "nano_35m": cls.nano_35m,
+            "helios_alpha_100m": cls.alpha_100m,
+            "alpha_100m": cls.alpha_100m,
+            "alpha": cls.alpha_100m,
+            "helios_beta_300m": cls.beta_300m,
+            "beta_300m": cls.beta_300m,
+            "beta": cls.beta_300m,
+            "helios_core_1b": cls.core_1b,
+            "core_1b": cls.core_1b,
+            "core": cls.core_1b,
+            "helios_pro_3b": cls.pro_3b,
+            "pro_3b": cls.pro_3b,
+            "pro": cls.pro_3b,
+            "helios_flagship_6b": cls.flagship_6b,
+            "flagship_6b": cls.flagship_6b,
+            "flagship": cls.flagship_6b,
         }
         if name not in presets:
             raise KeyError(f"Unknown preset '{preset_name}'. Available: {list(presets.keys())}")
