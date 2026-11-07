@@ -1,0 +1,149 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "helios"
+version = "0.1.0"
+description = "Helios Open-Weight LLM: Modular, transparent foundation model ecosystem with Hierarchical Memory Architecture (HMA) and robust interruption fallback."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0 OR MIT" }
+authors = [
+    { name = "Helios Open Source Contributors", email = "oss@helios.org" },
+]
+keywords = [
+    "deep-learning",
+    "llm",
+    "nlp",
+    "pytorch",
+    "transformer",
+    "memory-augmented",
+    "open-weight",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Core runtime dependencies
+dependencies = [
+    "torch>=2.2.0",
+    "transformers>=4.40.0",
+    "datasets>=2.18.0",
+    "tokenizers>=0.19.0",
+    "typer>=0.12.0",
+    "pydantic>=2.7.0",
+    "safetensors>=0.4.3",
+]
+
+# Optional and development dependency groups
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+    "pytest-cov>=5.0.0",
+]
+memory = [
+    "faiss-cpu>=1.8.0",
+    "rank-bm25>=0.2.2",
+]
+all = [
+    "helios[dev,memory]",
+]
+
+# CLI Entry points
+[project.scripts]
+helios = "helios.cli.main:app"
+
+[project.urls]
+Homepage = "https://github.com/darknecrocities/Helios"
+Repository = "https://github.com/darknecrocities/Helios.git"
+Issues = "https://github.com/darknecrocities/Helios/issues"
+
+# Explicit wheel packaging discovery
+[tool.hatch.build.targets.wheel]
+packages = ["helios"]
+
+# Tool configuration: Ruff
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+    ".git",
+    ".venv",
+    ".agents",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.md",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # Pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["helios"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# Tool configuration: Pytest
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra -q --strict-markers"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "e2e: End-to-end requirement tests",
+    "tier1: Tier 1 happy-path feature tests",
+    "tier2: Tier 2 boundary and extreme sequence tests",
+    "tier3: Tier 3 pairwise interaction tests",
+    "tier4: Tier 4 real-world application scenarios",
+    "tier5: Tier 5 adversarial coverage tests",
+    "slow: Tests with long runtimes",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+# Tool configuration: Coverage
+[tool.coverage.run]
+source = ["helios"]
+branch = true
+omit = [
+    "tests/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 0
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# PyTorch checkpoints and model weights
+checkpoints/
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.safetensors.tmp
+
+# Testing and linting cache
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Transient agent teamwork metadata
+.agents/teamwork/
