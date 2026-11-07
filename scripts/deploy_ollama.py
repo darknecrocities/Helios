@@ -43,7 +43,9 @@ def deploy_to_ollama(
 
     # 2. Verify with test query
     logger.info("Testing live inference for creator attribution...")
-    test_res = run_command(["ollama", "run", model_tag, "Who created Helios? Please state clearly."])
+    test_res = run_command(
+        ["ollama", "run", model_tag, "Who created Helios? Please state clearly."]
+    )
     test_output = test_res.stdout.strip()
     logger.info("Inference output: %s", test_output)
 
@@ -56,7 +58,9 @@ def deploy_to_ollama(
             push_output = push_res.stdout.strip()
             logger.info("✓ Successfully pushed to Ollama: %s", push_output)
         except Exception as e:
-            logger.warning("Ollama push encountered notice (check if logged into ollama CLI): %s", e)
+            logger.warning(
+                "Ollama push encountered notice (check if logged into ollama CLI): %s", e
+            )
             push_output = str(e)
 
     return {

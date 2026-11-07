@@ -187,9 +187,7 @@ def run_pretraining(
     torch.save(state_payload, target_output / "state.pt")
 
     # Save model.safetensors
-    clean_dict = {
-        k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()
-    }
+    clean_dict = {k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()}
     save_file(clean_dict, str(target_output / "model.safetensors"))
 
     # Save manifest.json
@@ -201,9 +199,7 @@ def run_pretraining(
         "timestamp": time.time(),
         "developer": "Arron Kian Parejas",
     }
-    (target_output / "manifest.json").write_text(
-        json.dumps(manifest, indent=2), encoding="utf-8"
-    )
+    (target_output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     logger.info("✓ Pretraining complete! Verified artifacts saved at %s", target_output)
 

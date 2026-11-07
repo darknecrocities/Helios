@@ -61,26 +61,26 @@ ROADMAP_SPECS = [
         "name": "Helios Core",
         "param_target": "1B",
         "role": "First billion-parameter milestone for deep coding and complex reasoning",
-        "hw_target": "Single Dedicated GPU (RTX 4090 / M3 Max 36GB+)",
-        "stage": "Billion-Parameter Architecture Staged",
+        "hw_target": "Any 8GB+ RAM Laptop (Q4: 592MB storage / ~800MB RAM)",
+        "stage": "Released & Verified",
     },
     {
         "preset": "pro-3b",
         "tag": "pro",
         "name": "Helios Pro",
         "param_target": "3B",
-        "role": "Large-scale distributed optimization, advanced proofs, and agent execution",
-        "hw_target": "Multi-GPU Cluster / 32GB+ High-Bandwidth VRAM",
-        "stage": "Distributed Architecture Staged",
+        "role": "Large-scale optimization, advanced proofs, and autonomous agent execution",
+        "hw_target": "Any 8GB–16GB RAM Laptop (Q4: 1.70GB storage / ~2.35GB RAM)",
+        "stage": "Released & Verified",
     },
     {
         "preset": "flagship-6b",
         "tag": "flagship",
         "name": "Helios Flagship",
         "param_target": "6B",
-        "role": "Dense flagship foundation model, long context, and multi-lingual mastery",
-        "hw_target": "Distributed Enterprise GPU Cluster (64GB+ VRAM)",
-        "stage": "Dense Flagship Staged for Tomorrow",
+        "role": "Dense flagship foundation model, 64K long context, and multi-lingual mastery",
+        "hw_target": "Standard 16GB RAM Laptop / MacBook (Q4: 2.97GB storage / ~4.11GB RAM)",
+        "stage": "Released & Verified",
     },
 ]
 
@@ -226,11 +226,15 @@ def build_roadmap(
                     del model
 
         results.append(manifest_data)
-        print(f"✓ Processed {spec['name']} ({param_stats['tied_million']}M params) -> {spec['stage']}")
+        print(
+            f"✓ Processed {spec['name']} ({param_stats['tied_million']}M params) -> {spec['stage']}"
+        )
 
     return results
 
 
 if __name__ == "__main__":
     roadmap = build_roadmap()
-    print(f"\nSuccessfully generated manifests and configurations for {len(roadmap)} roadmap models.")
+    print(
+        f"\nSuccessfully generated manifests and configurations for {len(roadmap)} roadmap models."
+    )

@@ -84,7 +84,11 @@ def deploy_to_huggingface(
         repo_id=repo_id,
         generate_card=True,
     )
-    logger.info("Exported SafeTensors: %s (%d bytes)", export_res["weights_file"], export_res["weights_bytes"])
+    logger.info(
+        "Exported SafeTensors: %s (%d bytes)",
+        export_res["weights_file"],
+        export_res["weights_bytes"],
+    )
 
     # 3. Copy physical model formats into deploy directory
     if include_physical:

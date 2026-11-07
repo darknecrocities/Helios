@@ -46,7 +46,9 @@ MCP_SYNTHETIC_TEMPLATES = [
         "description": "Execute a safe read-only SQL query against the SQLite database.",
         "parameters": {"sql": "string"},
         "query": "Show me the top 3 users by total purchases from the users table.",
-        "call_args": {"sql": "SELECT id, name, total_purchases FROM users ORDER BY total_purchases DESC LIMIT 3;"},
+        "call_args": {
+            "sql": "SELECT id, name, total_purchases FROM users ORDER BY total_purchases DESC LIMIT 3;"
+        },
         "result": "[{'id': 104, 'name': 'Maria Santos', 'total_purchases': 1420.50}, {'id': 82, 'name': 'Juan Dela Cruz', 'total_purchases': 980.00}, {'id': 215, 'name': 'Elena Reyes', 'total_purchases': 875.25}]",
         "response": "Here are the top 3 users by total purchases:\n1. Maria Santos (ID: 104) - ₱1,420.50\n2. Juan Dela Cruz (ID: 82) - ₱980.00\n3. Elena Reyes (ID: 215) - ₱875.25",
     },
@@ -128,9 +130,24 @@ def harvest_all_reasoning_and_mcp(
 
     # Replicate template patterns across diverse system queries
     tool_variations = [
-        ("filesystem_read_file", {"path": "/var/log/syslog"}, "Log entries show normal daemon startup.", "Can you check the syslog?"),
-        ("database_execute_query", {"sql": "SELECT count(*) FROM orders WHERE status='pending';"}, "Count: 42", "How many pending orders do we have?"),
-        ("calculator_compute", {"expression": "math.sqrt(1024) * 8"}, "256", "What is the square root of 1024 multiplied by 8?"),
+        (
+            "filesystem_read_file",
+            {"path": "/var/log/syslog"},
+            "Log entries show normal daemon startup.",
+            "Can you check the syslog?",
+        ),
+        (
+            "database_execute_query",
+            {"sql": "SELECT count(*) FROM orders WHERE status='pending';"},
+            "Count: 42",
+            "How many pending orders do we have?",
+        ),
+        (
+            "calculator_compute",
+            {"expression": "math.sqrt(1024) * 8"},
+            "256",
+            "What is the square root of 1024 multiplied by 8?",
+        ),
     ]
     for name, args, res, q in tool_variations:
         mcp_records.append(format_mcp_turn(name, {}, q, args, res, f"Query completed: {res}"))
@@ -149,19 +166,24 @@ def harvest_all_reasoning_and_mcp(
             q = item.get("question", "").strip()
             a = item.get("answer", "").strip()
             if q and a:
-                records.append({
-                    "domain": "mathematical_reasoning",
-                    "prompt": q,
-                    "response": a,
-                    "text": f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n{a}<|eot_id|>",
-                })
+                records.append(
+                    {
+                        "domain": "mathematical_reasoning",
+                        "prompt": q,
+                        "response": a,
+                        "text": f"<|start_header_id|>user<|end_header_id|>\n{q}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n{a}<|eot_id|>",
+                    }
+                )
                 gsm_count += 1
                 if gsm_count >= 1000:
                     break
         counts["gsm8k_math"] = gsm_count
         logger.info("✓ Harvested %d GSM8K verified math records.", gsm_count)
     except Exception as e:
-        logger.warning("Could not stream live Hugging Face dataset (%s); using verified offline reasoning seed.", e)
+        logger.warning(
+            "Could not stream live Hugging Face dataset (%s); using verified offline reasoning seed.",
+            e,
+        )
 
     # Save to external One Touch storage
     target_file = out_path / "helios_curated_mcp_and_reasoning.jsonl"
