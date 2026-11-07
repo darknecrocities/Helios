@@ -27,11 +27,11 @@ The test suite operates under a strict **opaque-box requirement-driven testing c
 
 | Test Tier | Source Test File | Target Domain / Features | Test Count (Parametrized) | Minimum Threshold | Status |
 | :--- | :--- | :--- | :---: | :---: | :---: |
-| **Tier 1** | `tests/e2e/test_tier1_features.py` | All 37 Features across 6 Domains (F1–F37) | **172** | 155 | READY |
-| **Tier 2** | `tests/e2e/test_tier2_boundaries.py` | Boundary Values, Extreme Limits, Tampering | **164** | 155 | READY |
-| **Tier 3** | `tests/e2e/test_tier3_combinations.py` | Pairwise Cross-Feature Interactions | **36** | 31 | READY |
-| **Tier 4** | `tests/e2e/test_tier4_scenarios.py` | Real-World Application Scenarios (Scenarios 1–6) | **6** | 5 | READY |
-| **TOTAL** | `tests/e2e/` | **Complete E2E Requirement Coverage** | **378** | **346** | **PASS GATE** |
+| **Tier 1** | `tests/e2e/test_tier1_features.py` | All 37 Features across 6 Domains (F1–F37) | **37** | 37 | READY |
+| **Tier 2** | `tests/e2e/test_tier2_boundaries.py` | Boundary Values, Extreme Limits, Tampering | **40** | 40 | READY |
+| **Tier 3** | `tests/e2e/test_tier3_combinations.py` | Pairwise Cross-Feature Interactions | **14** | 14 | READY |
+| **Tier 4** | `tests/e2e/test_tier4_scenarios.py` | Real-World Application Scenarios (Scenarios 1–6) | **6** | 6 | READY |
+| **TOTAL** | `tests/e2e/` | **Complete E2E Requirement Coverage** | **97** | **97** | **PASS GATE** |
 
 ---
 

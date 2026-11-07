@@ -19,6 +19,9 @@ import torch
 import typer.testing
 
 from helios.cli.main import app as cli_app
+from helios.export.disk import DiskMirrorManager
+from helios.export.hf import export_huggingface
+from helios.export.ollama import export_ollama
 from helios.memory.base import compute_model_weight_hash
 from helios.memory.controller import HMAController
 from helios.memory.procedural import ToolDefinition
@@ -419,36 +422,40 @@ class TestDomain6DeploymentTooling:
 
     def test_f34_ollama_deployment_modelfile_generation(self, tmp_path: Path) -> None:
         """F34: Verify Modelfile generation containing system prompt and target model tag."""
-        modelfile_path = tmp_path / "Modelfile"
-        content = (
-            "FROM llama3.2\n"
-            "SYSTEM You are Helios, open-weight model by Arron Kian Parejas.\n"
-            "PARAMETER temperature 0.7\n"
-            "PARAMETER top_k 40\n"
-        )
-        modelfile_path.write_text(content, encoding="utf-8")
-        assert "Arron Kian Parejas" in modelfile_path.read_text(encoding="utf-8")
+        res = export_ollama(output_dir=tmp_path / "ollama", base_model="llama3.2")
+        modelfile_path = Path(res["modelfile_path"])
+        assert modelfile_path.exists()
+        content = modelfile_path.read_text(encoding="utf-8")
+        assert "FROM llama3.2" in content
+        assert "Arron Kian Parejas" in content
+        assert "PARAMETER temperature" in content
+        assert "parejasarronkian/Helios" in content
 
     def test_f35_huggingface_hub_export_workflow(
-        self, tiny_e2e_config: HeliosConfig, bpe_tokenizer: HeliosBPE, tmp_path: Path
+        self,
+        tiny_e2e_config: HeliosConfig,
+        tiny_e2e_model: HeliosForCausalLM,
+        bpe_tokenizer: HeliosBPE,
+        tmp_path: Path,
     ) -> None:
         """F35: Verify Hugging Face export directory staging and metadata."""
         export_dir = tmp_path / "hf_export"
-        tiny_e2e_config.save_pretrained(export_dir)
-        bpe_tokenizer.save_pretrained(str(export_dir))
-        model_card = (
-            "---\n"
-            "language: [en, tl]\n"
-            "license: apache-2.0\n"
-            "---\n"
-            "# Helios Foundation Model\n"
-            "Developed by Arron Kian Parejas.\n"
-            "Repository: https://huggingface.co/Darknecrocities/Helios\n"
+        res = export_huggingface(
+            output_dir=export_dir,
+            config=tiny_e2e_config,
+            model=tiny_e2e_model,
+            tokenizer=bpe_tokenizer,
+            repo_id="Darknecrocities/Helios",
+            generate_card=True,
         )
-        (export_dir / "README.md").write_text(model_card, encoding="utf-8")
         assert (export_dir / "config.json").exists()
         assert (export_dir / "tokenizer.json").exists()
-        assert "Darknecrocities/Helios" in (export_dir / "README.md").read_text(encoding="utf-8")
+        assert (export_dir / "model.safetensors").exists()
+        assert (export_dir / "README.md").exists()
+        assert res["weights_bytes"] > 0
+        readme_content = (export_dir / "README.md").read_text(encoding="utf-8")
+        assert "https://huggingface.co/Darknecrocities/Helios" in readme_content
+        assert "Arron Kian Parejas" in readme_content
 
     def test_f36_interactive_live_testing_cli(self, cli_runner: typer.testing.CliRunner) -> None:
         """F36: Verify CLI commands (version, inspect, roadmap) execute cleanly."""
@@ -466,9 +473,18 @@ class TestDomain6DeploymentTooling:
 
     def test_f37_onedrive_disk_preservation_mirroring(self, tmp_path: Path) -> None:
         """F37: Verify OneDrive disk preservation mirror staging utility and SHA verification."""
-        staging_dir = tmp_path / "OneDrive_Helios"
-        staging_dir.mkdir(parents=True, exist_ok=True)
-        test_file = staging_dir / "test_artifact.bin"
-        test_file.write_bytes(b"Helios checkpoint mirror payload")
-        assert test_file.exists()
-        assert test_file.stat().st_size > 0
+        workspace = tmp_path / "workspace"
+        ckpt_dir = workspace / "checkpoints" / "checkpoint_step_10"
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        (ckpt_dir / "manifest.json").write_text('{"step": 10}', encoding="utf-8")
+        (ckpt_dir / "state.pt").write_bytes(b"Helios checkpoint state binary payload")
+
+        disk_root = tmp_path / "disk_mirror"
+        mgr = DiskMirrorManager(disk_root=disk_root, workspace_root=workspace)
+        items = mgr.mirror_checkpoints(checkpoints_dir=workspace / "checkpoints", free_local=True)
+        manifest_file = mgr.write_disk_manifest(items)
+
+        assert manifest_file.exists()
+        assert (disk_root / "checkpoints" / "checkpoint_step_10" / "state.pt").exists()
+        assert (ckpt_dir / "state.pt.disk_pointer.json").exists()
+        assert not (ckpt_dir / "state.pt").exists()

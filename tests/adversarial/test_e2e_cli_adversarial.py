@@ -255,16 +255,16 @@ class TestCLIGenerateBoundaries:
             assert isinstance(tokens, list)
 
     def test_prompt_length_exceeding_max_seq_len_boundary(self) -> None:
-        """Verify prompt exceeding max_seq_len is detected with ValueError."""
+        """Verify prompt exceeding max_seq_len is safely truncated without unhandled crash."""
         model, config = load_model_and_config("nano-15m", device="cpu")
         tokenizer = load_or_create_tokenizer(vocab_size=config.vocab_size)
 
         # Huge prompt exceeding max_seq_len (2048)
         huge_prompt = "helios " * (config.max_seq_len + 50)
-        with pytest.raises(ValueError, match="exceeds max_seq_len"):
-            list(stream_generate(model, tokenizer, huge_prompt, max_new_tokens=4))
+        tokens = list(stream_generate(model, tokenizer, huge_prompt, max_new_tokens=4))
+        assert len(tokens) >= 1
 
-        # CLI runner non-zero exit on prompt overflow
+        # CLI runner succeeds with exit code 0 when prompt is safely truncated
         res = cli_runner.invoke(
             cli_app,
             [
@@ -275,9 +275,13 @@ class TestCLIGenerateBoundaries:
                 "nano-15m",
                 "--device",
                 "cpu",
+                "--no-stream",
+                "--max-new-tokens",
+                "4",
             ],
         )
-        assert res.exit_code != 0
+        assert res.exit_code == 0
+        assert "Helios Generation Telemetry" in res.stdout
 
 
 # ==============================================================================

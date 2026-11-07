@@ -17,6 +17,9 @@ from pathlib import Path
 import pytest
 import torch
 
+from helios.export.disk import DiskMirrorManager
+from helios.export.hf import export_huggingface
+from helios.export.ollama import export_ollama
 from helios.memory.base import compute_model_weight_hash
 from helios.memory.controller import HMAController
 from helios.model.config import HeliosConfig
@@ -288,46 +291,61 @@ def test_scenario5_full_pretraining_interruption_and_bitwise_resumption(
 @pytest.mark.e2e
 @pytest.mark.tier4
 def test_scenario6_deployment_and_preservation_pipeline(
-    tiny_e2e_config: HeliosConfig, bpe_tokenizer: HeliosBPE, tmp_path: Path
+    tiny_e2e_config: HeliosConfig,
+    tiny_e2e_model: HeliosForCausalLM,
+    bpe_tokenizer: HeliosBPE,
+    tmp_path: Path,
 ) -> None:
     """E2E Scenario 6: Verify Ollama Modelfile, HuggingFace Hub, and disk staging."""
     deploy_root = tmp_path / "deployment_artifacts"
     deploy_root.mkdir(parents=True, exist_ok=True)
 
-    # 1. Ollama Modelfile
-    modelfile = deploy_root / "Modelfile"
-    modelfile_content = (
-        "FROM llama3.2\n"
-        "PARAMETER temperature 0.7\n"
-        "PARAMETER stop <|end_of_text|>\n"
-        "SYSTEM You are Helios, an open-weight foundation model developed by Arron Kian Parejas.\n"
+    # 1. Ollama Modelfile Export
+    ollama_res = export_ollama(
+        output_dir=deploy_root / "ollama",
+        base_model="llama3.2",
     )
-    modelfile.write_text(modelfile_content, encoding="utf-8")
+    modelfile = Path(ollama_res["modelfile_path"])
     assert modelfile.exists()
-    assert "Arron Kian Parejas" in modelfile.read_text(encoding="utf-8")
+    content = modelfile.read_text(encoding="utf-8")
+    assert "FROM llama3.2" in content
+    assert "Arron Kian Parejas" in content
+    assert "parejasarronkian/Helios" in content
 
     # 2. Hugging Face Hub Export
     hf_dir = deploy_root / "hf_hub"
-    tiny_e2e_config.save_pretrained(hf_dir)
-    bpe_tokenizer.save_pretrained(str(hf_dir))
-    readme_content = (
-        "# Helios Open-Weight LLM\n"
-        "Author: Arron Kian Parejas\n"
-        "Repository: https://huggingface.co/Darknecrocities/Helios\n"
+    hf_res = export_huggingface(
+        output_dir=hf_dir,
+        config=tiny_e2e_config,
+        model=tiny_e2e_model,
+        tokenizer=bpe_tokenizer,
+        repo_id="Darknecrocities/Helios",
+        generate_card=True,
     )
-    (hf_dir / "README.md").write_text(readme_content, encoding="utf-8")
     assert (hf_dir / "config.json").exists()
     assert (hf_dir / "tokenizer.json").exists()
+    assert (hf_dir / "model.safetensors").exists()
+    assert (hf_dir / "README.md").exists()
+    assert hf_res["weights_bytes"] > 0
+    readme = (hf_dir / "README.md").read_text(encoding="utf-8")
+    assert "https://huggingface.co/Darknecrocities/Helios" in readme
+    assert "Arron Kian Parejas" in readme
 
-    # 3. External Disk Preservation Mirror (One Touch / OneDrive)
-    disk_dir = deploy_root / "OneTouch_Helios"
-    disk_dir.mkdir(parents=True, exist_ok=True)
-    mirror_file = disk_dir / "disk_manifest.json"
-    manifest_data = {
-        "author": "Arron Kian Parejas",
-        "model": "Helios-Nano-20M",
-        "sha256": "abcdef1234567890",
-        "preserved_disk_mb": 150.0,
-    }
-    mirror_file.write_text(json.dumps(manifest_data), encoding="utf-8")
-    assert mirror_file.exists()
+    # 3. External Disk Preservation Mirror (One Touch / External Disk)
+    workspace = tmp_path / "workspace"
+    ckpt_dir = workspace / "checkpoints" / "checkpoint_step_50"
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    (ckpt_dir / "manifest.json").write_text('{"step": 50, "loss": 1.234}', encoding="utf-8")
+    (ckpt_dir / "state.pt").write_bytes(b"Helios model checkpoint state tensor data")
+
+    disk_root = deploy_root / "OneTouch_Helios"
+    mgr = DiskMirrorManager(disk_root=disk_root, workspace_root=workspace)
+    items = mgr.mirror_checkpoints(checkpoints_dir=workspace / "checkpoints", free_local=True)
+    manifest_file = mgr.write_disk_manifest(items)
+
+    assert manifest_file.exists()
+    manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
+    assert manifest_data["total_items"] >= 2
+    assert (disk_root / "checkpoints" / "checkpoint_step_50" / "state.pt").exists()
+    assert (ckpt_dir / "state.pt.disk_pointer.json").exists()
+    assert not (ckpt_dir / "state.pt").exists()

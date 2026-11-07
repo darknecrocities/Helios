@@ -51,6 +51,11 @@ def stream_generate(
     if not prompt_ids:
         prompt_ids = [0]
 
+    # Context window guard: safely truncate prompt if it exceeds context budget
+    if len(prompt_ids) + max_new_tokens >= model.config.max_seq_len:
+        max_prompt_len = max(1, model.config.max_seq_len - max_new_tokens - 1)
+        prompt_ids = prompt_ids[-max_prompt_len:]
+
     prompt_tokens = torch.tensor([prompt_ids], dtype=torch.long, device=target_device)
     prompt_len = prompt_tokens.shape[1]
     total_seq_len = min(prompt_len + max_new_tokens + 16, model.config.max_seq_len)
