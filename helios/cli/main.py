@@ -176,8 +176,7 @@ def auto_improve_cmd(
     res = improver.run()
     typer.echo("✓ Auto-Improve Completed!")
     typer.echo(
-        f"  Final Accuracy: {res['final_accuracy'] * 100:.2f}% "
-        f"({res['passed']}/{res['total']})"
+        f"  Final Accuracy: {res['final_accuracy'] * 100:.2f}% ({res['passed']}/{res['total']})"
     )
     typer.echo(f"  Rounds Run    : {res['rounds_run']}")
     typer.echo(f"  Certified Model: {res['certified_checkpoint']}")
