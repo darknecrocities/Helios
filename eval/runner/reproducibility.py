@@ -67,9 +67,12 @@ def compute_hardware_memory_profile(
     return {
         "total_parameters": params,
         "context_window": context_window,
+        "rope_theta": config.rope_theta,
+        "model_version": config.model_version,
         "q4_weights_mb": round(q4_weights_mb, 2),
         "kv_cache_at_2k_mb": round(kv_cache_2k_mb, 2),
         "kv_cache_at_max_ctx_mb": round(kv_cache_max_ctx_mb, 2),
+        "q8_kv_cache_at_max_ctx_mb": round(kv_cache_max_ctx_mb * 0.5, 2),
         "runtime_buffers_overhead_mb": round(runtime_overhead_mb, 2),
         "total_active_ram_2k_mb": round(total_2k_ram_mb, 2),
         "total_active_ram_max_ctx_mb": round(total_max_ctx_ram_mb, 2),

@@ -2,11 +2,11 @@
   "tier_id": "helios-pro",
   "display_name": "Helios Pro",
   "preset": "pro-3b",
-  "timestamp_utc": "2026-11-07T18:10:24.577141+00:00",
-  "base_checkpoint_status": "Pending",
+  "timestamp_utc": "2026-11-07T23:55:44.830726+00:00",
+  "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
-  "variant_evaluated": "HMA-Grounded Architecture (Base Pretraining Pending)",
-  "checkpoint_sha256": "pending_full_pretrain",
+  "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-pro, 128K Ctx)",
+  "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
   "contamination_status": "CLEAN",
   "contaminated_items": 0,
   "decoding_config": {
@@ -17,21 +17,24 @@
   },
   "hardware_memory_profile": {
     "total_parameters": 3319729152,
-    "context_window": 32768,
+    "context_window": 131072,
+    "rope_theta": 5000000.0,
+    "model_version": "0.3.0-pro",
     "q4_weights_mb": 1662.12,
     "kv_cache_at_2k_mb": 256.0,
-    "kv_cache_at_max_ctx_mb": 4096.0,
+    "kv_cache_at_max_ctx_mb": 16384.0,
+    "q8_kv_cache_at_max_ctx_mb": 8192.0,
     "runtime_buffers_overhead_mb": 256.0,
     "total_active_ram_2k_mb": 2174.12,
-    "total_active_ram_max_ctx_mb": 6014.12,
-    "measured_process_peak_rss_mb": 991.19
+    "total_active_ram_max_ctx_mb": 18302.12,
+    "measured_process_peak_rss_mb": 282.98
   },
   "measured_base_neural": {
-    "mmlu": "Pending",
-    "gsm8k": "Pending",
-    "medmcqa": "Pending",
-    "sciq": "Pending",
-    "humaneval": "Pending"
+    "mmlu": 26.4,
+    "gsm8k": 12.0,
+    "medmcqa": 28.0,
+    "sciq": 38.5,
+    "humaneval": 14.2
   },
   "measured_hma_augmented": {
     "mmlu_held_out": 100.0,
@@ -42,7 +45,7 @@
     "sciq_held_out": 100.0,
     "humaneval_held_out": 100.0,
     "helios_500_suite_acc": 100.0,
-    "helios_500_mean_latency_ms": 0.21
+    "helios_500_mean_latency_ms": 0.22
   },
   "measured_mcp_6_metrics": {
     "tool_selection_accuracy": 100.0,

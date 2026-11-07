@@ -86,75 +86,79 @@ def stream_generate(
         stop_ids.add(eos_token_id)
 
     generated_ids: list[int] = []
+    try:
+        # 1. Prefill Step
+        t0 = time.perf_counter()
+        with torch.inference_mode():
+            out = model.forward(prompt_tokens, start_pos=0, kv_caches=kv_caches)
+            next_logits = out["logits"][:, -1, :]
+            next_tok = model._sample_token(next_logits, temperature=temperature, top_k=top_k)
 
-    # 1. Prefill Step
-    t0 = time.perf_counter()
-    with torch.inference_mode():
-        out = model.forward(prompt_tokens, start_pos=0, kv_caches=kv_caches)
-        next_logits = out["logits"][:, -1, :]
-        next_tok = model._sample_token(next_logits, temperature=temperature, top_k=top_k)
+        t_prefill = time.perf_counter() - t0
+        tok_id = int(next_tok.item())
 
-    t_prefill = time.perf_counter() - t0
-    tok_id = int(next_tok.item())
+        if tok_id in stop_ids:
+            if telemetry is not None:
+                telemetry.update(
+                    {
+                        "prefill_s": t_prefill,
+                        "decode_s": 0.0,
+                        "tokens_generated": 0,
+                        "tokens_per_sec": 0.0,
+                        "kv_mem_mb": sum(c.memory_footprint_mb() for c in kv_caches),
+                    }
+                )
+            return generated_ids
 
-    if tok_id in stop_ids:
+        generated_ids.append(tok_id)
+        tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
+        if tok_str:
+            yield tok_str
+
+        # 2. Incremental Decode Steps with O(1) KV caching
+        t_decode_start = time.perf_counter()
+        cur_tok = next_tok
+
+        with torch.inference_mode():
+            for step in range(1, max_new_tokens):
+                cur_pos = prompt_len + step - 1
+                if cur_pos >= model.config.max_seq_len - 1:
+                    break
+
+                out = model.forward(cur_tok, start_pos=cur_pos, kv_caches=kv_caches)
+                next_logits = out["logits"][:, 0, :]
+                cur_tok = model._sample_token(next_logits, temperature=temperature, top_k=top_k)
+                tok_id = int(cur_tok.item())
+
+                if tok_id in stop_ids:
+                    break
+
+                generated_ids.append(tok_id)
+                tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
+                if tok_str:
+                    yield tok_str
+
+        t_decode = time.perf_counter() - t_decode_start
+        num_gen = len(generated_ids)
+        tok_sec = num_gen / t_decode if t_decode > 0 else 0.0
+        kv_mb = sum(c.memory_footprint_mb() for c in kv_caches)
+
         if telemetry is not None:
             telemetry.update(
                 {
                     "prefill_s": t_prefill,
-                    "decode_s": 0.0,
-                    "tokens_generated": 0,
-                    "tokens_per_sec": 0.0,
-                    "kv_mem_mb": sum(c.memory_footprint_mb() for c in kv_caches),
+                    "decode_s": t_decode,
+                    "tokens_generated": float(num_gen),
+                    "tokens_per_sec": tok_sec,
+                    "kv_mem_mb": kv_mb,
                 }
             )
+
         return generated_ids
-
-    generated_ids.append(tok_id)
-    tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
-    if tok_str:
-        yield tok_str
-
-    # 2. Incremental Decode Steps with O(1) KV caching
-    t_decode_start = time.perf_counter()
-    cur_tok = next_tok
-
-    with torch.inference_mode():
-        for step in range(1, max_new_tokens):
-            cur_pos = prompt_len + step - 1
-            if cur_pos >= model.config.max_seq_len - 1:
-                break
-
-            out = model.forward(cur_tok, start_pos=cur_pos, kv_caches=kv_caches)
-            next_logits = out["logits"][:, 0, :]
-            cur_tok = model._sample_token(next_logits, temperature=temperature, top_k=top_k)
-            tok_id = int(cur_tok.item())
-
-            if tok_id in stop_ids:
-                break
-
-            generated_ids.append(tok_id)
-            tok_str = tokenizer.decode([tok_id], skip_special_tokens=True)
-            if tok_str:
-                yield tok_str
-
-    t_decode = time.perf_counter() - t_decode_start
-    num_gen = len(generated_ids)
-    tok_sec = num_gen / t_decode if t_decode > 0 else 0.0
-    kv_mb = sum(c.memory_footprint_mb() for c in kv_caches)
-
-    if telemetry is not None:
-        telemetry.update(
-            {
-                "prefill_s": t_prefill,
-                "decode_s": t_decode,
-                "tokens_generated": float(num_gen),
-                "tokens_per_sec": tok_sec,
-                "kv_mem_mb": kv_mb,
-            }
-        )
-
-    return generated_ids
+    finally:
+        kv_caches.clear()
+        if target_device.type == "mps" and hasattr(torch, "mps"):
+            torch.mps.empty_cache()
 
 
 def run_generate(

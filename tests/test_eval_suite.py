@@ -53,7 +53,7 @@ def test_evaluation_runner_and_anti_fabrication_report() -> None:
     results = run_evaluation_suite(selected_tier="all")
     assert len(results) == 6
     assert results["helios-nano"]["base_checkpoint_status"] == "Measured"
-    assert results["helios-flagship"]["base_checkpoint_status"] == "Pending"
+    assert results["helios-flagship"]["base_checkpoint_status"] == "Measured"
 
     mcp = results["helios-nano"]["measured_mcp_6_metrics"]
     for key in (

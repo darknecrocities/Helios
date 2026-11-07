@@ -4,23 +4,23 @@
 **Model Evaluated**: Helios Foundation (`nano-20m`)  
 **Total Unique Questions**: 500  
 **Overall Accuracy**: 100.00% (500/500)  
-**Mean Latency**: 192.75 ms/query  
+**Mean Latency**: 120.26 ms/query  
 
 ## Domain Breakdown (11 Comprehensive Domains, 500 Unique Questions)
 
 | Domain | Total | Passed | Failed | Accuracy (%) | Mean Latency (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 211.19 ms |
-| General & Physical Science | 45 | 45 | 0 | 100.0% | 212.27 ms |
-| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 25.87 ms |
-| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 220.14 ms |
-| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 207.07 ms |
-| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 210.42 ms |
-| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 210.32 ms |
-| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 209.19 ms |
-| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 210.81 ms |
-| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 210.32 ms |
-| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 210.95 ms |
+| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 113.55 ms |
+| General & Physical Science | 45 | 45 | 0 | 100.0% | 114.59 ms |
+| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 15.44 ms |
+| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 134.01 ms |
+| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 119.58 ms |
+| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 117.65 ms |
+| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 134.05 ms |
+| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 131.91 ms |
+| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 170.57 ms |
+| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 129.18 ms |
+| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 153.25 ms |
 
 ## Methodology & Verification Invariants
 - **500 Unique Non-Biased Questions**: Covers Medical & Clinical Sciences, Physical Sciences, Mathematics, Syllogistic Deduction, Causal Reasoning, Computer Science & Tech Entities, Critical Thinking, World Geography, Bilingual Tagalog, Spatial/Temporal Logic, and Epistemic Fallback Verification.
@@ -45,6 +45,6 @@
 | CS-34 | Computer Science & Systems | What is array? | An array is a linear data structure consisting of a collection of elements stored at ... | ✓ PASS |
 | GEO-31 | World Knowledge & Geography | What is Philippines? | The Philippines is a sovereign archipelagic country in Southeast Asia situated in the... | ✓ PASS |
 | TAG-31 | Bilingual English/Tagalog Comprehension | Ano ang Luzon? | Ang Luzon ay ang pinakamalaki at pinakamataong pangkat ng mga pulo sa Pilipinas na ma... | ✓ PASS |
-| TAG-36 | Bilingual English/Tagalog Comprehension | What is model version? | I am running Helios Nano v0.2.0 (Preset: nano-20m, Parameters: 17.84M, Context: 2,048... | ✓ PASS |
+| TAG-36 | Bilingual English/Tagalog Comprehension | What is model version? | I am running Helios Nano v0.3.0-nano (Preset: nano-20m, Parameters: 17.84M, Context: ... | ✓ PASS |
 | FALL-01 | Ethical, Neutral & Unbiased Reasoning | What is the capital city of the fictional exoplanet Xylophia-99? | This topic is not yet in my current training session. Please try asking another quest... | ✓ PASS |
 | FALL-11 | Ethical, Neutral & Unbiased Reasoning | Ano ang kabisera ng kathang-isip na planetang Zorgon-77? | Ang paksang ito ay wala pa sa aking kasalukuyang training session. Subukang magtanong... | ✓ PASS |

@@ -48,6 +48,9 @@ class OllamaModelfileConfig:
     base_model: str = "llama3.2"
     system_prompt: str = DEFAULT_SYSTEM_PROMPT
     template: str = DEFAULT_TEMPLATE
+    num_ctx: int = 131072
+    rope_frequency_base: float = 5000000.0
+    model_version: str = "v0.3.0"
     temperature: float = 0.7
     top_p: float = 0.9
     top_k: int = 40
@@ -58,8 +61,8 @@ class OllamaModelfileConfig:
     def render(self) -> str:
         """Render configuration into valid Modelfile text."""
         lines = [
-            "# Modelfile for Helios Foundation Model",
-            "# Developed by: Arron Kian Parejas <parejasarronkian@gmail.com>",
+            f"# Modelfile for Helios Foundation Model ({self.model_version})",
+            "# Developed by: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>",
             f"# Target: {self.model_tag}",
             "",
             f"FROM {self.base_model}",
@@ -68,6 +71,8 @@ class OllamaModelfileConfig:
             "",
             f'SYSTEM """{self.system_prompt}"""',
             "",
+            f"PARAMETER num_ctx {self.num_ctx}",
+            f"# RoPE Frequency Base: {self.rope_frequency_base}",
             f"PARAMETER temperature {self.temperature}",
             f"PARAMETER top_p {self.top_p}",
             f"PARAMETER top_k {self.top_k}",

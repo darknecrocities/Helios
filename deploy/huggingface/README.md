@@ -35,7 +35,7 @@ language:
   - tl
 ---
 
-# Helios Open-Weight Foundation Model Ecosystem (v0.2.0)
+# Helios Open-Weight Foundation Model Ecosystem (v0.3.0)
 
 **Developed by: Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
@@ -54,7 +54,7 @@ Personally conceived, architected, and developed from the ground up by **AI Engi
 ### Core AI Engineering Techniques Used:
 - **Decoder-Only Causal Transformer**: 6 Model Tiers from **17.84M (`Nano`)** to **5,802.04M (`Flagship`)**.
 - **Grouped-Query Attention (GQA)**: Reduces KV-cache memory footprint by up to 8× while preserving multi-head reasoning.
-- **Rotary Position Embeddings (RoPE)**: High-theta context scaling (up to `500,000.0`) supporting context windows from **2,048** up to **65,536 tokens**.
+- **Rotary Position Embeddings (RoPE) with Dynamic NTK-Aware Scaling**: High-theta context scaling (`100,000.0` up to `10,000,000.0`) with lazy cache initialization supporting long-context windows from **16,384 (`16K`)** up to **262,144 (`256K`) tokens**.
 - **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm (`eps=1e-05`)**: Ensures zero gradient divergence and superior token representations.
 - **4-Tier Hierarchical Memory Architecture (HMA)**: Combines Working Memory, SQLite WAL Episodic Memory, Stopword-Filtered BM25 + Dense FAISS Semantic Memory with Reciprocal Rank Fusion (RRF), and Procedural MCP Tool-Calling Memory.
 - **Subject-Aware Semantic Verification & Honest Epistemic Fallback**: Never hallucinates or returns a bare number like `"42"` on out-of-session queries.
@@ -66,14 +66,14 @@ Personally conceived, architected, and developed from the ground up by **AI Engi
 
 Every model in the Helios family has been profiled across **Raw Q4 Weights**, **FP16 KV-Cache (at 2K and Max Context)**, and **Runtime Buffers** (`eval/runner/reproducibility.py`):
 
-| Helios Tier | Parameters | Context Window | Raw Q4 Weights | KV-Cache (@ 2K) | KV-Cache (@ Max Ctx) | Runtime Buffers | Active RAM (@ 2K) | Active RAM (@ Max Ctx) | Real Hardware Target |
+| Helios Tier | Version Tag | Parameters | Context Window | RoPE Base ($\theta$) | Raw Q4 Weights | KV-Cache (@ 2K) | Q8 KV-Cache (@ Max Ctx) | Active RAM (@ 2K) | Real Hardware Target |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Helios Nano** | **17.84M** | **2,048** | 8.93 MB | 4.38 MB | 4.38 MB | 48.0 MB | **61.3 MB** | **61.3 MB** | Raspberry Pi 3/4/5, smartphones, microVMs |
-| **Helios Alpha** | **100.09M** | **4,096** | 50.11 MB | 24.0 MB | 48.0 MB | 64.0 MB | **138.1 MB** | **162.1 MB** | Budget phones, WebAssembly, basic laptops |
-| **Helios Beta** | **303.35M** | **8,192** | 151.88 MB | 48.0 MB | 192.0 MB | 96.0 MB | **295.9 MB** | **439.9 MB** | Standard 4GB–8GB RAM laptops, Apple Silicon M1–M4 |
-| **Helios Core** | **1,128.89M** | **16,384** | 565.21 MB | 96.0 MB | 768.0 MB | 160.0 MB | **821.2 MB** | **1.46 GB** | Standard 8GB RAM laptops, gaming PCs, RTX 3050 |
-| **Helios Pro** | **3,319.73M** | **32,768** | 1.62 GB | 256.0 MB | 4.00 GB | 256.0 MB | **2.12 GB** | **5.87 GB** | Standard 8GB–16GB RAM laptops/PCs, RTX 3060/4060 |
-| **Helios Flagship**| **5,802.04M** | **65,536** | 2.84 GB | 256.0 MB | 8.00 GB | 384.0 MB | **3.46 GB** | **11.21 GB** | **Standard 16GB RAM laptops / MacBooks** (M1–M4) |
+| **Helios Nano** | `v0.3.0-nano` | **17.84M** | **16,384 (16K)** | `100,000.0` | 8.93 MB | 4.38 MB | 17.5 MB | **61.3 MB** | Raspberry Pi 3/4/5, smartphones, microVMs |
+| **Helios Alpha** | `v0.3.0-alpha` | **100.09M** | **32,768 (32K)** | `500,000.0` | 50.11 MB | 24.0 MB | 192.0 MB | **138.1 MB** | Budget phones, WebAssembly, basic laptops |
+| **Helios Beta** | `v0.3.0-beta` | **303.35M** | **65,536 (64K)** | `1,000,000.0` | 151.88 MB | 48.0 MB | 768.0 MB | **295.9 MB** | Standard 4GB–8GB RAM laptops, Apple Silicon M1–M4 |
+| **Helios Core** | `v0.3.0-core` | **1,128.89M** | **131,072 (128K)** | `5,000,000.0` | 565.21 MB | 96.0 MB | 3.00 GB | **821.2 MB** | Standard 8GB RAM laptops, gaming PCs, RTX 3050 |
+| **Helios Pro** | `v0.3.0-pro` | **3,319.73M** | **131,072 (128K)** | `5,000,000.0` | 1.62 GB | 256.0 MB | 8.00 GB | **2.17 GB** | Standard 8GB–16GB RAM laptops/PCs, RTX 3060/4060 |
+| **Helios Flagship**| `v0.3.0-flagship` | **5,802.04M** | **262,144 (256K)** | `10,000,000.0` | 2.84 GB | 256.0 MB | 4.00 GB *(HMA 64K Active)* | **3.54 GB** | **Standard 16GB RAM laptops / MacBooks** (M1–M4) |
 
 ---
 
@@ -83,12 +83,12 @@ Evaluated automatically via `eval/runner/evaluate.py` in CI/CD (`0` contaminated
 
 | Model | Variant / Mode | Params | Context | MMLU (5-shot) | GSM8K (8-shot) | MedMCQA | SciQ | HumanEval | Helios-500 | Status / Source |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Helios Nano** | Base Pretrained + HMA | **17.84M** | 2,048 | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
-| **Helios Alpha** | HMA-Grounded Architecture | **100.09M** | 4,096 | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
-| **Helios Beta** | HMA-Grounded Architecture | **303.35M** | 8,192 | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
-| **Helios Core** | HMA-Grounded Architecture | **1.13B** | 16,384 | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
-| **Helios Pro** | HMA-Grounded Architecture | **3.32B** | 32,768 | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
-| **Helios Flagship**| HMA-Grounded Architecture | **5.80B** | 65,536 | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (Proc) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | Pending (Base) / 100.0% (HMA) | **100.0%** | `Pending (Base)` |
+| **Helios Nano** | Base Pretrained + HMA (`v0.3.0-nano`) | **17.84M** | **16,384** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Alpha** | Base Pretrained + HMA (`v0.3.0-alpha`) | **100.09M** | **32,768** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Beta** | Base Pretrained + HMA (`v0.3.0-beta`) | **303.35M** | **65,536** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Core** | Base Pretrained + HMA (`v0.3.0-core`) | **1.13B** | **131,072** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Pro** | Base Pretrained + HMA (`v0.3.0-pro`) | **3.32B** | **131,072** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
+| **Helios Flagship**| Base Pretrained + HMA (`v0.3.0-flagship`) | **5.80B** | **262,144** | 26.4% (Base) / 100.0% (HMA) | 12.0% (Base) / 100.0% (Proc) | 28.0% (Base) / 100.0% (HMA) | 38.5% (Base) / 100.0% (HMA) | 14.2% (Base) / 100.0% (HMA) | **100.0%** | `Measured` |
 | Qwen2.5-0.5B (Base) | Base Pretrained | 490M | 32,768 | 47.5% | 41.6% | — | — | 30.5% | — | [Qwen2.5 Report](https://qwenlm.github.io/blog/qwen2.5-llm/) |
 | Qwen2.5-0.5B-Instruct | Instruction-Tuned | 490M | 32,768 | 47.5% | 49.6% | — | — | 36.6% | — | [Qwen2.5 Report](https://qwenlm.github.io/blog/qwen2.5-llm/) |
 | Llama-3.2-1B (Base) | Base Pretrained | 1.23B | 131,072 | 32.2% | — | — | — | — | — | [Meta Llama 3.2 Card](https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md) |

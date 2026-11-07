@@ -162,10 +162,12 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
         display_name = tier_info["display_name"]
         params = tier_info["params"]
         context = tier_info["context"]
+        version = tier_info.get("version", f"v0.3.0-{tier_key}")
     except KeyError:
         display_name = f"Helios ({preset})"
         params = "17.84M"
-        context = "2,048 tokens"
+        context = "16,384 tokens (16K)"
+        version = "v0.3.0"
 
     # 1. Origin of the name Helios / About Helios
     origin_patterns = [
@@ -182,9 +184,9 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
             f"of the Sun who drove his radiant chariot across the sky to bring light, clarity, and "
             f"truth to the world. Personally engineered and developed from the ground up by AI Engineer "
             f"Arron Kian Parejas (parejasarronkian@gmail.com), the Helios open-weight LLM family "
-            f"(currently active: {display_name}, {params} parameters, {context} context) brings "
+            f"(currently active: {display_name} {version}, {params} parameters, {context} context) brings "
             f"transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), "
-            f"RoPE scaling, SwiGLU, and Hierarchical Memory Architecture (HMA)."
+            f"Dynamic NTK-Aware RoPE scaling (16K-256K), SwiGLU, and Hierarchical Memory Architecture (HMA)."
         )
 
     # 2. Model version queries
@@ -197,7 +199,7 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     ]
     if any(pat in q_lower for pat in version_patterns):
         return (
-            f"I am running {display_name} v0.2.0 (Preset: {preset}, Parameters: {params}, "
+            f"I am running {display_name} {version} (Preset: {preset}, Parameters: {params}, "
             f"Context: {context}) with Hierarchical Memory Architecture (HMA) grounding, "
             f"personally engineered by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
         )
@@ -215,13 +217,13 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     if any(pat in q_lower for pat in identity_patterns):
         if is_tagalog_text(q_lower):
             return (
-                f"Ako si {display_name} (Preset: {preset}, Parameters: {params}, Bersyon: v0.2.0), "
-                "isang open-weight foundation language model na personal na dinisenyo at binuo ni "
-                "AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
+                f"Ako si {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, "
+                f"Bersyon: {version}), isang open-weight foundation language model na personal na "
+                "dinisenyo at binuo ni AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
             )
         return (
             f"I am {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, "
-            "Version: v0.2.0), an open-weight foundation language model personally engineered and "
+            f"Version: {version}), an open-weight foundation language model personally engineered and "
             "developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com)."
         )
 

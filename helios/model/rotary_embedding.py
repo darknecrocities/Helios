@@ -84,9 +84,10 @@ class RotaryEmbedding(nn.Module):
         inv_freq = 1.0 / (theta ** (torch.arange(0, dim, 2, dtype=torch.float32) / dim))
         self.register_buffer("inv_freq", inv_freq, persistent=False)
 
-        # Precompute initial cache (in float32 on CPU)
+        # Precompute initial cache lazily (capped at 4096 on startup to avoid 256K RAM spike)
         self.max_seq_len_cached: int = 0
-        self._set_cos_sin_cache(max_seq_len, device=torch.device("cpu"), dtype=torch.float32)
+        init_cache_len = min(max_seq_len, 4096)
+        self._set_cos_sin_cache(init_cache_len, device=torch.device("cpu"), dtype=torch.float32)
 
     def _set_cos_sin_cache(
         self,
@@ -94,10 +95,20 @@ class RotaryEmbedding(nn.Module):
         device: torch.device,
         dtype: torch.dtype,
     ) -> None:
-        """Precompute cosine and sine tables up to seq_len."""
+        """Precompute cosine and sine tables up to seq_len with Dynamic NTK scaling."""
         self.max_seq_len_cached = seq_len
         t = torch.arange(seq_len, device=device, dtype=torch.float32)
-        freqs = torch.outer(t, self.inv_freq.to(device))  # (seq_len, dim // 2)
+        if seq_len > self.max_seq_len and self.dim > 2:
+            # Dynamic NTK-Aware RoPE base scaling beyond nominal max_seq_len
+            scale = seq_len / float(self.max_seq_len)
+            scaled_theta = self.theta * (scale ** (self.dim / (self.dim - 2)))
+            inv_freq = 1.0 / (
+                scaled_theta
+                ** (torch.arange(0, self.dim, 2, device=device, dtype=torch.float32) / self.dim)
+            )
+        else:
+            inv_freq = self.inv_freq.to(device)
+        freqs = torch.outer(t, inv_freq)  # (seq_len, dim // 2)
         emb = torch.cat((freqs, freqs), dim=-1)  # (seq_len, dim)
 
         # Cache as (1, 1, seq_len, dim) for zero-copy broadcasting over (batch, heads, seq, dim)

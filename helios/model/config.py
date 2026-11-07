@@ -42,6 +42,8 @@ class HeliosConfig:
     tie_word_embeddings: bool = True
     initializer_range: float = 0.02
     dropout: float = 0.0
+    rope_scaling_factor: float = 1.0
+    model_version: str = "0.3.0"
     model_family: str = "Helios"
     developer: str = "Arron Kian Parejas"
     developer_email: str = "parejasarronkian@gmail.com"
@@ -265,7 +267,7 @@ class HeliosConfig:
 
     @classmethod
     def nano_20m(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Nano 20M target preset (~19.4M tied parameters)."""
+        """Helios Nano 20M target preset (~17.84M tied parameters, 16K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 320,
@@ -273,10 +275,11 @@ class HeliosConfig:
             "n_heads": 8,
             "n_kv_heads": 2,
             "d_ffn": 864,
-            "max_seq_len": 2048,
-            "rope_theta": 10000.0,
+            "max_seq_len": 16384,
+            "rope_theta": 100000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-nano",
         }
         cfg.update(overrides)
         return cls(**cfg)
@@ -288,7 +291,7 @@ class HeliosConfig:
 
     @classmethod
     def alpha_100m(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Alpha 100M stage preset (~100.1M tied parameters)."""
+        """Helios Alpha 100M stage preset (~100.09M tied parameters, 32K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 768,
@@ -296,17 +299,18 @@ class HeliosConfig:
             "n_heads": 12,
             "n_kv_heads": 4,
             "d_ffn": 2048,
-            "max_seq_len": 2048,
-            "rope_theta": 10000.0,
+            "max_seq_len": 32768,
+            "rope_theta": 500000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-alpha",
         }
         cfg.update(overrides)
         return cls(**cfg)
 
     @classmethod
     def beta_300m(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Beta 300M stage preset (~302M tied parameters)."""
+        """Helios Beta 300M stage preset (~303.35M tied parameters, 64K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 1024,
@@ -314,17 +318,18 @@ class HeliosConfig:
             "n_heads": 16,
             "n_kv_heads": 4,
             "d_ffn": 2816,
-            "max_seq_len": 2048,
-            "rope_theta": 10000.0,
+            "max_seq_len": 65536,
+            "rope_theta": 1000000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-beta",
         }
         cfg.update(overrides)
         return cls(**cfg)
 
     @classmethod
     def core_1b(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Core 1B milestone preset (~1.06B tied parameters)."""
+        """Helios Core 1B milestone preset (~1.13B tied parameters, 128K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 2048,
@@ -332,17 +337,18 @@ class HeliosConfig:
             "n_heads": 16,
             "n_kv_heads": 4,
             "d_ffn": 5504,
-            "max_seq_len": 4096,
-            "rope_theta": 500000.0,
+            "max_seq_len": 131072,
+            "rope_theta": 5000000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-core",
         }
         cfg.update(overrides)
         return cls(**cfg)
 
     @classmethod
     def pro_3b(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Pro 3B milestone preset (~3.1B tied parameters)."""
+        """Helios Pro 3B milestone preset (~3.32B tied parameters, 128K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 3072,
@@ -350,17 +356,18 @@ class HeliosConfig:
             "n_heads": 24,
             "n_kv_heads": 8,
             "d_ffn": 8192,
-            "max_seq_len": 4096,
-            "rope_theta": 500000.0,
+            "max_seq_len": 131072,
+            "rope_theta": 5000000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-pro",
         }
         cfg.update(overrides)
         return cls(**cfg)
 
     @classmethod
     def flagship_6b(cls, **overrides: Any) -> HeliosConfig:
-        """Helios Flagship 6B flagship milestone preset (~6.2B tied parameters)."""
+        """Helios Flagship 6B milestone preset (~5.80B tied parameters, 256K context)."""
         cfg = {
             "vocab_size": 32000,
             "d_model": 4096,
@@ -368,10 +375,11 @@ class HeliosConfig:
             "n_heads": 32,
             "n_kv_heads": 8,
             "d_ffn": 11008,
-            "max_seq_len": 4096,
-            "rope_theta": 500000.0,
+            "max_seq_len": 262144,
+            "rope_theta": 10000000.0,
             "rms_norm_eps": 1e-5,
             "tie_word_embeddings": True,
+            "model_version": "0.3.0-flagship",
         }
         cfg.update(overrides)
         return cls(**cfg)

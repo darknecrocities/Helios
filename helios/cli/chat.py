@@ -239,16 +239,16 @@ class ChatSession:
         )
 
         # 3. Retrieve conversation history
-        history = self.hma.get_working_context(self.session_id, max_tokens=768)
+        history = self.hma.get_working_context(self.session_id, max_tokens=256)
 
         # Format full prompt
         prompt_parts: list[str] = []
         if grounded_context:
-            prompt_parts.append(grounded_context)
+            prompt_parts.append(grounded_context[:600])
 
-        for turn in history:
+        for turn in history[-4:]:
             role = turn["role"]
-            content = turn["content"]
+            content = turn["content"][:300]
             prompt_parts.append(f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>")
 
         prompt_parts.append(
@@ -279,22 +279,25 @@ class ChatSession:
         is_coherent: bool | None = None
         has_printed = False
 
-        for piece in generator:
-            full_reply_parts.append(piece)
-            current_text = "".join(full_reply_parts)
-            if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
-                if self._is_coherent_reply(current_text):
-                    is_coherent = True
-                    if stream:
-                        sys.stdout.write(f"Helios > {current_text}")
-                        sys.stdout.flush()
-                        has_printed = True
-                else:
-                    is_coherent = False
-                    break
-            elif is_coherent is True and stream:
-                sys.stdout.write(piece)
-                sys.stdout.flush()
+        try:
+            for piece in generator:
+                full_reply_parts.append(piece)
+                current_text = "".join(full_reply_parts)
+                if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
+                    if self._is_coherent_reply(current_text):
+                        is_coherent = True
+                        if stream:
+                            sys.stdout.write(f"Helios > {current_text}")
+                            sys.stdout.flush()
+                            has_printed = True
+                    else:
+                        is_coherent = False
+                        break
+                elif is_coherent is True and stream:
+                    sys.stdout.write(piece)
+                    sys.stdout.flush()
+        finally:
+            generator.close()
 
         reply = "".join(full_reply_parts).strip()
         if is_coherent is not True or not self._is_coherent_reply(reply):

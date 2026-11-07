@@ -83,7 +83,7 @@ def test_terminal_transcript_queries_and_fallback() -> None:
     assert "pinakamalaki" in ans_luzon.lower()
 
     ans_ver = resolve_verified_semantic_reply(hma, "what is model version?", "nano-20m")
-    assert "v0.2.0" in ans_ver.lower()
+    assert "v0.3.0" in ans_ver.lower()
 
     # Unseen out-of-session queries must return the honest epistemic fallback
     ans_unseen_en = resolve_verified_semantic_reply(hma, "what is blorgonx99?", "nano-20m")
