@@ -162,10 +162,10 @@ class SemanticMemory:
                     score=final_score,
                 )
             )
-            if len(items) >= top_k:
-                break
 
-        return items
+        # Re-sort candidates by final_score (trust-weighted RRF) descending, tie-breaking by id
+        items.sort(key=lambda item: (item.score, item.id), reverse=True)
+        return items[:top_k]
 
     def save(self, directory: Path | str) -> None:
         """Persist semantic memory state to directory."""
