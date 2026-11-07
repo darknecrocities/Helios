@@ -1,0 +1,28 @@
+# Modelfile for Helios Alpha (100.09M Parameters)
+# Architecture Lead: Arron Kian Parejas <parejasarronkian@gmail.com>
+# Target Registry: parejasarronkian/Helios:alpha
+
+FROM llama3.2
+
+# Explicit Context Window: 4,096 tokens
+PARAMETER num_ctx 4096
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.1
+
+# Stop sequences
+PARAMETER stop "<|end_of_text|>"
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|start_header_id|>"
+PARAMETER stop "<|end_header_id|>"
+
+TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
+
+{{ .System }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
+
+{{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
+
+{{ .Response }}<|end_of_text|>"""
+
+SYSTEM """You are Helios Alpha (100M parameters), a foundation base model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You specialize in everyday conversation, bilingual English/Tagalog dialogue, Philippine knowledge, and responsive QA."""

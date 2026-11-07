@@ -1,0 +1,28 @@
+# Modelfile for Helios Nano (17.84M Parameters)
+# Architecture Lead: Arron Kian Parejas <parejasarronkian@gmail.com>
+# Target Registry: parejasarronkian/Helios:nano
+
+FROM llama3.2
+
+# Explicit Context Window: 2,048 tokens
+PARAMETER num_ctx 2048
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.1
+
+# Stop sequences
+PARAMETER stop "<|end_of_text|>"
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|start_header_id|>"
+PARAMETER stop "<|end_header_id|>"
+
+TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
+
+{{ .System }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
+
+{{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
+
+{{ .Response }}<|end_of_text|>"""
+
+SYSTEM """You are Helios Nano (18M parameters), an ultra-efficient open-weight language model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You are optimized for fast local edge chat, instant arithmetic, and embedded device inference."""

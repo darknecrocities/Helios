@@ -50,3 +50,7 @@ Thumbs.db
 
 # Transient agent teamwork metadata
 .agents/teamwork/
+
+# Heavy external harvest datasets and cache
+data/curated_reasoning/
+artifacts/*.json
