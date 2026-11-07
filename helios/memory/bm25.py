@@ -6,10 +6,126 @@ import math
 import re
 from typing import Any, Callable
 
+STOPWORDS_EN_TL: frozenset[str] = frozenset(
+    {
+        "q",
+        "a",
+        "what",
+        "is",
+        "are",
+        "was",
+        "were",
+        "who",
+        "whom",
+        "whose",
+        "where",
+        "when",
+        "why",
+        "how",
+        "which",
+        "the",
+        "an",
+        "of",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "with",
+        "by",
+        "from",
+        "about",
+        "into",
+        "through",
+        "after",
+        "over",
+        "between",
+        "out",
+        "against",
+        "during",
+        "without",
+        "before",
+        "under",
+        "around",
+        "among",
+        "do",
+        "does",
+        "did",
+        "can",
+        "could",
+        "would",
+        "should",
+        "will",
+        "shall",
+        "may",
+        "might",
+        "must",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "this",
+        "that",
+        "these",
+        "those",
+        "it",
+        "its",
+        "they",
+        "them",
+        "their",
+        "you",
+        "your",
+        "we",
+        "our",
+        "tell",
+        "me",
+        "explain",
+        "define",
+        "describe",
+        "ano",
+        "ang",
+        "mga",
+        "sino",
+        "saan",
+        "kailan",
+        "bakit",
+        "paano",
+        "alin",
+        "sa",
+        "ng",
+        "na",
+        "ay",
+        "ba",
+        "po",
+        "ho",
+        "ito",
+        "iyan",
+        "iyon",
+        "si",
+        "sina",
+        "ni",
+        "nina",
+        "kay",
+        "kina",
+        "para",
+        "kung",
+        "kapag",
+        "o",
+    }
+)
+
 
 def default_bm25_tokenizer(text: str) -> list[str]:
     """Fast alphanumeric lowercase tokenizer."""
     return re.findall(r"\b\w+\b", text.lower())
+
+
+def extract_content_tokens(text: str) -> list[str]:
+    """Extract non-stopword content tokens from a query or prompt."""
+    tokens = default_bm25_tokenizer(text)
+    return [t for t in tokens if t not in STOPWORDS_EN_TL and len(t) > 1]
 
 
 class BM25Okapi:
@@ -126,7 +242,8 @@ class BM25Okapi:
         if not tokens:
             return []
 
-        query_terms = set(tokens)
+        content_tokens = [t for t in tokens if t not in STOPWORDS_EN_TL]
+        query_terms = set(content_tokens if content_tokens else tokens)
         candidate_scores: dict[str, float] = {}
         avg_len = self.avgdl
         k1 = self.k1

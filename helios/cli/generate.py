@@ -75,7 +75,8 @@ def stream_generate(
     ]
 
     stop_ids = {
-        v for k, v in tokenizer.special_tokens.items()
+        v
+        for k, v in tokenizer.special_tokens.items()
         if k in ("<|end_of_text|>", "<|eot_id|>", "<|im_end|>", "</s>", "<pad>")
     }
     eos_token_id = tokenizer.special_tokens.get("<|end_of_text|>")

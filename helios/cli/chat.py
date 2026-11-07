@@ -15,6 +15,10 @@ from pathlib import Path
 import torch
 import typer
 
+from helios.cli.fallback import (
+    resolve_verified_semantic_reply,
+    seed_hma_knowledge_base,
+)
 from helios.cli.generate import stream_generate
 from helios.cli.utils import (
     format_card,
@@ -32,11 +36,17 @@ def solve_arithmetic_query(text: str) -> str | None:
     """Deterministically solve basic and multi-step arithmetic expressions."""
     cleaned = text.strip().lower().rstrip("?").strip()
     for prefix in [
-        "what is", "calculate", "solve", "how much is",
-        "evaluate", "compute", "tell me what is", "tell me"
+        "what is",
+        "calculate",
+        "solve",
+        "how much is",
+        "evaluate",
+        "compute",
+        "tell me what is",
+        "tell me",
     ]:
         if cleaned.startswith(prefix):
-            cleaned = cleaned[len(prefix):].strip()
+            cleaned = cleaned[len(prefix) :].strip()
 
     # Percentage evaluation: e.g. 20% of 150
     m_pct = re.fullmatch(r"(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned)
@@ -52,12 +62,7 @@ def solve_arithmetic_query(text: str) -> str | None:
         res = (num / den) * tot
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
 
-    expr = (
-        cleaned.replace("^", "**")
-        .replace("x", "*")
-        .replace("×", "*")
-        .replace("÷", "/")
-    )
+    expr = cleaned.replace("^", "**").replace("x", "*").replace("×", "*").replace("÷", "/")
     # Check if string consists purely of digits, operators, spaces, parentheses, decimal points
     if re.fullmatch(r"[\d\s\+\-\*\/\%\(\)\.]+", expr):
         if not any(op in expr for op in ["+", "-", "*", "/", "%"]):
@@ -110,70 +115,11 @@ class ChatSession:
 
     def _seed_knowledge_base(self) -> None:
         """Seed semantic index with expanded and contextual reasoning records."""
-        candidates = [
-            Path("data/helios_expanded_reasoning_corpus.jsonl").resolve(),
-            Path("/Volumes/One Touch/Helios/data/helios_expanded_reasoning_corpus.jsonl").resolve(),
-            Path("data/helios_contextual_reasoning.jsonl").resolve(),
-            Path(__file__).parent.parent.parent / "data" / "helios_expanded_reasoning_corpus.jsonl",
-            Path(__file__).parent.parent.parent / "data" / "helios_contextual_reasoning.jsonl",
-        ]
-        indexed_prompts: set[str] = set()
-        doc_count = 0
-        for candidate in candidates:
-            if candidate.exists():
-                try:
-                    import json
-
-                    with open(candidate, "r", encoding="utf-8") as f:
-                        for line in f:
-                            line = line.strip()
-                            if line:
-                                data = json.loads(line)
-                                p = data.get("prompt", "")
-                                r = data.get("response", "")
-                                if p and p not in indexed_prompts:
-                                    indexed_prompts.add(p)
-                                    doc_count += 1
-                                    self.hma.index_semantic(
-                                        doc_id=f"kb_doc_{doc_count}",
-                                        text=f"Q: {p}\nA: {r}",
-                                        metadata={"prompt": p, "response": r},
-                                    )
-                                    for w in (p + " " + r).split():
-                                        clean = w.lower().strip(".,!?:;\"'()[]{}")
-                                        if clean:
-                                            self._valid_words.add(clean)
-                except Exception:
-                    pass
+        seed_hma_knowledge_base(self.hma, self._valid_words)
 
     def _generate_grounded_fallback(self, query: str) -> str:
-        """Provide grounded responses for common conversational and identity queries."""
-        q_lower = query.lower().strip()
-        creator_terms = [
-            "who created", "who made", "developer", "creator", "lumikha", "gumawa"
-        ]
-        if any(term in q_lower for term in creator_terms):
-            return (
-                "I am Helios, an open-source large language model conceived and developed by "
-                "Arron Kian Parejas (parejasarronkian@gmail.com)."
-            )
-        if any(term in q_lower for term in ["philippines", "pilipinas"]):
-            return (
-                "The Philippines is an archipelagic country in Southeast Asia situated in "
-                "the western Pacific Ocean, consisting of 7,641 islands across Luzon, Visayas, "
-                "and Mindanao. The capital city is Manila, and Quezon City is the largest city."
-            )
-        greeting_pattern = r"\b(hello|hi|hey|kamusta|greetings|good morning|good evening)\b"
-        if re.search(greeting_pattern, q_lower):
-            return (
-                "Hello! I am Helios, an open-weight foundation model developed by "
-                "Arron Kian Parejas. How can I assist you with reasoning, math, or coding today?"
-            )
-        return (
-            "I am Helios, an open-weight model designed by Arron Kian Parejas. "
-            "I can assist with multi-step reasoning, deterministic arithmetic, "
-            "systems programming, and general knowledge."
-        )
+        """Provide grounded responses or honest epistemic fallback for unseen topics."""
+        return resolve_verified_semantic_reply(self.hma, query)
 
     def _is_coherent_reply(self, reply: str) -> bool:
         """Evaluate semantic coherence ratio against known vocabulary."""
@@ -182,7 +128,20 @@ class ChatSession:
         if any(
             frag in reply
             for frag in [
-                "<|", "|>", "_o", "|a", "_a", "?|", "|s", "||", "t|", "d|", "_e", "_s", "o_", "i_"
+                "<|",
+                "|>",
+                "_o",
+                "|a",
+                "_a",
+                "?|",
+                "|s",
+                "||",
+                "t|",
+                "d|",
+                "_e",
+                "_s",
+                "o_",
+                "i_",
             ]
         ):
             return False
@@ -319,21 +278,7 @@ class ChatSession:
 
         reply = "".join(full_reply_parts).strip()
         if is_coherent is not True or not self._is_coherent_reply(reply):
-            norm_q = user_input.strip().lower().rstrip("?")
-            direct_match = None
-            for doc in self.hma.semantic.documents.values():
-                meta_p = doc.metadata.get("prompt", "").strip().lower().rstrip("?")
-                if meta_p == norm_q:
-                    direct_match = doc.metadata.get("response")
-                    break
-
-            retrieved = self.hma.query(query_text=user_input, top_k=1)
-            if direct_match:
-                reply = direct_match
-            elif retrieved and "A: " in retrieved[0].content and retrieved[0].score >= 0.005:
-                reply = retrieved[0].content.split("A: ", 1)[1].strip()
-            else:
-                reply = self._generate_grounded_fallback(user_input)
+            reply = resolve_verified_semantic_reply(self.hma, user_input)
 
             if stream:
                 if has_printed:
