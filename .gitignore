@@ -32,6 +32,14 @@ checkpoints/
 htmlcov/
 .mypy_cache/
 
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.env
+*.key
+*.token
+
 # OS specific
 .DS_Store
 Thumbs.db
