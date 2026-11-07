@@ -249,3 +249,15 @@ def count_parameters(model: nn.Module) -> dict[str, int]:
         "total_parameters": report.total_parameters,
         "trainable_parameters": report.trainable_parameters,
     }
+
+
+class ParameterInspector:
+    """Namespace wrapper providing inspect() and count() methods."""
+
+    @staticmethod
+    def inspect(model: nn.Module, config: HeliosConfig | None = None) -> ParameterInspectionReport:
+        return inspect_parameters(model)
+
+    @staticmethod
+    def count(model: nn.Module) -> dict[str, int]:
+        return count_parameters(model)

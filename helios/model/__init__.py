@@ -7,6 +7,7 @@ from helios.model.normalization import RMSNorm
 from helios.model.parameter_inspector import (
     LayerBreakdown,
     ParameterInspectionReport,
+    ParameterInspector,
     calculate_theoretical_parameters,
     count_parameters,
     inspect_parameters,
@@ -31,6 +32,7 @@ __all__ = [
     "HeliosForCausalLM",
     "LayerBreakdown",
     "ParameterInspectionReport",
+    "ParameterInspector",
     "inspect_parameters",
     "count_parameters",
     "calculate_theoretical_parameters",
