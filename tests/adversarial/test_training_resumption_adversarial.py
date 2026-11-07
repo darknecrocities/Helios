@@ -10,7 +10,7 @@ Empirically stress-tests core mathematical and systems invariants:
 4. Nano Overfit Robustness: Verified convergence across multiple random seeds and
    varying batch sizes without numerical divergence.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

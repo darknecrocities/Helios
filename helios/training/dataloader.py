@@ -3,7 +3,7 @@
 Supports zero-copy token streaming from memory-mapped arrays, exact state
 serialization, and bit-accurate deterministic training resumption.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

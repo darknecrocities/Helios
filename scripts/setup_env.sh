@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Helios Foundation Model Ecosystem - Environment Setup & Toolchain Provisioning
-# Developed by: Arron Kian Parejas <arronkianparejas@gmail.com>
+# Developed by: Arron Kian Parejas <parejasarronkian@gmail.com>
 
 set -euo pipefail
 

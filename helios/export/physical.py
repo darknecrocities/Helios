@@ -6,7 +6,7 @@ Exports trained Helios foundation models into tangible on-device binary formats:
 3. SafeTensors (.safetensors): Zero-copy header-indexed tensor serialization.
 4. TorchScript (.pt): Standalone compiled C++ executable graph.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

@@ -3,7 +3,7 @@
 Backward compatibility module re-exporting disk preservation engine configured for
 external storage (primary: `/Volumes/One Touch/Helios/`).
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

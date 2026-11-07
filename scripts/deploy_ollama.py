@@ -3,14 +3,13 @@
 Builds local Ollama model 'parejasarronkian/Helios' from deploy/ollama/Modelfile,
 verifies live inference response attribution, and pushes to Ollama registry.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
 
 import logging
 import subprocess
-import sys
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

@@ -2,7 +2,7 @@
 
 **Status**: READY FOR IMPLEMENTATION & EXECUTION  
 **Version**: 0.1.0  
-**Architect & Lead**: Arron Kian Parejas (`arronkianparejas@gmail.com`)  
+**Architect & Lead**: Arron Kian Parejas (`parejasarronkian@gmail.com`)  
 **Repository**: `https://github.com/darknecrocities/Helios`  
 **Test Suite Directory**: `tests/e2e/`  
 

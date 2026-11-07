@@ -10,7 +10,7 @@ Automated verification suite validating:
    and learning rate reduction without corrupting weights.
 4. POSIX Interruption Fallback: Verifies graceful termination and emergency checkpointing.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

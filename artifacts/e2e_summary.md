@@ -1,5 +1,5 @@
 # Helios E2E Test Execution Report — 2026-11-07T13:21:25.781836+00:00
-- **Author & Lead**: Arron Kian Parejas <arronkianparejas@gmail.com>
+- **Author & Lead**: Arron Kian Parejas <parejasarronkian@gmail.com>
 - **Helios Version**: 0.1.0
 - **Execution Device**: `cpu`
 - **Total Duration**: 4.32 seconds

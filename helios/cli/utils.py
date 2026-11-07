@@ -3,7 +3,7 @@
 Handles hardware device resolution, model instantiation, checkpoint loading,
 tokenizer initialization, and formatted console telemetry.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -18,7 +18,6 @@ from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
 from helios.tokenizer.base import BaseTokenizer, HeliosTokenizer
 from helios.tokenizer.bpe import ByteLevelBPETokenizer
-from helios.training.checkpoint import CheckpointManager
 
 
 def resolve_device(device_str: str = "auto") -> torch.device:

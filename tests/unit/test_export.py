@@ -4,7 +4,7 @@ Covers Ollama Modelfile generation, Hugging Face Hub package serialization,
 OneDrive mirroring with SHA-256 integrity and local disk space reclamation,
 and export CLI commands.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

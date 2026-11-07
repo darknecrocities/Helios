@@ -30,7 +30,7 @@ language:
 
 # Helios Open-Weight Foundation Model (Helios)
 
-**Developed by: Arron Kian Parejas** (`arronkianparejas@gmail.com`)  
+**Developed by: Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 **Hugging Face Hub**: [https://huggingface.co/Darknecrocities/Helios](https://huggingface.co/Darknecrocities/Helios)  
 **Ollama Registry**: `parejasarronkian/Helios`  

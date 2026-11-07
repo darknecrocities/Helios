@@ -20,7 +20,7 @@ Empirically challenges:
    - 15-step training trajectory with keep_last_n=2 shields global minimum (step 3) from deletion.
    - Comprehensive retention rotation stress-test verifies sliding window + best loss preservation.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

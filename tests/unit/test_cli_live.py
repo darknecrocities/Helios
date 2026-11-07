@@ -2,7 +2,7 @@
 
 Tests `helios generate`, `helios chat`, and `helios eval`.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

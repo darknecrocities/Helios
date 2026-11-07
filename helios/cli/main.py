@@ -4,7 +4,7 @@ Provides inspection, training smoke tests, resumption verification, roadmap disp
 live code generation, interactive chat, performance/perplexity evaluation, and
 deployment export commands.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ app = typer.Typer(
 def version() -> None:
     """Print Helios ecosystem version and author attribution."""
     typer.echo(f"Helios version {helios.__version__} (Helios Foundation Ecosystem)")
-    typer.echo("Author & Architecture Lead: Arron Kian Parejas <arronkianparejas@gmail.com>")
+    typer.echo("Author & Architecture Lead: Arron Kian Parejas <parejasarronkian@gmail.com>")
     typer.echo("Repository: https://github.com/darknecrocities/Helios")
 
 

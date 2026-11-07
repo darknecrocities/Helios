@@ -44,7 +44,7 @@ class HeliosConfig:
     dropout: float = 0.0
     model_family: str = "Helios"
     developer: str = "Arron Kian Parejas"
-    developer_email: str = "arronkianparejas@gmail.com"
+    developer_email: str = "parejasarronkian@gmail.com"
 
     def __post_init__(self) -> None:
         if self.vocab_size <= 0:

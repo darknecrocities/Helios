@@ -4,7 +4,7 @@ Packages pretrained weights, SafeTensors, tokenizer artifacts, model card,
 and physical binaries, then synchronizes to Hugging Face Hub using the
 configured authentication token without hardcoding secrets.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -104,6 +104,7 @@ def deploy_to_huggingface(
         commit_message="Deploy Helios Open-Weight Foundation Model Ecosystem (Weights, SafeTensors, Tokenizer, ONNX, TFLite)",
         token=token,
     )
+    logger.info("Uploaded folder commit: %s", upload_url)
 
     repo_url = f"https://huggingface.co/{repo_id}"
     logger.info("✓ Successfully deployed to Hugging Face Hub: %s", repo_url)

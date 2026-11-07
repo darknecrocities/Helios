@@ -3,7 +3,7 @@
 Orchestrates microbatch stepping, gradient accumulation, adaptive learning-rate
 schedules, gradient norm clipping, and crash-resilient 6-state checkpointing.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
