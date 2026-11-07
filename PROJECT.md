@@ -88,12 +88,20 @@ Every feature from the Phase 0 Survey is inventoried and assigned to a milestone
 | M3 | Decoder-Only Transformer Architecture & Parameter Inspection | `helios/model/`: RoPE, Pre-RMSNorm, SwiGLU, GQA, KV Cache, `HeliosForCausalLM`, `HeliosConfig` (Nano 10M–40M), and `parameter_inspector.py` | M1 | DONE |
 | M4 | Hierarchical Memory Architecture (HMA) & Hybrid Retrieval | `helios/memory/`: Working, Episodic (SQLite/WAL), Semantic (Dense/BM25 + RRF), Procedural (Skills), external store controller & weight isolation | M1, M2 | DONE |
 | M5 | Training Controller & Interruption Fallback Engine | `helios/training/`: POSIX signal trapping (`SIGINT`/`SIGTERM`), atomic checkpointing, exact 6-state resumption, L2 grad clipping, overfit-one-batch smoke test | M1, M3 | DONE |
-| M6 | Final Milestone: 100% E2E Test Suite Pass, Deployment & Verification | Phase 1: Pass 100% of Tiers 1-4 tests published in `TEST_READY.md`. Phase 2: Tier 5 adversarial coverage hardening with Challengers | M1, M2, M3, M4, M5, E2E | IN_PROGRESS |
+| M6 | Final Milestone: 100% E2E Test Suite Pass, Deployment & Verification | Phase 1: Pass 100% of Tiers 1-4 tests published in `TEST_READY.md`. Phase 2: Tier 5 adversarial coverage hardening with Challengers | M1, M2, M3, M4, M5, E2E | DONE |
 
 ### Parallel Track: E2E Testing Track
 - **Owner**: E2E Testing Track Orchestrator
 - **Scope**: Requirement-driven test harness (`tests/e2e/`), test suites for Tiers 1–4, publishing `TEST_READY.md`.
-- **Status**: PLANNED (Dispatched in parallel with implementation milestones).
+- **Status**: DONE (97/97 E2E tests passing with 100% pass rate).
+
+### Milestone 6 Key Outputs
+- **Total Test Suite**: 655/655 total tests passing (190 unit, 2 integration, 97 e2e, 366 adversarial).
+- **E2E Test Suite**: 97/97 E2E tests passing (100% pass rate across Tiers 1–4).
+- **Ollama Modelfile Deployment**: Automated Modelfile generation and push recipe for `parejasarronkian/Helios`.
+- **HuggingFace Hub Safetensors Export**: Model repository export (safetensors, configuration, tokenizer, model card) with git-xet support for `https://huggingface.co/Darknecrocities/Helios`.
+- **One Touch External Disk Mirroring**: Repository and checkpoint preservation mirroring to `/Volumes/One Touch/Helios/`.
+
 
 ---
 
@@ -266,12 +274,17 @@ helios/
 │   │   ├── semantic.py
 │   │   ├── procedural.py
 │   │   └── controller.py
-│   └── training/
+│   ├── training/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── checkpoint.py
+│   │   ├── controller.py
+│   │   └── smoke_test.py
+│   └── export/
 │       ├── __init__.py
-│       ├── config.py
-│       ├── checkpoint.py
-│       ├── controller.py
-│       └── smoke_test.py
+│       ├── disk.py
+│       ├── hf.py
+│       └── ollama.py
 ├── tests/
 │   ├── unit/
 │   │   ├── test_tokenizer.py
