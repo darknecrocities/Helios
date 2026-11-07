@@ -74,7 +74,7 @@ Every feature from the Phase 0 Survey is inventoried and assigned to a milestone
 | 34 | Ollama Deployment & Modelfile Generation | Automated Modelfile creation, GGUF/Ollama conversion recipes, and push workflow to parejasarronkian/Helios | M6 | ORIGINAL_REQUEST §7 |
 | 35 | Hugging Face Hub Export & Git-Xet Workflow | Model repository export (safetensors, config.json, tokenizer, model card) to https://huggingface.co/Darknecrocities/Helios | M6 | ORIGINAL_REQUEST §7 |
 | 36 | Interactive Live Testing CLI | Real-time CLI verification (`helios chat`, `helios generate`, `helios eval`) to ask questions, generate code, and verify model | M6 | ORIGINAL_REQUEST §6 |
-| 37 | OneDrive Disk Preservation Mirroring | Utility to export/mirror model checkpoints and deliverables to `/Users/arronkianparejas/OneDrive/Helios` | M6 | ORIGINAL_REQUEST §6 |
+| 37 | One Touch Drive Disk Preservation Mirroring | Utility to export/mirror model checkpoints and deliverables to `/Volumes/One Touch/Helios` | M6 | ORIGINAL_REQUEST §6, Follow-up 13:02 UTC |
 
 
 ---
@@ -87,8 +87,8 @@ Every feature from the Phase 0 Survey is inventoried and assigned to a milestone
 | M2 | Tokenizer Engine (Byte-Level BPE & Unigram) | `helios/tokenizer/`: Byte-level BPE, Unigram, special tokens contract, EN/Filipino/code fertility benchmarks, HF serialization formats | M1 | DONE |
 | M3 | Decoder-Only Transformer Architecture & Parameter Inspection | `helios/model/`: RoPE, Pre-RMSNorm, SwiGLU, GQA, KV Cache, `HeliosForCausalLM`, `HeliosConfig` (Nano 10M–40M), and `parameter_inspector.py` | M1 | DONE |
 | M4 | Hierarchical Memory Architecture (HMA) & Hybrid Retrieval | `helios/memory/`: Working, Episodic (SQLite/WAL), Semantic (Dense/BM25 + RRF), Procedural (Skills), external store controller & weight isolation | M1, M2 | DONE |
-| M5 | Training Controller & Interruption Fallback Engine | `helios/training/`: POSIX signal trapping (`SIGINT`/`SIGTERM`), atomic checkpointing, exact 6-state resumption, L2 grad clipping, overfit-one-batch smoke test | M1, M3 | IN_PROGRESS |
-| M6 | Final Milestone: 100% E2E Test Suite Pass & Adversarial Hardening | Phase 1: Pass 100% of Tiers 1-4 tests published in `TEST_READY.md`. Phase 2: Tier 5 adversarial coverage hardening with Challengers | M1, M2, M3, M4, M5, E2E | PLANNED |
+| M5 | Training Controller & Interruption Fallback Engine | `helios/training/`: POSIX signal trapping (`SIGINT`/`SIGTERM`), atomic checkpointing, exact 6-state resumption, L2 grad clipping, overfit-one-batch smoke test | M1, M3 | DONE |
+| M6 | Final Milestone: 100% E2E Test Suite Pass, Deployment & Verification | Phase 1: Pass 100% of Tiers 1-4 tests published in `TEST_READY.md`. Phase 2: Tier 5 adversarial coverage hardening with Challengers | M1, M2, M3, M4, M5, E2E | IN_PROGRESS |
 
 ### Parallel Track: E2E Testing Track
 - **Owner**: E2E Testing Track Orchestrator
