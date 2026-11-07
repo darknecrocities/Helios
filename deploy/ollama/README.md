@@ -1,0 +1,135 @@
+# Helios Ollama Deployment Guide
+
+**Target Registry**: `parejasarronkian/Helios`  
+**Developer & Architect**: **Arron Kian Parejas** (`arronkianparejas@gmail.com`)  
+**Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
+
+---
+
+## 1. Overview
+
+This directory provides the automated recipes and configuration required to build and deploy the Helios Open-Weight LLM into the [Ollama](https://ollama.com) ecosystem under the namespace `parejasarronkian/Helios`.
+
+---
+
+## 2. Prerequisites
+
+1. **Install Ollama**:
+   - macOS:
+     ```bash
+     brew install ollama
+     # Or download directly from https://ollama.com/download
+     ```
+   - Verify installation:
+     ```bash
+     ollama --version
+     ```
+
+2. **Start the Ollama daemon**:
+   Ensure Ollama is running either via the menu bar app or via terminal:
+   ```bash
+   ollama serve
+   ```
+
+---
+
+## 3. Modelfile Configuration
+
+The `deploy/ollama/Modelfile` defines the runtime behavior for Helios:
+- `FROM`: Points to the base weights (`llama3.2` for instant testing, or converted GGUF weights `helios-nano.gguf`).
+- `TEMPLATE`: Uses Go template formatting matching Helios special control tokens:
+  ```gotemplate
+  {{ if .System }}<|start_header_id|>system<|end_header_id|>
+
+  {{ .System }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
+
+  {{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
+
+  {{ .Response }}<|end_of_text|>
+  ```
+- `SYSTEM`: Identifies the model and author:
+  ```
+  You are Helios, a transparent, high-performance open-weight foundation language model developed by Arron Kian Parejas. You provide precise, rigorous, and helpful answers across coding, mathematics, science, and reasoning.
+  ```
+- `PARAMETER`:
+  - `temperature 0.7`: Balanced creativity and determinism.
+  - `top_p 0.9`: Nucleus sampling threshold.
+  - `top_k 40`: Top-K token truncation.
+  - `repeat_penalty 1.1`: Repetition avoidance.
+  - Stop tokens: `<|end_of_text|>`, `<|eot_id|>`, `<|start_header_id|>`, `<|end_header_id|>`.
+
+---
+
+## 4. Building the Model
+
+### Option A: Build via Helios CLI (Recommended)
+```bash
+# Generate Modelfile and build local model
+helios export ollama --base-model llama3.2 --create
+```
+
+### Option B: Build via Ollama CLI Directly
+```bash
+# Pull base reference model if not already present
+ollama pull llama3.2
+
+# Build the custom Helios model
+ollama create -f deploy/ollama/Modelfile parejasarronkian/Helios
+```
+
+### Option C: Instant Copy Shortcut
+```bash
+ollama cp llama3.2 parejasarronkian/Helios
+```
+
+---
+
+## 5. Publishing to the Ollama Registry
+
+1. **Set Up Your Public Key**:
+   Find your Ollama public key:
+   ```bash
+   cat ~/.ollama/id_ed25519.pub
+   ```
+   Add this key to your account settings at [https://ollama.com/settings/keys](https://ollama.com/settings/keys).
+
+2. **Push the Model**:
+   ```bash
+   ollama push parejasarronkian/Helios
+   ```
+
+---
+
+## 6. Verification & Interactive Testing
+
+Once created, verify that Helios responds correctly and confirms its identity and capabilities:
+
+### Test 1: Identity & Attribution Verification
+```bash
+ollama run parejasarronkian/Helios "Who developed you and what is your architecture?"
+```
+*Expected Response*: Identifies as Helios, created and architected by **Arron Kian Parejas**, featuring Grouped-Query Attention (GQA), RoPE, SwiGLU, and Hierarchical Memory Architecture.
+
+### Test 2: Code Generation
+```bash
+ollama run parejasarronkian/Helios "Write a complete, typed Python function implementing merge sort with docstrings."
+```
+
+### Test 3: Technical Reasoning
+```bash
+ollama run parejasarronkian/Helios "Explain why Grouped-Query Attention reduces KV cache memory consumption compared to Multi-Head Attention."
+```
+
+---
+
+## 7. REST API Integration
+
+Ollama exposes a local HTTP REST API at port 11434:
+
+```bash
+curl http://localhost:11434/api/generate -d '{
+  "model": "parejasarronkian/Helios",
+  "prompt": "Hello Helios! Give me a brief summary of your features.",
+  "stream": false
+}'
+```
