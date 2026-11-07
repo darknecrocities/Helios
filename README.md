@@ -58,10 +58,22 @@ The initial architecture baseline is focused on the **Helios Nano** family:
 
 | Preset | Target Parameters | Hidden Dimension ($d$) | Layers | Heads ($Q$) | KV Heads ($KV$) | Feed-Forward ($d_{ff}$) | Max Sequence Length |
 |---|---|---|---|---|---|---|---|
-| `nano-15m` | ~15M | 256 | 6 | 4 | 2 | 680 | 1,024 |
-| `nano-20m` | ~20M | 288 | 6 | 6 | 2 | 768 | 1,024 |
-| `nano-25m` | ~25M | 320 | 8 | 8 | 2 | 864 | 1,024 |
-| `nano-35m` | ~35M | 384 | 10 | 6 | 2 | 1,024 | 1,024 |
+| `nano-15m` | ~15M | 288 | 6 | 6 | 2 | 768 | 2,048 |
+| `nano-25m` | ~25M | 384 | 8 | 6 | 2 | 1,024 | 2,048 |
+| `nano-35m` | ~35M | 512 | 8 | 8 | 2 | 1,376 | 2,048 |
+
+---
+
+## Parameter Roadmap & Exit Gates
+
+| Stage | Target size | Purpose | Exit gate |
+|---|---|---|---|
+| Nano | 10M–30M | Unit-test architecture, tokenizer, loss decrease, save/resume. | Deterministic resume test; overfit tiny corpus; no NaNs. |
+| Alpha | 100M | First meaningful small base model; data pipeline and throughput measurement. | Stable training run; documented validation loss and data manifest. |
+| Beta | 300M | Scale-up and context/throughput experiments. | Repeatable runs; no unexplained regressions; evaluation suite. |
+| Core | 1B | First billion-parameter HELIOS generation. | GPU cluster recipe; sharded checkpoints; validated inference. |
+| Pro | 3B | Large-scale training and distributed optimization. | Multi-node recovery, optimizer sharding, quality/cost report. |
+| Flagship | 6B | Long-term dense flagship checkpoint. | Full training provenance, independent evaluation, safety review, release gates. |
 
 ---
 
