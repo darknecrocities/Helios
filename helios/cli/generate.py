@@ -3,7 +3,7 @@
 Provides high-throughput generation with continuous pre-allocated KVCache,
 token-by-token streaming, top-k sampling, and telemetry tracking.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

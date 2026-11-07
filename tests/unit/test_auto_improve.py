@@ -1,11 +1,9 @@
 """Unit tests for the autonomous self-improving benchmark evaluation suite.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
-
-import pytest
 
 from helios.training.auto_improve import BENCHMARK_SUITE, AutoImprover, BenchmarkQuestion
 

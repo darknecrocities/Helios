@@ -4,7 +4,7 @@ Provides POSIX signal interception (SIGINT, SIGTERM), a thread-safe state machin
 microbatch boundary checking, context manager lifecycle management, and a 30-second
 emergency watchdog thread to guarantee crash-resilient shutdown.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

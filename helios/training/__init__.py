@@ -3,7 +3,7 @@
 Provides the fault-tolerant TrainingController, Trainer, 6-state CheckpointManager,
 signal trapping, cursor-based streaming dataloaders, and convergence/resumption smoke tests.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from helios.training.checkpoint import (

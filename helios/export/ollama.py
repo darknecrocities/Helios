@@ -4,7 +4,7 @@ Supports Modelfile creation with Helios chat turn templates, stop token sequence
 system attribution for Arron Kian Parejas, and automated subprocess integration with
 the Ollama CLI daemon.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ class OllamaModelfileConfig:
         """Render configuration into valid Modelfile text."""
         lines = [
             "# Modelfile for Helios Foundation Model",
-            "# Developed by: Arron Kian Parejas <arronkianparejas@gmail.com>",
+            "# Developed by: Arron Kian Parejas <parejasarronkian@gmail.com>",
             f"# Target: {self.model_tag}",
             "",
             f"FROM {self.base_model}",

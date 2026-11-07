@@ -1,6 +1,6 @@
 """Unit tests for physical model exporters (ONNX, TFLite, SafeTensors, TorchScript).
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

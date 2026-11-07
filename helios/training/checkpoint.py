@@ -4,7 +4,7 @@ Implements exact 6-state serialization (weights, optimizer, scheduler, multi-RNG
 dataloader cursor, and telemetry), SHA-256 integrity verification, atomic staging
 and POSIX file replacement, and intelligent retention policies.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

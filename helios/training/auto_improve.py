@@ -5,7 +5,7 @@ creator attribution, arithmetic, Filipino dialogue, and failure modes). Detects
 inaccuracies, synthesizes targeted contrastive training pairs, runs fine-tuning
 with TrainingController, and verifies 100% convergence.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -16,15 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-import torch
-
 from helios.cli.chat import ChatSession
 from helios.cli.utils import load_model_and_config, load_or_create_tokenizer
-from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
 from helios.tokenizer.base import BaseTokenizer
-from helios.training.config import TrainingConfig
-from helios.training.controller import TrainingController
 
 logger = logging.getLogger("helios.training.auto_improve")
 

@@ -3,7 +3,7 @@
 Benchmarks generation speed (tokens/sec), continuous KVCache memory footprint (MB),
 and multi-domain cross-entropy perplexity.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

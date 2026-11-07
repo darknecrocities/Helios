@@ -12,14 +12,13 @@ Synthesizes high-fidelity training pairs across 10 reasoning domains:
 - Common-sense physical intuition
 - Fallacy detection and critical thinking
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-
 
 PAIRS = [
     # 1. Greetings & Conversational

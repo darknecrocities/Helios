@@ -136,7 +136,7 @@ def build_run_report(plugin: E2EReporterPlugin, target_tier: str, device: str) -
     report = TestRunReport(
         timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         helios_version=getattr(helios, "__version__", "0.1.0"),
-        author="Arron Kian Parejas <arronkianparejas@gmail.com>",
+        author="Arron Kian Parejas <parejasarronkian@gmail.com>",
         device=device,
         tier_filter=target_tier,
         total_duration_seconds=duration,

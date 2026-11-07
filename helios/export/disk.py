@@ -8,7 +8,7 @@ Preserves local laptop disk space by safely freeing local checkpoints after veri
 mirror confirmation, while creating lightweight pointer stubs so local tools remain
 aware of checkpoint history.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

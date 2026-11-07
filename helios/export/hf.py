@@ -7,7 +7,7 @@ Generates standard Hugging Face repository files:
 - model.safetensors (safe zero-copy weight serialization)
 - README.md (Comprehensive model card with dataset citations & Arron Kian Parejas attribution)
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -165,7 +165,7 @@ language:
 
 # Helios Open-Weight Foundation Model ({config.model_family})
 
-**Developed by: Arron Kian Parejas** (`arronkianparejas@gmail.com`)  
+**Developed by: Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 **Hugging Face Hub**: [https://huggingface.co/{repo_id}](https://huggingface.co/{repo_id})  
 **Ollama Registry**: `parejasarronkian/Helios`  

@@ -9,7 +9,7 @@ Empirically stress-tests:
 4. Multi-turn chat memory accumulation, SQLite persistence, and saturation boundaries.
 5. CLI eval & export command error resilience.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

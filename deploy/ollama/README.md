@@ -1,7 +1,7 @@
 # Helios Ollama Deployment Guide
 
 **Target Registry**: `parejasarronkian/Helios`  
-**Developer & Architect**: **Arron Kian Parejas** (`arronkianparejas@gmail.com`)  
+**Developer & Architect**: **Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
 **Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 
 ---

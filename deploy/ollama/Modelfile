@@ -1,5 +1,5 @@
 # Modelfile for Helios Foundation Model
-# Developed by: Arron Kian Parejas <arronkianparejas@gmail.com>
+# Developed by: Arron Kian Parejas <parejasarronkian@gmail.com>
 # Target Registry: parejasarronkian/Helios
 
 FROM llama3.2

@@ -4,7 +4,7 @@ Trains Helios on the unconstrained contextual reasoning dataset using
 TrainingController with Pre-RMSNorm float32 stabilization, RoPE, AdamW,
 cosine scheduling, and atomic 6-state checkpointing.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
@@ -23,7 +23,6 @@ from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
 from helios.tokenizer.base import BaseTokenizer
 from helios.tokenizer.bpe import ByteLevelBPETokenizer
-from helios.training.checkpoint import CheckpointManager
 from helios.training.config import TrainingConfig
 from helios.training.controller import TrainingController
 

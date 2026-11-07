@@ -6,7 +6,7 @@ Validates:
 3. External disk failure modes: detached volume, read-only media, hash corruption, fault injection,
    graceful fallback recovery, and zero-data-loss guarantees under space reclamation.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

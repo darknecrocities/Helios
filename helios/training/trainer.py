@@ -4,7 +4,7 @@ Orchestrates microbatch gradient accumulation, mixed precision autocasting (bf16
 L2 gradient clipping, loss spike/NaN/Inf detection with clean rollback, POSIX interruption
 trapping, throughput metrics (tokens/sec, TFLOPs), and exact 6-state checkpointing.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations

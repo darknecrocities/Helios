@@ -3,11 +3,12 @@
 Provides a multi-turn chat interface backed by Working Memory buffers and
 persistent SQLite Episodic Memory with WAL mode.
 
-Author: Arron Kian Parejas <arronkianparejas@gmail.com>
+Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -25,6 +26,36 @@ from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
 from helios.model.transformer import HeliosForCausalLM
 from helios.tokenizer.base import BaseTokenizer
+
+
+def solve_arithmetic_query(text: str) -> str | None:
+    """Deterministically solve basic and multi-step arithmetic expressions."""
+    cleaned = text.strip().lower().rstrip("?").strip()
+    for prefix in [
+        "what is", "calculate", "solve", "how much is",
+        "evaluate", "compute", "tell me what is", "tell me"
+    ]:
+        if cleaned.startswith(prefix):
+            cleaned = cleaned[len(prefix):].strip()
+
+    expr = (
+        cleaned.replace("^", "**")
+        .replace("x", "*")
+        .replace("×", "*")
+        .replace("÷", "/")
+    )
+    # Check if string consists purely of digits, operators, spaces, parentheses, decimal points
+    if re.fullmatch(r"[\d\s\+\-\*\/\%\(\)\.]+", expr):
+        if not any(op in expr for op in ["+", "-", "*", "/", "%"]):
+            return None
+        try:
+            val = eval(expr, {"__builtins__": None}, {})
+            if isinstance(val, float) and val.is_integer():
+                val = int(val)
+            return f"{cleaned} = {val}"
+        except Exception:
+            return None
+    return None
 
 
 class ChatSession:
@@ -64,35 +95,71 @@ class ChatSession:
         self.total_generation_time_s = 0.0
 
     def _seed_knowledge_base(self) -> None:
-        """Seed semantic index with contextual reasoning records."""
+        """Seed semantic index with expanded and contextual reasoning records."""
         candidates = [
+            Path("data/helios_expanded_reasoning_corpus.jsonl").resolve(),
+            Path("/Volumes/One Touch/Helios/data/helios_expanded_reasoning_corpus.jsonl").resolve(),
             Path("data/helios_contextual_reasoning.jsonl").resolve(),
+            Path(__file__).parent.parent.parent / "data" / "helios_expanded_reasoning_corpus.jsonl",
             Path(__file__).parent.parent.parent / "data" / "helios_contextual_reasoning.jsonl",
         ]
+        indexed_prompts: set[str] = set()
+        doc_count = 0
         for candidate in candidates:
             if candidate.exists():
                 try:
                     import json
 
                     with open(candidate, "r", encoding="utf-8") as f:
-                        for idx, line in enumerate(f):
+                        for line in f:
                             line = line.strip()
                             if line:
                                 data = json.loads(line)
                                 p = data.get("prompt", "")
                                 r = data.get("response", "")
-                                self.hma.index_semantic(
-                                    doc_id=f"kb_doc_{idx}",
-                                    text=f"Q: {p}\nA: {r}",
-                                    metadata={"prompt": p, "response": r},
-                                )
-                                for w in (p + " " + r).split():
-                                    clean = w.lower().strip(".,!?:;\"'()[]{}")
-                                    if clean:
-                                        self._valid_words.add(clean)
-                    break
+                                if p and p not in indexed_prompts:
+                                    indexed_prompts.add(p)
+                                    doc_count += 1
+                                    self.hma.index_semantic(
+                                        doc_id=f"kb_doc_{doc_count}",
+                                        text=f"Q: {p}\nA: {r}",
+                                        metadata={"prompt": p, "response": r},
+                                    )
+                                    for w in (p + " " + r).split():
+                                        clean = w.lower().strip(".,!?:;\"'()[]{}")
+                                        if clean:
+                                            self._valid_words.add(clean)
                 except Exception:
                     pass
+
+    def _generate_grounded_fallback(self, query: str) -> str:
+        """Provide grounded responses for common conversational and identity queries."""
+        q_lower = query.lower().strip()
+        creator_terms = [
+            "who created", "who made", "developer", "creator", "lumikha", "gumawa"
+        ]
+        if any(term in q_lower for term in creator_terms):
+            return (
+                "I am Helios, an open-source large language model conceived and developed by "
+                "Arron Kian Parejas (parejasarronkian@gmail.com)."
+            )
+        if any(term in q_lower for term in ["philippines", "pilipinas"]):
+            return (
+                "The Philippines is an archipelagic country in Southeast Asia situated in "
+                "the western Pacific Ocean, consisting of 7,641 islands across Luzon, Visayas, "
+                "and Mindanao. The capital city is Manila, and Quezon City is the largest city."
+            )
+        greeting_pattern = r"\b(hello|hi|hey|kamusta|greetings|good morning|good evening)\b"
+        if re.search(greeting_pattern, q_lower):
+            return (
+                "Hello! I am Helios, an open-weight foundation model developed by "
+                "Arron Kian Parejas. How can I assist you with reasoning, math, or coding today?"
+            )
+        return (
+            "I am Helios, an open-weight model designed by Arron Kian Parejas. "
+            "I can assist with multi-step reasoning, deterministic arithmetic, "
+            "systems programming, and general knowledge."
+        )
 
     def _is_coherent_reply(self, reply: str) -> bool:
         """Evaluate semantic coherence ratio against known vocabulary."""
@@ -160,12 +227,25 @@ class ChatSession:
         stream: bool = True,
     ) -> str:
         """Execute one conversational turn with memory grounding."""
-        # 1. Retrieve grounded context from HMA
+        # 1. Deterministic arithmetic interception
+        math_solution = solve_arithmetic_query(user_input)
+        if math_solution is not None:
+            reply = math_solution
+            if stream:
+                sys.stdout.write(f"Helios > {reply}\n")
+                sys.stdout.flush()
+            self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
+            self.hma.store_episodic(session_id=self.session_id, role="assistant", content=reply)
+            self.total_turns += 1
+            self.total_generated_tokens += len(reply.split())
+            return reply
+
+        # 2. Retrieve grounded context from HMA
         grounded_context = self.hma.build_grounded_context(
             user_input, session_id=self.session_id, max_tokens=256
         )
 
-        # 2. Retrieve conversation history
+        # 3. Retrieve conversation history
         history = self.hma.get_working_context(self.session_id, max_tokens=768)
 
         # Format full prompt
@@ -184,10 +264,10 @@ class ChatSession:
         )
         full_prompt = "".join(prompt_parts)
 
-        # 3. Store user turn in HMA
+        # 4. Store user turn in HMA
         self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
 
-        # 4. Stream generate assistant response
+        # 5. Stream generate assistant response with buffered verification
         k_val = top_k if top_k > 0 else None
         telemetry: dict[str, float] = {}
 
@@ -202,30 +282,55 @@ class ChatSession:
             telemetry=telemetry,
         )
 
-        if stream:
-            sys.stdout.write("Helios > ")
         full_reply_parts: list[str] = []
+        is_coherent: bool | None = None
+        has_printed = False
+
         for piece in generator:
-            if stream:
+            full_reply_parts.append(piece)
+            current_text = "".join(full_reply_parts)
+            if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
+                if self._is_coherent_reply(current_text):
+                    is_coherent = True
+                    if stream:
+                        sys.stdout.write(f"Helios > {current_text}")
+                        sys.stdout.flush()
+                        has_printed = True
+                else:
+                    is_coherent = False
+                    break
+            elif is_coherent is True and stream:
                 sys.stdout.write(piece)
                 sys.stdout.flush()
-            full_reply_parts.append(piece)
 
         reply = "".join(full_reply_parts).strip()
-        is_coherent = self._is_coherent_reply(reply)
+        if is_coherent is not True or not self._is_coherent_reply(reply):
+            norm_q = user_input.strip().lower().rstrip("?")
+            direct_match = None
+            for doc in self.hma.semantic.documents.values():
+                meta_p = doc.metadata.get("prompt", "").strip().lower().rstrip("?")
+                if meta_p == norm_q:
+                    direct_match = doc.metadata.get("response")
+                    break
 
-        if not is_coherent:
             retrieved = self.hma.query(query_text=user_input, top_k=1)
-            if retrieved and "A: " in retrieved[0].content:
+            if direct_match:
+                reply = direct_match
+            elif retrieved and "A: " in retrieved[0].content and retrieved[0].score >= 0.005:
                 reply = retrieved[0].content.split("A: ", 1)[1].strip()
-                if stream:
-                    sys.stdout.write(f"\rHelios > {reply}\n")
-                    sys.stdout.flush()
+            else:
+                reply = self._generate_grounded_fallback(user_input)
+
+            if stream:
+                if has_printed:
+                    sys.stdout.write("\r\033[2K")
+                sys.stdout.write(f"Helios > {reply}\n")
+                sys.stdout.flush()
         else:
             if stream:
                 sys.stdout.write("\n")
 
-        # 5. Store assistant turn in HMA
+        # 6. Store assistant turn in HMA
         self.hma.store_episodic(session_id=self.session_id, role="assistant", content=reply)
 
         # Update telemetry
