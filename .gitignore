@@ -23,7 +23,11 @@ checkpoints/
 *.pth
 *.bin
 *.ckpt
+*.safetensors
 *.safetensors.tmp
+*.onnx
+*.onnx.data
+*.tflite
 
 # Testing and linting cache
 .pytest_cache/

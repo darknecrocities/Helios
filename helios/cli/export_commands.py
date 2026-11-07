@@ -183,3 +183,37 @@ def export_disk_cmd(
     typer.echo(f"✓ Updated sync manifest at {res['manifest_path']}")
     if free_local:
         typer.echo(f"✓ Local disk space reclaimed: {res['audit'].get('mb_saved_locally', 0.0)} MB")
+
+
+@export_app.command(name="physical")
+def export_physical_cmd(
+    output_dir: str = typer.Option(
+        "dist/physical_models",
+        "--output-dir",
+        "-o",
+        help="Target directory for physical model exports (.onnx, .tflite, .safetensors, .pt).",
+    ),
+    preset: str = typer.Option(
+        "nano-20m",
+        "--preset",
+        "-m",
+        help="Helios model preset if initializing weights.",
+    ),
+    model_path: Optional[str] = typer.Option(
+        None,
+        "--model-path",
+        "-p",
+        help="Path to trained checkpoint directory or state.pt.",
+    ),
+) -> None:
+    """Export physical on-device formats (.onnx, .tflite, .safetensors, .pt)."""
+    from helios.cli.utils import load_model_and_config
+    from helios.export.physical import export_all_physical_formats
+
+    typer.echo(f"Exporting physical models to {output_dir}...")
+    model, config = load_model_and_config(preset=preset, model_path=model_path)
+    res = export_all_physical_formats(model, config, output_dir=output_dir)
+    for fmt, info in res["formats"].items():
+        mb = info["bytes"] / 1e6
+        typer.echo(f"✓ {fmt:<12}: {info['file']} ({mb:.2f} MB)")
+    typer.echo(f"✓ Physical manifest written: {res['manifest_file']}")
