@@ -10,15 +10,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from helios.evaluation.schema import BenchmarkQuestion, EvaluationResult
-from helios.evaluation.taxonomy import (
-    CATEGORY_CODES,
-    ClassifiedError,
-    ErrorCategory,
-    TaxonomyClassifier,
-)
+
+if TYPE_CHECKING:
+    from helios.evaluation.taxonomy import ClassifiedError, TaxonomyClassifier
 
 
 class TaxonomyReportGenerator:
@@ -29,7 +26,12 @@ class TaxonomyReportGenerator:
         classifier: TaxonomyClassifier | None = None,
         output_dir: Path | str | None = None,
     ) -> None:
-        self.classifier = classifier or TaxonomyClassifier()
+        if classifier is None:
+            from helios.evaluation.taxonomy import TaxonomyClassifier
+
+            self.classifier = TaxonomyClassifier()
+        else:
+            self.classifier = classifier
         self.output_dir = Path(output_dir).resolve() if output_dir else Path("reports").resolve()
 
     def generate_report(
@@ -40,6 +42,11 @@ class TaxonomyReportGenerator:
         results: list[EvaluationResult] | None = None,
     ) -> dict[str, Any]:
         """Aggregate results and classify failures into the 7-Type Taxonomy."""
+        from helios.evaluation.taxonomy import (
+            CATEGORY_CODES,
+            ErrorCategory,
+        )
+
         if isinstance(results_or_summary, dict):
             summary = results_or_summary
             eval_results = results or []
