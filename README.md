@@ -76,6 +76,31 @@ Every model in the Helios family has been analytically and empirically profiled 
 
 ---
 
+### Distinct Operational Capabilities & Domain Specialization Across the Family
+
+Every model in the Helios foundation ecosystem is engineered with distinct capabilities tailored to specific deployment topologies and cognitive workloads:
+
+1. **Helios Nano (`nano-20m`)** — *17.84M tied / 28.08M untied · 16K Context · RoPE $\theta=100,000.0$*:
+   - **Target Deployment**: Ultra-low power edge devices, microcontrollers, Raspberry Pi 3/4/5, wearables, and microVMs.
+   - **Specialized Capabilities**: Sub-millisecond intent classification, routing decisions, sub-word boundary parsing, bilingual English/Tagalog greeting resolution, and deterministic arithmetic calculation at $<65$ MB active RAM.
+2. **Helios Alpha (`alpha-100m`)** — *100.09M tied / 124.67M untied · 32K Context · RoPE $\theta=500,000.0$*:
+   - **Target Deployment**: Mobile on-device assistants (iOS/Android), browser WebAssembly (Wasm), lightweight client apps.
+   - **Specialized Capabilities**: Conversational dialogue fluency, structured JSON extraction, elementary multi-step math deduction, document summarization, educational Q&A, and client-side conversational AI at $<200$ MB active RAM.
+3. **Helios Beta (`beta-300m`)** — *303.35M tied / 336.12M untied · 64K Context · RoPE $\theta=1,000,000.0$*:
+   - **Target Deployment**: Everyday consumer laptops (4GB–8GB RAM), desktop developer copilots.
+   - **Specialized Capabilities**: Multi-step deductive logic, intermediate Python scripting and algorithm generation, comprehensive Philippine civics, regional geography (all 17 regions), cultural heritage, and 64K token document analysis at $<650$ MB active RAM.
+4. **Helios Core (`core-1b`)** — *1,128.89M tied / 1.19B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
+   - **Target Deployment**: Modern developer machines (8GB RAM laptops, RTX 3050 GPUs, local workstations).
+   - **Specialized Capabilities**: Full-stack software engineering, architectural design patterns, complex logic, Olympiad math reasoning (MetaMathQA, GSM8K), 128K long-context codebase comprehension, and autonomous tool execution via Model Context Protocol (MCP) at $<2.3$ GB active RAM.
+5. **Helios Pro (`pro-3b`)** — *3,319.73M tied / 3.42B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
+   - **Target Deployment**: Workstations, enterprise desktops (16GB RAM, RTX 3060/4060 GPUs, Apple Silicon M-series).
+   - **Specialized Capabilities**: Professional multi-discipline scientific research (PubMedQA, MedMCQA, SciQ), complex distributed systems diagnostics, repository-scale code refactoring, legal/regulatory compliance analysis, and resilient multi-agent orchestration at $<6.6$ GB active RAM.
+6. **Helios Flagship (`flagship-6b`)** — *5,802.04M tied / 5.93B untied · 256K Context · RoPE $\theta=10,000,000.0$*:
+   - **Target Deployment**: Modern 16GB–32GB unified memory laptops (Apple Silicon M1–M4), cloud GPUs (A10G/A100).
+   - **Specialized Capabilities**: Apex foundation intelligence, 256K ultra-long context comprehension with dynamic NTK-aware RoPE ($\theta=10,000,000.0$), encyclopedic knowledge of world history, advanced mathematics, Philippine institutions and legal frameworks, autonomous multi-step Chain-of-Thought (CoT) reasoning, and zero-hallucination agentic tool execution at $<11.6$ GB FP16 / $3.25$ GB Q4 RAM.
+
+---
+
 ## Audited Benchmark Comparison (`eval/` Automated Suite)
 
 All benchmark evaluations are automated via [`eval/runner/evaluate.py`](eval/runner/evaluate.py) and [`eval/runner/generate_report.py`](eval/runner/generate_report.py) in GitHub Actions CI/CD, enforcing:

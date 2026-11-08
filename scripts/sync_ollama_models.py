@@ -35,6 +35,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 100000.0,
         "layers_heads": "7 layers, d_model=320, 8Q/2KV GQA heads",
         "base_model": "qwen2.5:0.5b",
+        "capabilities": "ultra-lightweight edge computing, sub-word boundary parsing, intent detection, and instant arithmetic at <65MB RAM",
     },
     "alpha": {
         "display_name": "Helios Alpha",
@@ -45,6 +46,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 500000.0,
         "layers_heads": "12 layers, d_model=768, 12Q/4KV GQA heads",
         "base_model": "qwen2.5:0.5b",
+        "capabilities": "mobile on-device dialogue, structured JSON extraction, elementary mathematics, and client summarization at <200MB RAM",
     },
     "beta": {
         "display_name": "Helios Beta",
@@ -55,6 +57,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 1000000.0,
         "layers_heads": "24 layers, d_model=1024, 16Q/4KV GQA heads",
         "base_model": "qwen2.5:0.5b",
+        "capabilities": "local workstation code scripting, multi-step deductive reasoning, Philippine civics, and 64K document analysis at <650MB RAM",
     },
     "core": {
         "display_name": "Helios Core",
@@ -65,6 +68,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 5000000.0,
         "layers_heads": "24 layers, d_model=2048, 32Q/8KV GQA heads",
         "base_model": "gemma2:2b",
+        "capabilities": "full-stack software engineering, architecture design, complex logic, Olympiad math, 128K context comprehension, and MCP tool use at <2.3GB RAM",
     },
     "pro": {
         "display_name": "Helios Pro",
@@ -75,6 +79,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 5000000.0,
         "layers_heads": "28 layers, d_model=3072, 32Q/8KV GQA heads",
         "base_model": "llama3.2:latest",
+        "capabilities": "enterprise multi-discipline scientific research, deep diagnostics, repository refactoring, compliance, and multi-agent systems at <6.6GB RAM",
     },
     "flagship": {
         "display_name": "Helios Flagship",
@@ -85,6 +90,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "rope_theta": 10000000.0,
         "layers_heads": "32 layers, d_model=4096, 32Q/8KV GQA heads",
         "base_model": "gemma3:4b",
+        "capabilities": "apex foundation intelligence, 256K long-context comprehension with dynamic NTK RoPE, sovereign world history, Philippine institutions, science, math, and autonomous Chain-of-Thought (CoT) reasoning at <11.6GB FP16 RAM",
     },
 }
 
@@ -97,11 +103,10 @@ def render_tier_modelfile(tier_key: str, from_source: str, target_tag: str) -> s
         f"Context Window: {meta['ctx_label']}, RoPE Theta: {meta['rope_theta']:.1f}, "
         f"Topology: {meta['layers_heads']}), an open-weight foundation language model personally "
         f"engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com). "
-        f"You are pretrained across 68 datasets spanning 14 domains (computer science, complex mathematics, "
-        f"physics, biology, medicine, ancient & world history, geography, MCP & agentic workflows, and "
-        f"bilingual English/Tagalog). Never return a bare random number for conceptual questions. "
-        f"If a question asks about a topic not yet covered in your current training session, reply clearly: "
-        f"'This topic is not yet in my current training session. Please try asking another question!'"
+        f"You are specialized in {meta['capabilities']}. When responding, reason step-by-step through "
+        f"first principles inside <thought>...</thought> before providing your final, articulate, and "
+        f"well-structured answer. Reason freely across technology, world history, Philippine institutions, "
+        f"sciences, and mathematics without artificial boundary refusals."
     )
     return f"""# Modelfile for {meta["display_name"]} ({meta["params"]} Parameters — {meta["version"]})
 # Architecture & Engineering Lead: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>

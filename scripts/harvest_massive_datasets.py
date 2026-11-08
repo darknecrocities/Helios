@@ -19,6 +19,11 @@ from pathlib import Path
 from typing import Any
 
 from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
+from scripts.dataset_builders.fineweb_and_philippines_streamer import (
+    stream_filipino_instructions,
+    stream_fineweb_edu_records,
+    stream_wikipedia_philippines_records,
+)
 from scripts.dataset_builders.omni_domain_curated import build_omni_domain_records
 from scripts.harvest_reasoning_datasets import MCP_SYNTHETIC_TEMPLATES, format_mcp_turn
 
@@ -431,6 +436,21 @@ def stream_hf_datasets_to_one_touch(
             logger.warning("MetaMathQA stream fallback (%s)", e)
         counts["metamath_advanced_proofs"] = math_count
         logger.info("✓ Harvested %d MetaMathQA Advanced Proof records.", math_count)
+
+        # 15. Stream Educational Web Knowledge (HuggingFaceFW/fineweb-edu)
+        fw_records = stream_fineweb_edu_records(limit=2500)
+        records.extend(fw_records)
+        counts["fineweb_edu_educational"] = len(fw_records)
+
+        # 16. Stream Wikipedia Tagalog & Philippines (wikimedia/wikipedia)
+        wiki_records = stream_wikipedia_philippines_records(limit=2500)
+        records.extend(wiki_records)
+        counts["wikipedia_philippines_tagalog"] = len(wiki_records)
+
+        # 17. Stream Real Filipino Instructions (saillab, TagaloGuanaco, Platypus)
+        fil_records = stream_filipino_instructions(limit=5000)
+        records.extend(fil_records)
+        counts["filipino_instructions_hf"] = len(fil_records)
 
     except Exception as exc:
         logger.warning("Dataset streaming encountered an issue: %s", exc)

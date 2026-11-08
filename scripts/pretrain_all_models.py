@@ -30,9 +30,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from safetensors.torch import save_file
 
-from helios.cli.utils import resolve_device
+from helios.cli.utils import load_or_create_tokenizer, resolve_device
 from helios.model import HeliosBlock, HeliosConfig, HeliosForCausalLM, RMSNorm
-from helios.tokenizer.bpe import ByteLevelBPETokenizer
 from helios.training.config import TrainingConfig
 from helios.training.controller import TrainingController
 from scripts.build_roadmap_models import ROADMAP_SPECS, calculate_param_counts
@@ -87,16 +86,25 @@ class ProgressiveTierProjectionHead(nn.Module):
         return {"logits": logits, "loss": loss}
 
 
-def build_padded_tokenizer(vocab_size: int) -> ByteLevelBPETokenizer:
-    """Create a ByteLevelBPETokenizer expanded to the target vocabulary size."""
-    tok = ByteLevelBPETokenizer()
-    cur_size = tok.vocab_size
-    if cur_size < vocab_size:
-        for i in range(cur_size, vocab_size):
-            reserved = f"<extra_id_{i}>"
-            tok.vocab[reserved] = i
-            tok.inv_vocab[i] = reserved
-    return tok
+def stratify_sample_records(
+    records: list[dict[str, Any]], sample_size: int = 4096
+) -> list[dict[str, Any]]:
+    """Sample records evenly across all domains in the massive pretraining corpus."""
+    import random
+
+    by_domain: dict[str, list[dict[str, Any]]] = {}
+    for r in records:
+        dom = r.get("domain", "general")
+        by_domain.setdefault(dom, []).append(r)
+
+    per_domain = max(2, sample_size // max(1, len(by_domain)))
+    sampled: list[dict[str, Any]] = []
+    rng = random.Random(42)
+    for _dom, items in by_domain.items():
+        rng.shuffle(items)
+        sampled.extend(items[:per_domain])
+    rng.shuffle(sampled)
+    return sampled
 
 
 def train_full_parameter_tier(
@@ -118,9 +126,10 @@ def train_full_parameter_tier(
     train_cfg_model = HeliosConfig.from_preset(preset)
     train_cfg_model.max_seq_len = max_seq_len
 
-    tok = build_padded_tokenizer(cfg.vocab_size)
+    tok = load_or_create_tokenizer()
+    sampled = stratify_sample_records(records, sample_size=4096)
     batches = prepare_token_batches(
-        records[:256], tok, max_seq_len=max_seq_len, batch_size=2, device=device
+        sampled, tok, max_seq_len=max_seq_len, batch_size=4, device=device
     )
 
     model = HeliosForCausalLM(train_cfg_model).to(device)
@@ -203,9 +212,10 @@ def train_block_streamed_large_tier(
     block_cfg = HeliosConfig.from_preset(preset)
     block_cfg.max_seq_len = max_seq_len
 
-    tok = build_padded_tokenizer(4096)
+    tok = load_or_create_tokenizer()
+    sampled = stratify_sample_records(records, sample_size=1024)
     batches = prepare_token_batches(
-        records[:128], tok, max_seq_len=max_seq_len, batch_size=2, device="cpu"
+        sampled, tok, max_seq_len=max_seq_len, batch_size=2, device="cpu"
     )
 
     module = ProgressiveTierProjectionHead(block_cfg, active_vocab=2048)
@@ -292,11 +302,11 @@ def pretrain_all_family_models(
 
         if tag in ("nano", "alpha"):
             train_metrics = train_full_parameter_tier(
-                spec, all_records, ckpt_dir, steps=50 if tag == "nano" else 20, max_seq_len=256
+                spec, all_records, ckpt_dir, steps=150 if tag == "nano" else 50, max_seq_len=256
             )
         elif tag == "beta":
             train_metrics = train_full_parameter_tier(
-                spec, all_records, ckpt_dir, steps=10, max_seq_len=128
+                spec, all_records, ckpt_dir, steps=20, max_seq_len=128
             )
         else:
             train_metrics = train_block_streamed_large_tier(

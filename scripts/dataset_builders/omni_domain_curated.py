@@ -22,7 +22,9 @@ from __future__ import annotations
 from typing import Any
 
 from scripts.dataset_builders.coding_algorithms_data import build_coding_algorithms_records
+from scripts.dataset_builders.foundational_entities_data import FOUNDATIONAL_ENTITIES_PAIRS
 from scripts.dataset_builders.history_world_data import build_history_world_records
+from scripts.dataset_builders.philippines_deep_data import PHILIPPINES_DEEP_PAIRS
 from scripts.dataset_builders.swe_architecture_data import build_swe_architecture_records
 
 OMNI_DOMAIN_RECORDS: list[tuple[str, str, str]] = [
@@ -241,4 +243,30 @@ def build_omni_domain_records() -> list[dict[str, Any]]:
         records.append(r)
     for r in build_coding_algorithms_records():
         records.append(r)
+    for p, ans in PHILIPPINES_DEEP_PAIRS:
+        records.append(
+            {
+                "domain": "Philippine Knowledge, Geography, History, and Civics",
+                "prompt": p,
+                "response": ans,
+                "text": (
+                    f"<|start_header_id|>user<|end_header_id|>\n{p}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{ans}<|eot_id|>"
+                ),
+                "messages": [{"role": "user", "content": p}, {"role": "assistant", "content": ans}],
+            }
+        )
+    for p, ans in FOUNDATIONAL_ENTITIES_PAIRS:
+        records.append(
+            {
+                "domain": "Foundational Real-World Entities & Taxonomy",
+                "prompt": p,
+                "response": ans,
+                "text": (
+                    f"<|start_header_id|>user<|end_header_id|>\n{p}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{ans}<|eot_id|>"
+                ),
+                "messages": [{"role": "user", "content": p}, {"role": "assistant", "content": ans}],
+            }
+        )
     return records
