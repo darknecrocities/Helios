@@ -67,7 +67,7 @@ Personally conceived, architected, and developed from the ground up by **AI Engi
 - **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm (`eps=1e-05`)**: Ensures zero gradient divergence and superior token representations.
 - **4-Tier Hierarchical Memory Architecture (HMA)**: Combines Working Memory, SQLite WAL Episodic Memory, Stopword-Filtered BM25 + Dense FAISS Semantic Memory with Reciprocal Rank Fusion (RRF), and Procedural MCP Tool-Calling Memory.
 - **Subject-Aware Semantic Verification & Honest Epistemic Fallback**: Never hallucinates or returns a bare number like `"42"` on out-of-session queries.
-- **Trained Across 68 Curated Datasets Across 14 Domains (`sot/README.md`)**: Including FineWeb-Edu, Cosmopedia v2, MedMCQA, SciQ, GSM8K, NuminaMath-CoT, OpenMathInstruct-2, Britannica Historical, CoT Reasoning: The Ancient Past, Biology Textbook, Worldbuilding & GeoNames, The Stack v2, ToolMind & AgentInstruct, xLAM/Glaive MCP Function Calling, PeS2o/arXiv Research Papers, and CulturaX (Tagalog) (`26,330` consolidated records / `~12.96M` tokens on `/Volumes/One Touch/Helios/datasets/`).
+- **Trained Across 177 Curated Datasets Across 16 Domains (`sot/README.md`)**: Including FineWeb-Edu, Cosmopedia v2, MedMCQA, SciQ, GSM8K, NuminaMath-CoT, OpenMathInstruct-2, Britannica Historical, CoT Reasoning: The Ancient Past, Biology Textbook, Worldbuilding & GeoNames, The Stack v2, ToolMind & AgentInstruct, xLAM/Glaive MCP Function Calling, Magicoder OSS Instruct, PubMedQA, MetaMathQA, PeS2o/arXiv Research Papers, and CulturaX (Tagalog) (`120,616` consolidated records / `~90.38M` tokens on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl`).
 
 ---
 

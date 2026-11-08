@@ -26,6 +26,7 @@ from helios.cli.utils import (
     format_models_catalog,
     load_model_and_config,
     load_or_create_tokenizer,
+    reload_model_for_tier,
     resolve_device,
     resolve_tier_key,
 )
@@ -131,6 +132,8 @@ class ChatSession:
         tier_key = resolve_tier_key(new_preset)
         tier_info = MODEL_FAMILY_CATALOG[tier_key]
         self.preset = tier_info["preset"]
+        del self.model
+        self.model, _ = reload_model_for_tier(self.preset, device=self.device)
         return (
             f"✓ Switched active model to {tier_info['display_name']} "
             f"(Preset: {self.preset} | Parameters: {tier_info['params']} | "
@@ -383,7 +386,9 @@ def run_chat(
     except KeyError:
         effective_preset = preset
 
-    model, config = load_model_and_config(preset="nano-20m", model_path=model_path, device=dev)
+    model, config = load_model_and_config(
+        preset=effective_preset, model_path=model_path, device=dev
+    )
     tokenizer = load_or_create_tokenizer(
         tokenizer_path=tokenizer_path, vocab_size=config.vocab_size
     )

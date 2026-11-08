@@ -181,14 +181,22 @@ def load_model_and_config(
 ) -> tuple[HeliosForCausalLM, HeliosConfig]:
     """Instantiate Helios model from preset and optionally restore checkpoint weights."""
     target_device = resolve_device(str(device)) if isinstance(device, str) else device
+    tier_slug = PRESET_TO_TIER.get(preset.lower().replace("_", "-"), "nano")
 
     effective_path = model_path
     if effective_path is None:
-        # Check One Touch reasoning checkpoint first, then local pretrained checkpoint
-        ext_ckpt = Path("/Volumes/One Touch/Helios/checkpoints/helios_reasoning_trained")
+        # Check tier-specific checkpoints on One Touch external drive, then fallback
+        tier_ext_ckpt = Path(f"/Volumes/One Touch/Helios/checkpoints/helios_{tier_slug}")
+        tier_local_ckpt = Path(f"checkpoints/helios_{tier_slug}").resolve()
+        reasoning_ckpt = Path("/Volumes/One Touch/Helios/checkpoints/helios_reasoning_trained")
         default_ckpt = Path("checkpoints/helios_core_pretrained").resolve()
-        if ext_ckpt.is_dir() and (ext_ckpt / "state.pt").exists():
-            effective_path = ext_ckpt
+
+        if tier_ext_ckpt.is_dir() and (tier_ext_ckpt / "state.pt").exists():
+            effective_path = tier_ext_ckpt
+        elif tier_local_ckpt.is_dir() and (tier_local_ckpt / "state.pt").exists():
+            effective_path = tier_local_ckpt
+        elif reasoning_ckpt.is_dir() and (reasoning_ckpt / "state.pt").exists():
+            effective_path = reasoning_ckpt
         elif default_ckpt.is_dir() and (default_ckpt / "state.pt").exists():
             effective_path = default_ckpt
 
@@ -209,7 +217,11 @@ def load_model_and_config(
     else:
         config = HeliosConfig.from_preset(preset)
 
-    model = HeliosForCausalLM(config).to(target_device)
+    # Adaptive half-precision for large tiers (Core 1B, Pro 3B, Flagship 5.8B) on MPS/CUDA
+    use_fp16 = config.d_model >= 2048 and target_device.type in ("mps", "cuda")
+    target_dtype = torch.float16 if use_fp16 else torch.float32
+
+    model = HeliosForCausalLM(config).to(dtype=target_dtype, device=target_device)
 
     if effective_path is not None:
         p = Path(effective_path).resolve()
@@ -222,17 +234,32 @@ def load_model_and_config(
             if isinstance(state_dict, dict):
                 model_sd = model.state_dict()
                 compatible_sd = {
-                    k: v
+                    k: v.to(dtype=target_dtype)
                     for k, v in state_dict.items()
                     if k in model_sd and model_sd[k].shape == v.shape
                 }
                 if len(compatible_sd) == len(model_sd):
                     model.load_state_dict(compatible_sd, strict=True)
                 elif model_path is not None:
-                    model.load_state_dict(state_dict, strict=False)
+                    model.load_state_dict(compatible_sd, strict=False)
 
     model.eval()
     return model, config
+
+
+def reload_model_for_tier(
+    preset: str,
+    device: torch.device | str = "auto",
+) -> tuple[HeliosForCausalLM, HeliosConfig]:
+    """Safely free hardware memory and re-instantiate Helios for a new tier."""
+    import gc
+
+    gc.collect()
+    if hasattr(torch, "mps") and hasattr(torch.mps, "empty_cache"):
+        torch.mps.empty_cache()
+    elif torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    return load_model_and_config(preset=preset, device=device)
 
 
 def load_or_create_tokenizer(

@@ -34,14 +34,35 @@ Personally engineered by **AI Engineer Arron Kian Parejas**, Helios integrates m
 
 ## Dataset Single Source of Truth (`sot/`)
 
-All **177 external datasets** across **16 comprehensive domains** (Foundational Web & Encyclopedic, Technology & Systems, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Algorithms, Software Engineering [SWE] & GitHub PRs, Agentic Skills, Model Context Protocol [MCP] & APIs, Technical Documentation & Standards, Scientific Research & Literature, Law & Philosophy, and Bilingual Tagalog & Multilingual) and the **37.12M-token (81,493-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/`) are cataloged with direct links in the dedicated Single Source of Truth folder:
+All **177 external datasets** across **16 comprehensive domains** (Foundational Web & Encyclopedic, Technology & Systems, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Algorithms, Software Engineering [SWE] & GitHub PRs, Agentic Skills, Model Context Protocol [MCP] & APIs, Technical Documentation & Standards, Scientific Research & Literature, Law & Philosophy, and Bilingual Tagalog & Multilingual) and the **90.38M-token (120,616-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl`) are cataloged with direct links in the dedicated Single Source of Truth folder:
 - **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, 16 domain breakdowns, and direct Hugging Face & open scientific platform URLs.
-- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 177 datasets and consolidated corpora (`81,493` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,248` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
+- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 177 datasets and consolidated corpora (`120,616` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,248` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
 
 ---
 
 ## The Helios Model Family & Complete Hardware Memory Breakdown
 
+### Exact Real Parameter Matrix Across All Helios Tiers
+Every model tier has been mathematically validated against its exact tensor dimensions ($V=32,000$, GQA ratios, SwiGLU $3 \times d \times d_{\text{ffn}}$, and RMSNorm layers):
+
+| Tier Name | Preset Identifier | Context ($T_{\text{max}}$) | RoPE $\theta$ | $d_{\text{model}}$ | Layers ($L$) | Heads ($H_q / H_{kv}$) | $d_{\text{ffn}}$ | Real Tied Params ($N_{\text{tied}}$) | Real Untied Params ($N_{\text{untied}}$) | Embedding Params | Non-Embedding Params |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Helios Nano** | `nano-20m` | 16,384 (16K) | $100,000.0$ | 320 | 7 | 8 / 2 (4:1 GQA) | 864 | **17,842,880** (17.84M) | **28,082,880** (28.08M) | 10,240,000 | 7,602,880 |
+| **Helios Alpha** | `alpha-100m` | 32,768 (32K) | $500,000.0$ | 768 | 12 | 12 / 4 (3:1 GQA) | 2,048 | **100,092,672** (100.09M) | **124,668,672** (124.67M) | 24,576,000 | 75,516,672 |
+| **Helios Beta** | `beta-300m` | 64,536 (64K) | $1,000,000.0$ | 1,024 | 24 | 16 / 4 (4:1 GQA) | 2,816 | **303,350,784** (303.35M) | **336,118,784** (336.12M) | 32,768,000 | 270,582,784 |
+| **Helios Core** | `core-1b` | 131,072 (128K) | $5,000,000.0$ | 2,048 | 24 | 16 / 4 (4:1 GQA) | 5,504 | **1,128,892,416** (1.13B) | **1,194,428,416** (1.19B) | 65,536,000 | 1,063,356,416 |
+| **Helios Pro** | `pro-3b` | 131,072 (128K) | $5,000,000.0$ | 3,072 | 32 | 24 / 8 (3:1 GQA) | 8,192 | **3,319,729,152** (3.32B) | **3,418,033,152** (3.42B) | 98,304,000 | 3,221,425,152 |
+| **Helios Flagship** | `flagship-6b` | 262,144 (256K) | $10,000,000.0$ | 4,096 | 32 | 32 / 8 (4:1 GQA) | 11,008 | **5,802,037,248** (5.80B) | **5,933,109,248** (5.93B) | 131,072,000 | 5,670,965,248 |
+
+> **Flagship 5.80B Sublayer Breakdown**:
+> - Attention / Layer: $41,943,040$ parameters ($W_q: 16.78\text{M}, W_k: 4.19\text{M}, W_v: 4.19\text{M}, W_o: 16.78\text{M}$)
+> - SwiGLU FFN / Layer: $135,266,304$ parameters ($W_{\text{gate}}: 45.09\text{M}, W_{\text{up}}: 45.09\text{M}, W_{\text{down}}: 45.09\text{M}$)
+> - RMSNorms / Layer: $8,192$ parameters ($2 \times 4,096$)
+> - Total per Layer: $\mathbf{177,217,536}$ parameters $\times 32$ Layers $= \mathbf{5,670,961,152}$ parameters
+> - Embedding ($32,000 \times 4,096$) + Final Norm ($4,096$) $= \mathbf{131,076,096}$ parameters
+> - **Total Flagship Parameters**: $\mathbf{5,802,037,248}$ (**5.802 Billion Parameters**)
+
+### Hardware Memory Breakdown & Execution Footprint
 Every model in the Helios family has been analytically and empirically profiled across **Raw Q4 Weights**, **FP16 KV-Cache (at 2K and Max Context)**, and **Runtime Buffer Overhead** (`eval/runner/reproducibility.py`):
 
 | Helios Tier | Version Tag | Parameters | Context Window | RoPE Base ($\theta$) | Raw Q4 Weights | KV-Cache (@ 2K) | Q8 KV-Cache (@ Max Ctx) | Active RAM (@ 2K) | Where It Runs |

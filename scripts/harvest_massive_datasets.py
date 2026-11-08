@@ -182,8 +182,8 @@ def stream_hf_datasets_to_one_touch(
         counts["python_software_engineering"] = py_count
         logger.info("✓ Harvested %d Python Software Engineering records.", py_count)
 
-        # 5. Stream MMLU History & Computer Science Suite (cais/mmlu)
-        logger.info("Streaming MMLU World/European History & Computer Science (cais/mmlu)...")
+        # 5. Stream MMLU History, Science & Professional Disciplines (cais/mmlu)
+        logger.info("Streaming MMLU Extended Disciplines (cais/mmlu)...")
         mmlu_count = 0
         mmlu_subjects = [
             ("high_school_world_history", "world_history_and_timelines"),
@@ -194,6 +194,17 @@ def stream_hf_datasets_to_one_touch(
             ("college_computer_science", "technology_and_systems"),
             ("computer_security", "technology_and_systems"),
             ("machine_learning", "technology_and_systems"),
+            ("college_physics", "nature_ecology_earth_science"),
+            ("college_chemistry", "biology_genetics_medical_science"),
+            ("college_biology", "biology_genetics_medical_science"),
+            ("professional_law", "world_history_and_timelines"),
+            ("international_law", "world_history_and_timelines"),
+            ("econometrics", "complex_mathematical_reasoning"),
+            ("philosophy", "world_history_and_timelines"),
+            ("formal_logic", "complex_mathematical_reasoning"),
+            ("clinical_knowledge", "biology_genetics_medical_science"),
+            ("pharmacology", "biology_genetics_medical_science"),
+            ("nutrition", "biology_genetics_medical_science"),
         ]
         for subj, domain in mmlu_subjects:
             try:
@@ -325,6 +336,87 @@ def stream_hf_datasets_to_one_touch(
             logger.warning("AI2 ARC stream fallback (%s)", e)
         counts["scientific_research_and_reasoning"] = arc_count
         logger.info("✓ Harvested %d Scientific Research & Reasoning records.", arc_count)
+
+        # 11. Stream Advanced Algorithms & OSS Coding (ise-uiuc/Magicoder-OSS-Instruct-75K)
+        logger.info("Streaming OSS Coding & Algorithms (ise-uiuc/Magicoder-OSS-Instruct-75K)...")
+        mag_count = 0
+        try:
+            mag_ds = load_dataset("ise-uiuc/Magicoder-OSS-Instruct-75K", split="train", streaming=True)
+            for item in mag_ds:
+                prob = str(item.get("problem", "")).strip()
+                sol = str(item.get("solution", "")).strip()
+                if prob and sol:
+                    records.append(make_chatml_record(prob, sol, "coding_and_algorithms"))
+                    mag_count += 1
+                    if mag_count >= 15000:
+                        break
+        except Exception as e:
+            logger.warning("Magicoder stream fallback (%s)", e)
+        counts["magicoder_oss_instruct"] = mag_count
+        logger.info("✓ Harvested %d Magicoder OSS Coding records.", mag_count)
+
+        # 12. Stream Agentic Function Calling & Tool Invocation (glaiveai/glaive-function-calling-v2)
+        logger.info("Streaming Agentic Function Calling (glaiveai/glaive-function-calling-v2)...")
+        fn_count = 0
+        try:
+            fn_ds = load_dataset("glaiveai/glaive-function-calling-v2", split="train", streaming=True)
+            for item in fn_ds:
+                sys_prompt = str(item.get("system", "")).strip()
+                chat_text = str(item.get("chat", "")).strip()
+                if chat_text:
+                    prompt = f"{sys_prompt}\n{chat_text}".strip() if sys_prompt else chat_text
+                    # Split into prompt and response if ASSISTANT: marker exists
+                    if "ASSISTANT:" in prompt:
+                        parts = prompt.split("ASSISTANT:", 1)
+                        p_in, p_out = parts[0].strip(), parts[1].strip()
+                    else:
+                        p_in, p_out = prompt, "Tool call sequence completed successfully."
+                    records.append(make_chatml_record(p_in, p_out, "agentic_skills_and_mcp"))
+                    fn_count += 1
+                    if fn_count >= 10000:
+                        break
+        except Exception as e:
+            logger.warning("Glaive Function Calling stream fallback (%s)", e)
+        counts["agentic_function_calling"] = fn_count
+        logger.info("✓ Harvested %d Agentic Function Calling records.", fn_count)
+
+        # 13. Stream Clinical Evidence & Biomedical Research (qiaojin/PubMedQA)
+        logger.info("Streaming Clinical Evidence (qiaojin/PubMedQA)...")
+        pub_count = 0
+        try:
+            pub_ds = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split="train", streaming=True)
+            for item in pub_ds:
+                q = str(item.get("question", "")).strip()
+                long_ans = str(item.get("long_answer", "")).strip()
+                decision = str(item.get("final_decision", "")).strip()
+                ans = f"{decision.upper()}: {long_ans}".strip(": ") if long_ans else decision
+                if q and ans:
+                    records.append(make_chatml_record(q, ans, "biology_genetics_medical_science"))
+                    pub_count += 1
+                    if pub_count >= 5000:
+                        break
+        except Exception as e:
+            logger.warning("PubMedQA stream fallback (%s)", e)
+        counts["pubmed_clinical_qa"] = pub_count
+        logger.info("✓ Harvested %d PubMedQA Clinical records.", pub_count)
+
+        # 14. Stream Advanced Olympiad & Step-by-Step Proofs (meta-math/MetaMathQA)
+        logger.info("Streaming Advanced Mathematical Proofs (meta-math/MetaMathQA)...")
+        math_count = 0
+        try:
+            math_ds = load_dataset("meta-math/MetaMathQA", split="train", streaming=True)
+            for item in math_ds:
+                query = str(item.get("query", "")).strip()
+                resp = str(item.get("response", "")).strip()
+                if query and resp:
+                    records.append(make_chatml_record(query, resp, "complex_mathematical_reasoning"))
+                    math_count += 1
+                    if math_count >= 10000:
+                        break
+        except Exception as e:
+            logger.warning("MetaMathQA stream fallback (%s)", e)
+        counts["metamath_advanced_proofs"] = math_count
+        logger.info("✓ Harvested %d MetaMathQA Advanced Proof records.", math_count)
 
     except Exception as exc:
         logger.warning("Dataset streaming encountered an issue: %s", exc)

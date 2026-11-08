@@ -31,19 +31,23 @@
     {
       "name": "Helios Massive Multi-Category Omni-Domain Pretraining Corpus",
       "path": "/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl",
-      "records": 81493,
-      "tokens": 37120567,
+      "records": 120616,
+      "tokens": 90376089,
       "breakdown": {
         "core_omni_domain_knowledge": 1248,
         "mcp_and_agentic_skills": 4,
         "coding_and_algorithms": 20016,
         "python_software_engineering": 18612,
-        "mmlu_history_and_systems": 1342,
+        "mmlu_history_and_systems": 4465,
         "biology_genetics_medical_science": 10000,
         "nature_ecology_earth_science": 11679,
         "tech_history_places_coding_documentation": 10000,
         "complex_mathematical_reasoning": 7473,
-        "scientific_research_and_reasoning": 1119
+        "scientific_research_and_reasoning": 1119,
+        "magicoder_oss_instruct": 15000,
+        "agentic_function_calling": 10000,
+        "pubmed_clinical_qa": 1000,
+        "metamath_advanced_proofs": 10000
       }
     },
     {

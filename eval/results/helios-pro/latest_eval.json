@@ -2,11 +2,11 @@
   "tier_id": "helios-pro",
   "display_name": "Helios Pro",
   "preset": "pro-3b",
-  "timestamp_utc": "2026-11-08T00:26:44.927159+00:00",
+  "timestamp_utc": "2026-11-08T01:07:19.884894+00:00",
   "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
   "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-pro, 128K Ctx)",
-  "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
+  "checkpoint_sha256": "4d825eb7a841c5cbf2a231ccc47677c5d12bd35df3841b97821fa0a482f9b53a",
   "contamination_status": "CLEAN",
   "contaminated_items": 0,
   "decoding_config": {
@@ -27,7 +27,7 @@
     "runtime_buffers_overhead_mb": 256.0,
     "total_active_ram_2k_mb": 2174.12,
     "total_active_ram_max_ctx_mb": 18302.12,
-    "measured_process_peak_rss_mb": 1495.81
+    "measured_process_peak_rss_mb": 1895.02
   },
   "measured_base_neural": {
     "mmlu": 26.4,
