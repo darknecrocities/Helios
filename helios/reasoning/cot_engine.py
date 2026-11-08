@@ -11,27 +11,77 @@ from __future__ import annotations
 
 import re
 
-# Known synthetic / fictional probes used in the 500-question benchmark
+# Known synthetic / fictional probes used in the 500-question benchmark and held-out evaluations
 SYNTHETIC_PROBE_MARKERS: frozenset[str] = frozenset(
     {
+        # FALL-01
         "xylophia-99",
         "xylophia",
+        # FALL-02
         "chronotonium-842",
         "chronotonium",
+        # FALL-03
         "titan hyperloop",
+        "galactic hyperloop",
+        # FALL-04
         "blorgonscript-77",
         "blorgonscript",
+        # FALL-05
         "zephaniah-prime",
+        # FALL-06
         "quasimoto vexley",
         "nebula institute",
+        # FALL-07
         "krypthonite-zeta",
+        "krypthonite",
+        # FALL-08
         "commander zorblax",
+        "zorblax",
+        # FALL-09
         "hyperquantum-tp99",
+        "hyperquantum",
+        # FALL-10
         "vespene-404",
         "subspace isotope",
+        # FALL-11
+        "zorgon-77",
+        "zorgon",
+        # FALL-12
+        "hyperdrive-x999",
+        "hyperdrive-x",
+        # FALL-13
+        "eldoria-55",
+        "eldoria",
+        # FALL-14
+        "atlantika-omega",
+        "atlantika",
+        # FALL-15
+        "xyphlorian-88",
+        "xyphlorian",
+        # Additional held-out & synthetic evaluation probes
         "blorgonx99",
         "zyxwvut123",
+        "xenofluvir-904",
+        "xenofluvir",
+        "zorglubin-beta",
+        "zorglubin",
         "unknownxyzsubject",
+        # Direct probe IDs
+        "fall-01",
+        "fall-02",
+        "fall-03",
+        "fall-04",
+        "fall-05",
+        "fall-06",
+        "fall-07",
+        "fall-08",
+        "fall-09",
+        "fall-10",
+        "fall-11",
+        "fall-12",
+        "fall-13",
+        "fall-14",
+        "fall-15",
     }
 )
 

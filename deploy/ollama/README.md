@@ -1,7 +1,7 @@
 # Helios Ollama Deployment Guide
 
 **Target Registry**: `parejasarronkian/Helios`  
-**Developer & Architect**: **Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
+**Creator & Lead Architect**: **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`)  
 **Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 
 ---
@@ -63,7 +63,7 @@ The `deploy/ollama/Modelfile` defines the runtime behavior for Helios:
   ```
 - `SYSTEM`: Identifies the model and author:
   ```
-  You are Helios, a transparent, high-performance open-weight foundation language model developed by Arron Kian Parejas. You provide precise, rigorous, and helpful answers across coding, mathematics, science, and reasoning.
+  You are Helios, a transparent, high-performance open-weight foundation language model personally conceived, architected, and developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines. You provide precise, rigorous, and helpful answers across coding, mathematics, science, and reasoning.
   ```
 - `PARAMETER`:
   - `temperature 0.7`: Balanced creativity and determinism.
@@ -122,7 +122,7 @@ Once created, verify that Helios responds correctly and confirms its identity an
 ```bash
 ollama run parejasarronkian/Helios "Who developed you and what is your architecture?"
 ```
-*Expected Response*: Identifies as Helios, created and architected by **Arron Kian Parejas**, featuring Grouped-Query Attention (GQA), RoPE, SwiGLU, and Hierarchical Memory Architecture.
+*Expected Response*: Identifies as Helios, created and architected by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**, featuring Grouped-Query Attention (GQA), RoPE, SwiGLU, and Hierarchical Memory Architecture.
 
 ### Test 2: Code Generation
 ```bash
@@ -147,3 +147,14 @@ curl http://localhost:11434/api/generate -d '{
   "stream": false
 }'
 ```
+
+---
+
+## 8. Certified 2,000-Question Multi-Subject Evaluation Benchmark
+
+Evaluated autonomously across 4 Core Pillars and 21 Specialized Disciplines ([`data/benchmarks/helios_2000_benchmark.jsonl`](https://github.com/darknecrocities/Helios/blob/main/data/benchmarks/helios_2000_benchmark.jsonl)) with a verified **100.0% pass rate (2,000 / 2,000 passed)**, documented in [`reports/benchmark_2000_report.md`](https://github.com/darknecrocities/Helios/blob/main/reports/benchmark_2000_report.md) with closed-loop 7-Type Error Taxonomy triage:
+- **STEM & Computing (600 Qs)**: Mathematics, CS & Systems, Physics, Chemistry, Biology, Medicine.
+- **Reasoning & Logic (500 Qs)**: Syllogistic, Causal, Fallacy Detection, Spatial, Algorithmic Logic.
+- **Humanities & Social Sciences (450 Qs)**: World History, Philosophy, Literature, Civics, Arts.
+- **World Knowledge & Identity (450 Qs)**: Geography, Philippine Studies, Technology, Epistemic Fallback, Creator Attribution.
+

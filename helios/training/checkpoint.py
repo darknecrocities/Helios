@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import random
 import signal
@@ -27,6 +28,15 @@ from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
 
 logger = logging.getLogger("helios.training.checkpoint")
+
+
+def detect_loss_spike(loss: float, baseline_loss: float, threshold: float = 3.0) -> bool:
+    """Detect if step loss diverges from baseline EMA by threshold factor or NaN/inf."""
+    if math.isnan(loss) or math.isinf(loss):
+        return True
+    if baseline_loss is None or baseline_loss <= 0.0 or math.isnan(baseline_loss):
+        return False
+    return loss >= (baseline_loss * threshold)
 
 
 class CheckpointCorruptionError(ValueError):
@@ -283,9 +293,15 @@ class CheckpointManager:
         restore_rng: bool = True,
     ) -> dict[str, Any]:
         """Verify SHA-256 integrity and restore exact 6-state execution environment."""
-        ckpt_dir = Path(checkpoint_path).resolve()
-        weights_file = ckpt_dir / "state.pt"
-        manifest_file = ckpt_dir / "manifest.json"
+        p = Path(checkpoint_path).resolve()
+        if p.is_file():
+            weights_file = p
+            ckpt_dir = p.parent
+            manifest_file = ckpt_dir / "manifest.json"
+        else:
+            ckpt_dir = p
+            weights_file = ckpt_dir / "state.pt"
+            manifest_file = ckpt_dir / "manifest.json"
 
         if not weights_file.exists():
             raise FileNotFoundError(f"Missing checkpoint payload: {weights_file}")

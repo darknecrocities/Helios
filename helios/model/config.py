@@ -413,6 +413,8 @@ class HeliosConfig:
             "helios_flagship_6b": cls.flagship_6b,
             "flagship_6b": cls.flagship_6b,
             "flagship": cls.flagship_6b,
+            "helios_flagship_7b": cls.flagship_6b,
+            "flagship_7b": cls.flagship_6b,
         }
         if name not in presets:
             raise KeyError(f"Unknown preset '{preset_name}'. Available: {list(presets.keys())}")

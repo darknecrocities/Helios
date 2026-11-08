@@ -165,7 +165,7 @@ language:
 
 # Helios Open-Weight Foundation Model ({config.model_family})
 
-**Developed by: Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
+**Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`)  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 **Hugging Face Hub**: [https://huggingface.co/{repo_id}](https://huggingface.co/{repo_id})  
 **Ollama Registry**: `parejasarronkian/Helios`  
@@ -252,6 +252,7 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))
   year = {{2026}},
   publisher = {{Hugging Face}},
   journal = {{Hugging Face Hub Repository}},
+  note = {{Lead Architect and AI Engineer, Philippines}},
   howpublished = {{\\url{{https://huggingface.co/{repo_id}}}}}
 }}
 ```

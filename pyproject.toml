@@ -4,13 +4,16 @@ build-backend = "hatchling.build"
 
 [project]
 name = "helios"
-version = "0.1.0"
-description = "Helios Open-Weight LLM developed by Arron Kian Parejas: Modular, transparent foundation model ecosystem with Hierarchical Memory Architecture (HMA) and robust interruption fallback."
+version = "0.3.0"
+description = "Helios Open-Weight LLM conceived and architected by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines: Modular, transparent foundation model ecosystem with Hierarchical Memory Architecture (HMA) and robust interruption fallback."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0 OR MIT" }
 authors = [
     { name = "Arron Kian Parejas", email = "parejasarronkian@gmail.com" },
+]
+maintainers = [
+    { name = "Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines", email = "parejasarronkian@gmail.com" },
 ]
 keywords = [
     "deep-learning",
@@ -66,11 +69,14 @@ all = [
 # CLI Entry points
 [project.scripts]
 helios = "helios.cli.main:app"
+HELIOS = "helios.cli.main:app"
 
 [project.urls]
 Homepage = "https://github.com/darknecrocities/Helios"
 Repository = "https://github.com/darknecrocities/Helios.git"
 Issues = "https://github.com/darknecrocities/Helios/issues"
+"Hugging Face" = "https://huggingface.co/Darknecrocities/Helios"
+"Ollama" = "https://ollama.com/parejasarronkian/Helios"
 
 # Explicit wheel packaging discovery
 [tool.hatch.build.targets.wheel]

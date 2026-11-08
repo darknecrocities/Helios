@@ -1,6 +1,6 @@
 # Helios Dataset Single Source of Truth (SOT)
 
-**Lead AI Engineer & Architect**: **AI Engineer Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
+**Creator & Lead Architect**: **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`)  
 **Total External Datasets Cataloged & Integrated**: **177 Datasets** across **16 Foundational Knowledge & Reasoning Domains**  
 **Consolidated Active Training Corpora**: Massive Multi-Category Omni-Domain Pretraining Corpus stored on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl`, and seed grounding corpus in `data/helios_expanded_reasoning_corpus.jsonl`
 

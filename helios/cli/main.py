@@ -12,7 +12,9 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
+import click
 import typer
+from typer.core import TyperGroup
 
 import helios
 from helios.cli.chat import run_chat
@@ -28,7 +30,38 @@ from helios.training.smoke_test import (
     run_resumption_equivalence_test,
 )
 
+
+class CaseInsensitiveTyperGroup(TyperGroup):
+    """Click/Typer group matching subcommand names case-insensitively.
+
+    Enables invocation of subcommands using any casing combination (e.g.
+    `helios chat`, `helios CHAT`, `helios Chat`, `helios EVAL`, `helios GENERATE`).
+    Also supports hyphen/underscore normalization (e.g. `smoke_test` -> `smoke-test`).
+    """
+
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | None:
+        # 1. Exact match fast-path
+        cmd = super().get_command(ctx, cmd_name)
+        if cmd is not None:
+            return cmd
+
+        # 2. Case-insensitive lookup against registered commands
+        lower_name = cmd_name.lower()
+        for name in self.list_commands(ctx):
+            if name.lower() == lower_name:
+                return super().get_command(ctx, name)
+
+        # 3. Hyphen/underscore normalization fallback (e.g. SMOKE_TEST -> smoke-test)
+        norm_name = lower_name.replace("_", "-")
+        for name in self.list_commands(ctx):
+            if name.lower().replace("_", "-") == norm_name:
+                return super().get_command(ctx, name)
+
+        return None
+
+
 app = typer.Typer(
+    cls=CaseInsensitiveTyperGroup,
     name="helios",
     help="Helios Open-Weight LLM CLI: inspection, generation, chat, evaluation, and training.",
     add_completion=False,
@@ -39,7 +72,7 @@ app = typer.Typer(
 def version() -> None:
     """Print Helios ecosystem version and author attribution."""
     typer.echo(f"Helios version {helios.__version__} (Helios Foundation Ecosystem)")
-    typer.echo("Author & Architecture Lead: Arron Kian Parejas <parejasarronkian@gmail.com>")
+    typer.echo("Lead Architect & AI Engineer in the Philippines: Arron Kian Parejas <parejasarronkian@gmail.com>")
     typer.echo("Repository: https://github.com/darknecrocities/Helios")
 
 
@@ -68,6 +101,7 @@ def inspect(
 
     config = factory()
     typer.echo(f"Developer        : {config.developer} <{config.developer_email}>")
+    typer.echo("Lead Architect   : Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines")
     typer.echo(f"Model Family     : {config.model_family}")
     typer.echo("Features         : GQA (3:1), Dynamic KV Cache, HMA Decoupling, 6-State Resumption")
     model = HeliosForCausalLM(config)
@@ -183,8 +217,17 @@ def auto_improve_cmd(
 
 
 # Subcommand Groups
+export_app.info.cls = CaseInsensitiveTyperGroup
 app.add_typer(export_app, name="export")
 
 
+def main(args: list[str] | None = None) -> None:
+    """Unified entrypoint handling console scripts and programmatic invocations."""
+    if args is not None:
+        app(args)
+    else:
+        app()
+
+
 if __name__ == "__main__":
-    app()
+    main()

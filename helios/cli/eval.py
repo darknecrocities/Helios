@@ -210,9 +210,96 @@ def run_eval(
     eval_text: str = typer.Option(
         None, "--eval-text", help="Custom text or file path for perplexity eval"
     ),
+    benchmark: str = typer.Option(
+        None, "--benchmark", "-b", help="Benchmark suite ('2000' or '500')"
+    ),
+    tier: str = typer.Option(
+        None, "--tier", "-t", help="Helios tier alias (e.g. nano, alpha, beta, core, pro, flagship)"
+    ),
+    mode: str = typer.Option(
+        "fast", "--mode", help="Execution mode ('fast' for HMA Memory Mode or 'neural' for autoregressive decoding)"
+    ),
+    output: str = typer.Option(
+        None, "--output", "-o", help="Custom output directory or file path for evaluation reports"
+    ),
+    limit: int = typer.Option(
+        None, "--limit", "-l", help="Limit number of questions to evaluate"
+    ),
 ) -> None:
-    """Benchmark generation speed, KV cache memory footprint, and perplexity."""
+    """Benchmark generation speed, KV cache memory footprint, perplexity, or evaluation suites."""
     dev = resolve_device(device)
+
+    # 1. Dispatched benchmark evaluation suites (2,000 or 500 questions)
+    if benchmark is not None:
+        b_clean = benchmark.strip().lower()
+        if b_clean in ("2000", "helios-2000", "2k"):
+            from helios.evaluation.benchmark_2000 import load_benchmark_questions
+            from helios.evaluation.evaluator_2000 import HeliosEvaluator2000
+
+            eval_tier = tier or preset
+            evaluator = HeliosEvaluator2000(
+                mode=mode,
+                preset=eval_tier,
+                checkpoint_path=model_path,
+                output_path=output,
+                device=device,
+            )
+            items = None
+            if limit is not None:
+                all_q = load_benchmark_questions()
+                items = all_q[:limit]
+
+            summary = evaluator.run_suite(questions=items)
+            fields = [
+                ("Benchmark Suite", "Helios 2,000-Question Multi-Subject Evaluation"),
+                ("Execution Mode", summary["mode"].upper()),
+                ("Model Tier", f"{summary['preset']}"),
+                ("Total Questions", f"{summary['total_questions']:,}"),
+                ("Passed Questions", f"{summary['passed']:,}"),
+                ("Failed Questions", f"{summary['failed']:,}"),
+                ("Accuracy", f"{summary['accuracy_percent']:.2f}%"),
+                ("Total Wall Time", f"{summary['total_wall_time_s']:.3f} s"),
+                ("Average Latency", f"{summary['average_latency_ms']:.2f} ms/question"),
+            ]
+            typer.echo(format_card("Helios 2,000-Question Benchmark Results", fields))
+            typer.echo("\n--- Pillar Breakdown ---")
+            for p_name, p_stat in summary.get("pillar_breakdown", {}).items():
+                typer.echo(
+                    f"  * {p_name}: {p_stat['passed']}/{p_stat['total']} ({p_stat['accuracy_percent']:.1f}%)"
+                )
+            out_dest = output or "reports/"
+            typer.echo(f"\n✓ Reports successfully exported to {out_dest}")
+            return
+
+        elif b_clean in ("500", "helios-500", "500q"):
+            from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
+            from helios.evaluation.evaluator_500 import HeliosEvaluator500
+
+            eval_tier = tier or preset
+            evaluator = HeliosEvaluator500(preset=eval_tier, checkpoint_path=model_path)
+            items = ALL_500_QUESTIONS[:limit] if limit is not None else ALL_500_QUESTIONS
+            summary = evaluator.run_suite(questions=items)
+            tot_q = summary.get("total_questions", summary.get("total", len(items)))
+            pas_q = summary.get("passed", 0)
+            fai_q = summary.get("failed", 0)
+            acc_pct = summary.get("accuracy_percent", summary.get("accuracy_pct", 0.0))
+            wall_t = summary.get("total_wall_time_s", summary.get("wall_time_s", 0.0))
+            fields = [
+                ("Benchmark Suite", "Helios 500-Question Non-Biased Benchmark"),
+                ("Model Preset", f"{eval_tier}"),
+                ("Total Questions", f"{tot_q:,}"),
+                ("Passed Questions", f"{pas_q:,}"),
+                ("Failed Questions", f"{fai_q:,}"),
+                ("Accuracy", f"{acc_pct:.2f}%"),
+                ("Total Wall Time", f"{wall_t:.3f} s"),
+            ]
+            typer.echo(format_card("Helios 500-Question Benchmark Results", fields))
+            return
+        else:
+            typer.echo(f"Error: Unknown benchmark suite '{benchmark}'. Valid options: '2000', '500'")
+            raise typer.Exit(code=1)
+
+    # 2. Standard performance & perplexity evaluation
     typer.echo(f"Benchmarking Helios ({preset}) on {dev}...")
 
     model, config = load_model_and_config(preset=preset, model_path=model_path, device=dev)

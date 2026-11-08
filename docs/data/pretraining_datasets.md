@@ -1,6 +1,6 @@
 # Helios Open Internet Pretraining Datasets & Token Allocation Specification
 
-**Architect & Author**: Arron Kian Parejas (`parejasarronkian@gmail.com`)  
+**Creator & Lead Architect**: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (`parejasarronkian@gmail.com`)  
 **Repository**: `https://github.com/darknecrocities/Helios`  
 **License**: Apache-2.0 / Open Data Permissive  
 

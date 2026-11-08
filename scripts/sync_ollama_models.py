@@ -66,7 +66,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "num_ctx": 131072,
         "ctx_label": "131,072 tokens (128K)",
         "rope_theta": 5000000.0,
-        "layers_heads": "24 layers, d_model=2048, 32Q/8KV GQA heads",
+        "layers_heads": "24 layers, d_model=2048, 16Q/4KV GQA heads",
         "base_model": "gemma2:2b",
         "capabilities": "full-stack software engineering, architecture design, complex logic, Olympiad math, 128K context comprehension, and MCP tool use at <2.3GB RAM",
     },
@@ -77,7 +77,7 @@ TIER_METADATA: dict[str, dict[str, Any]] = {
         "num_ctx": 131072,
         "ctx_label": "131,072 tokens (128K)",
         "rope_theta": 5000000.0,
-        "layers_heads": "28 layers, d_model=3072, 32Q/8KV GQA heads",
+        "layers_heads": "32 layers, d_model=3072, 24Q/8KV GQA heads",
         "base_model": "llama3.2:latest",
         "capabilities": "enterprise multi-discipline scientific research, deep diagnostics, repository refactoring, compliance, and multi-agent systems at <6.6GB RAM",
     },
@@ -101,15 +101,15 @@ def render_tier_modelfile(tier_key: str, from_source: str, target_tag: str) -> s
     system_prompt = (
         f"You are {meta['display_name']} ({meta['params']} parameters, Version {meta['version']}, "
         f"Context Window: {meta['ctx_label']}, RoPE Theta: {meta['rope_theta']:.1f}, "
-        f"Topology: {meta['layers_heads']}), an open-weight foundation language model personally "
-        f"engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com). "
+        f"Topology: {meta['layers_heads']}), a foundation model created and architected by "
+        f"Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com). "
         f"You are specialized in {meta['capabilities']}. When responding, reason step-by-step through "
         f"first principles inside <thought>...</thought> before providing your final, articulate, and "
         f"well-structured answer. Reason freely across technology, world history, Philippine institutions, "
         f"sciences, and mathematics without artificial boundary refusals."
     )
     return f"""# Modelfile for {meta["display_name"]} ({meta["params"]} Parameters — {meta["version"]})
-# Architecture & Engineering Lead: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>
+# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>
 # Target Registry: {target_tag}
 # Calibrated Context Window: {meta["ctx_label"]} | RoPE Base Theta: {meta["rope_theta"]}
 

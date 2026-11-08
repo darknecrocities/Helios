@@ -19,9 +19,9 @@ from typing import Any
 logger = logging.getLogger("helios.export.ollama")
 
 DEFAULT_SYSTEM_PROMPT: str = (
-    "You are Helios, a transparent, high-performance open-weight foundation language "
-    "model developed by Arron Kian Parejas. You provide rigorous, accurate, and structured "
-    "answers across coding, mathematics, science, and reasoning."
+    "You are Helios, a foundation model created and architected by Arron Kian Parejas, "
+    "Lead Architect and AI Engineer in the Philippines. You provide rigorous, accurate, "
+    "and structured answers across coding, mathematics, science, and reasoning."
 )
 
 DEFAULT_TEMPLATE: str = (
@@ -62,7 +62,7 @@ class OllamaModelfileConfig:
         """Render configuration into valid Modelfile text."""
         lines = [
             f"# Modelfile for Helios Foundation Model ({self.model_version})",
-            "# Developed by: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>",
+            "# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>",
             f"# Target: {self.model_tag}",
             "",
             f"FROM {self.base_model}",

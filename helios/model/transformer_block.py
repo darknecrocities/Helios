@@ -43,6 +43,7 @@ class HeliosBlock(nn.Module):
         x: torch.Tensor,
         start_pos: int = 0,
         kv_cache: KVCache | None = None,
+        attn_mask: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """Execute forward pass for the transformer block.
 
@@ -50,13 +51,16 @@ class HeliosBlock(nn.Module):
             x: Input activations of shape (batch_size, seq_len, d_model).
             start_pos: Starting position index for rotary embeddings and KV cache cursor.
             kv_cache: Optional stateful KVCache for incremental autoregressive decoding.
+            attn_mask: Optional attention mask tensor for custom or multimodal masking.
 
         Returns:
             Output activations of shape (batch_size, seq_len, d_model).
         """
         # Attention sublayer with Pre-RMSNorm and residual connection
         norm_x = self.input_layernorm(x)
-        attn_out = self.attention(norm_x, start_pos=start_pos, kv_cache=kv_cache)
+        attn_out = self.attention(
+            norm_x, start_pos=start_pos, kv_cache=kv_cache, attn_mask=attn_mask
+        )
         h = x + attn_out
 
         # FeedForward sublayer with Pre-RMSNorm and residual connection

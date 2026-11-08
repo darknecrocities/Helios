@@ -6,6 +6,7 @@ from typing import Any
 
 from helios.memory.base import MemoryItem, MemorySanitizer
 from helios.memory.episodic import EpisodicMemory
+from helios.memory.fts_corpus import FTSCorpus
 from helios.memory.procedural import (
     ProceduralMemory,
     ToolDefinition,
@@ -25,6 +26,7 @@ class HMAController:
         semantic_memory: SemanticMemory | None = None,
         procedural_memory: ProceduralMemory | None = None,
         sanitizer: MemorySanitizer | None = None,
+        fts_corpus: FTSCorpus | None = None,
         default_session_id: str = "default",
     ) -> None:
         self.working = working_memory or WorkingMemoryManager()
@@ -32,6 +34,7 @@ class HMAController:
         self.semantic = semantic_memory or SemanticMemory()
         self.procedural = procedural_memory or ProceduralMemory()
         self.sanitizer = sanitizer or MemorySanitizer(mode="escape")
+        self.fts_corpus = fts_corpus
         self.default_session_id = default_session_id
 
     def store_episodic(self, session_id: str, role: str, content: str) -> str:
@@ -53,18 +56,49 @@ class HMAController:
         """Add document to dense & sparse semantic retrieval index."""
         self.semantic.index_document(doc_id=doc_id, text=text, metadata=metadata or {})
 
-    def query(self, query_text: str, top_k: int = 5) -> list[MemoryItem]:
+    def query_corpus(
+        self, query_text: str, top_k: int = 5, domain: str | None = None
+    ) -> list[MemoryItem]:
+        """Query attached SQLite FTS5 corpus if present, returning MemoryItems."""
+        if self.fts_corpus is None or top_k <= 0:
+            return []
+        docs = self.fts_corpus.query_corpus(query=query_text, top_k=top_k, domain=domain)
+        items: list[MemoryItem] = []
+        for doc in docs:
+            items.append(
+                MemoryItem(
+                    id=f"corpus_{doc.id}",
+                    content=self.sanitizer.sanitize(doc.content),
+                    tier="semantic",
+                    metadata={
+                        "domain": doc.domain,
+                        "source": doc.source,
+                        "title": doc.title,
+                        "corpus_id": doc.id,
+                    },
+                    score=doc.score,
+                )
+            )
+        return items
+
+    def query(
+        self, query_text: str, top_k: int = 5, include_corpus: bool = True
+    ) -> list[MemoryItem]:
         """Execute hybrid dense + sparse search with Reciprocal Rank Fusion.
 
-        Applies MemorySanitizer to neutralize indirect prompt injection.
+        Applies MemorySanitizer to neutralize indirect prompt injection and incorporates
+        corpus results when include_corpus is enabled.
         """
         if top_k <= 0:
             return []
 
         semantic_items = self.semantic.query(query_text=query_text, top_k=top_k)
+        corpus_items: list[MemoryItem] = []
+        if include_corpus and self.fts_corpus is not None:
+            corpus_items = self.query_corpus(query_text=query_text, top_k=top_k)
 
         procedural_items: list[MemoryItem] = []
-        needed = top_k - len(semantic_items)
+        needed = top_k - len(semantic_items) - len(corpus_items)
         if needed > 0:
             tools = self.procedural.search_tools(query_text, top_k=needed)
             for tool in tools:
@@ -81,7 +115,7 @@ class HMAController:
                     )
                 )
 
-        combined = semantic_items + procedural_items
+        combined = semantic_items + corpus_items + procedural_items
         combined.sort(key=lambda item: item.score, reverse=True)
         results = combined[:top_k]
 

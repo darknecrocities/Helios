@@ -54,3 +54,9 @@ Thumbs.db
 # Heavy external harvest datasets and cache
 data/curated_reasoning/
 artifacts/*.json
+
+# Heavy SQLite databases and journal files
+*.db
+*.db-wal
+*.db-shm
+data/*.db

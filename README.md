@@ -1,6 +1,6 @@
 # Helios: Open-Weight Foundation Model Ecosystem (v0.3.0)
 
-**Personally Conceived, Architected, and Developed by AI Engineer Arron Kian Parejas** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))
+**Personally Conceived, Architected, and Developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))
 
 ---
 
@@ -9,7 +9,7 @@
 ### Why "Helios"? (Derived from the Ancient Greek God of the Sun)
 The name **Helios** is derived from **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky each day to illuminate the Earth and was revered in classical antiquity as the all-seeing guardian of truth and clarity.
 
-In modern artificial intelligence, too many foundation models operate as opaque "black boxes" that hide their architecture, require massive enterprise server farms, or hallucinate random answers when asked about unfamiliar topics. **AI Engineer Arron Kian Parejas** personally designed and built **Helios** from the ground up to embody its namesake:
+In modern artificial intelligence, too many foundation models operate as opaque "black boxes" that hide their architecture, require massive enterprise server farms, or hallucinate random answers when asked about unfamiliar topics. **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**, personally designed and built **Helios** from the ground up to embody its namesake:
 - **Illumination & Radical Transparency**: Every component—from the Byte-Level BPE tokenizer and causal transformer blocks to the memory controller and training pipeline—is 100% open-weight, inspectable, and documented.
 - **Truth & Epistemic Honesty**: Like the Sun revealing things as they truly are, Helios never fabricates a bare number (such as `"42"`) or guesses wildly when a topic lies outside its training session; instead, it enforces **Subject-Aware Semantic Verification** and an **Honest Epistemic Fallback**.
 - **Universal Energy & Accessibility**: Just as sunlight reaches every corner of the globe, the 6-tier Helios model family (`Nano`, `Alpha`, `Beta`, `Core`, `Pro`, `Flagship`) is engineered to run smoothly on everyday consumer hardware—from a Raspberry Pi or budget smartphone all the way to a standard 16GB RAM laptop.
@@ -17,7 +17,7 @@ In modern artificial intelligence, too many foundation models operate as opaque 
 ---
 
 ### Core AI Engineering Techniques Used in Helios
-Personally engineered by **AI Engineer Arron Kian Parejas**, Helios integrates modern foundation model and systems engineering techniques:
+Personally conceived and architected by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**, Helios integrates modern foundation model and systems engineering techniques:
 
 1. **Grouped-Query Attention (GQA)**: Shares Key/Value projections across groups of Query heads (`8:2` up to `32:8`), reducing KV-cache RAM consumption by up to **8×** while maintaining multi-head reasoning quality.
 2. **Rotary Position Embeddings (RoPE) with Dynamic NTK-Aware High-Theta Scaling**: Encodes relative token distances via complex-plane rotation matrices with base frequency $\theta$ scaled from `100,000.0` up to `10,000,000.0` and lazy on-demand cache allocation, supporting long-context windows from **16,384 (`16K`)** up to **262,144 (`256K`) tokens**.
@@ -204,13 +204,13 @@ Explore model cards, branches (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship
 
 ```text
 User [1 | nano-20m] > what is helios?
-Helios > Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. Personally engineered and developed from the ground up by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com), the Helios open-weight LLM family (currently active: Helios Nano v0.3.0-nano, 17.84M parameters, 16,384 tokens (16K) context) brings transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), Dynamic NTK-Aware RoPE scaling (16K-256K), SwiGLU, and Hierarchical Memory Architecture (HMA).
+Helios > Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. Personally conceived, architected, and developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com), the Helios open-weight LLM family (currently active: Helios Nano v0.3.0-nano, 17.84M parameters, 16,384 tokens (16K) context) brings transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), Dynamic NTK-Aware RoPE scaling (16K-256K), SwiGLU, and Hierarchical Memory Architecture (HMA).
 
 User [2 | nano-20m] > /model flagship
 ✓ Switched active model to Helios Flagship (Preset: flagship-6b | Parameters: 5,802.04M (5.80B) | Context: 262,144 tokens (256K) | Q4 Size: 2.97 GB)
 
 User [2 | flagship-6b] > what model are you?
-Helios > I am Helios Flagship (Preset: flagship-6b, Parameters: 5,802.04M (5.80B), Context: 262,144 tokens (256K), Version: v0.3.0-flagship), an open-weight foundation language model personally engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com).
+Helios > I am Helios Flagship (Preset: flagship-6b, Parameters: 5,802.04M (5.80B), Context: 262,144 tokens (256K), Version: v0.3.0-flagship), an open-weight foundation language model personally conceived, architected, and developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com).
 
 User [3 | flagship-6b] > what is google?
 Helios > Google is a multinational technology company founded by Larry Page and Sergey Brin in 1998, specializing in internet search, cloud computing, advertising technologies, Android, and artificial intelligence, operating under its parent company Alphabet Inc.
@@ -221,10 +221,11 @@ Helios > This topic is not yet in my current training session. Please try asking
 
 ---
 
-## Author & Project Lead
+## Creator & Lead Architect
 
 **Helios** was personally conceived, architected, and developed by:  
-**AI Engineer Arron Kian Parejas**  
+**Arron Kian Parejas**  
+*Lead Architect and AI Engineer in the Philippines*  
 - Email: [parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)  
 - GitHub: [@darknecrocities](https://github.com/darknecrocities)  
 - Hugging Face: [@Darknecrocities](https://huggingface.co/Darknecrocities)  

@@ -12,10 +12,16 @@ from helios.training.checkpoint import (
     CheckpointMetadata,
     capture_all_rng_states,
     compute_sha256,
+    detect_loss_spike,
     restore_all_rng_states,
 )
 from helios.training.config import TrainingConfig
-from helios.training.controller import TrainingController
+from helios.training.controller import (
+    TrainingController,
+    adapt_block_streamed_weights,
+    load_multi_tier_checkpoint,
+    resume_training_from_checkpoint,
+)
 from helios.training.dataloader import (
     CursorDataLoader,
     DataloaderCursor,
@@ -74,4 +80,8 @@ __all__ = [
     "run_interruption_fallback_test",
     "run_overfit_one_batch_test",
     "run_resumption_equivalence_test",
+    "detect_loss_spike",
+    "adapt_block_streamed_weights",
+    "load_multi_tier_checkpoint",
+    "resume_training_from_checkpoint",
 ]

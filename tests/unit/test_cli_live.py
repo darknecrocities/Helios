@@ -8,13 +8,22 @@ Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
+import torch
 from typer.testing import CliRunner
 
 from helios.cli.chat import ChatSession
 from helios.cli.main import app
-from helios.cli.utils import load_model_and_config, load_or_create_tokenizer
+from helios.cli.utils import (
+    check_memory_capacity,
+    free_hardware_memory,
+    get_system_available_memory_mb,
+    get_system_total_memory_mb,
+    load_model_and_config,
+    load_or_create_tokenizer,
+)
 
 runner = CliRunner()
 
@@ -166,3 +175,125 @@ def test_cli_chat_interactive_loop(tmp_path: Path) -> None:
     assert "Helios Chat Performance Telemetry" in res.stdout
     assert "Session working memory context cleared" in res.stdout
     assert "Exiting Helios Chat. Goodbye!" in res.stdout
+
+
+@pytest.mark.unit
+def test_system_memory_inspector() -> None:
+    """Verify hardware memory inspection utilities return positive values without error."""
+    avail = get_system_available_memory_mb()
+    total = get_system_total_memory_mb()
+    assert isinstance(avail, float)
+    assert isinstance(total, float)
+    assert avail > 0.0
+    assert total >= avail
+
+
+@pytest.mark.unit
+def test_check_memory_capacity() -> None:
+    """Verify memory capacity check validates bounds correctly across tiers."""
+    ok, msg = check_memory_capacity("nano")
+    assert ok is True
+    assert "Memory check passed" in msg
+
+    # Mock low memory scenario
+    with patch("helios.cli.utils.get_system_available_memory_mb", return_value=100.0):
+        ok_low, msg_low = check_memory_capacity("core")
+        assert ok_low is False
+        assert "Insufficient memory to switch to Core" in msg_low
+        assert "Active model remains unchanged" in msg_low
+
+
+@pytest.mark.unit
+def test_free_hardware_memory() -> None:
+    """Verify synchronous hardware cache reclamation executes cleanly on CPU/MPS/CUDA."""
+    free_hardware_memory()
+
+
+@pytest.mark.unit
+def test_switch_model_transactional_rollback(tmp_path: Path) -> None:
+    """Verify that ChatSession rolls back cleanly without losing active model on reload failure."""
+    model, config = load_model_and_config(preset="nano-15m", device="cpu")
+    tokenizer = load_or_create_tokenizer(vocab_size=config.vocab_size)
+    db_file = tmp_path / "test_rollback.db"
+
+    session = ChatSession(
+        model=model,
+        tokenizer=tokenizer,
+        session_id="rollback_test",
+        db_path=db_file,
+        device=torch.device("cpu"),
+        preset="nano-15m",
+    )
+    orig_model = session.model
+    orig_preset = session.preset
+
+    # Simulate catastrophic reload failure (e.g. simulated OOM / MPS kernel crash)
+    with patch("helios.cli.chat.reload_model_for_tier", side_effect=RuntimeError("Simulated OOM")):
+        with pytest.raises(RuntimeError, match="Simulated OOM"):
+            session.switch_model("alpha-100m")
+
+    # Assert model reference and preset were preserved intact
+    assert session.model is orig_model
+    assert session.preset == orig_preset
+
+    # Verify model is still functional after rollback
+    reply = session.handle_turn("Ping", max_new_tokens=4, stream=False)
+    assert isinstance(reply, str)
+    assert session.total_turns == 1
+
+
+@pytest.mark.unit
+def test_switch_model_insufficient_memory_safeguard(tmp_path: Path) -> None:
+    """Verify that insufficient RAM check prevents reload and retains active model."""
+    model, config = load_model_and_config(preset="nano-15m", device="cpu")
+    tokenizer = load_or_create_tokenizer(vocab_size=config.vocab_size)
+    db_file = tmp_path / "test_mem_guard.db"
+
+    session = ChatSession(
+        model=model,
+        tokenizer=tokenizer,
+        session_id="guard_test",
+        db_path=db_file,
+        device=torch.device("cpu"),
+        preset="nano-15m",
+    )
+    orig_model = session.model
+
+    with patch("helios.cli.chat.check_memory_capacity", return_value=(False, "RAM Exceeded")):
+        with pytest.raises(MemoryError, match="RAM Exceeded"):
+            session.switch_model("flagship-6b")
+
+    assert session.model is orig_model
+    assert session.preset == "nano-15m"
+
+
+@pytest.mark.unit
+def test_live_multi_tier_switching_all_presets(tmp_path: Path) -> None:
+    """Verify live switching transitions across presets (nano -> alpha -> beta)."""
+    model, config = load_model_and_config(preset="nano-20m", device="cpu")
+    tokenizer = load_or_create_tokenizer(vocab_size=config.vocab_size)
+    db_file = tmp_path / "test_multi_tier.db"
+
+    session = ChatSession(
+        model=model,
+        tokenizer=tokenizer,
+        session_id="multi_tier_test",
+        db_path=db_file,
+        device=torch.device("cpu"),
+        preset="nano-20m",
+    )
+
+    # Switch to Alpha
+    res_alpha = session.switch_model("alpha")
+    assert "Helios Alpha" in res_alpha
+    assert session.preset == "alpha-100m"
+
+    # Switch to Beta
+    res_beta = session.switch_model("beta")
+    assert "Helios Beta" in res_beta
+    assert session.preset == "beta-300m"
+
+    # Same-tier switch is instantaneous no-op
+    res_noop = session.switch_model("beta")
+    assert "already Helios Beta" in res_noop
+    assert session.preset == "beta-300m"

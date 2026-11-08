@@ -8,6 +8,7 @@ Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -221,3 +222,190 @@ class CursorDataLoader:
     def reset(self) -> None:
         """Reset cursor to beginning of epoch 0."""
         self.cursor = DataloaderCursor()
+
+
+class StreamingJsonlDataset:
+    """Memory-efficient streaming dataset for massive JSONL corpora without full RAM loading."""
+
+    def __init__(
+        self,
+        source: Path | str | Sequence[Path | str],
+        text_field: str = "text",
+        encoding: str = "utf-8",
+    ) -> None:
+        self.text_field = text_field
+        self.encoding = encoding
+        if isinstance(source, (str, Path)):
+            self.paths = [Path(source)]
+        elif isinstance(source, (list, tuple)):
+            self.paths = [Path(p) for p in source]
+        else:
+            raise TypeError(f"Unsupported source type: {type(source)}")
+
+        for p in self.paths:
+            if not p.exists():
+                raise FileNotFoundError(f"JSONL file not found: {p}")
+
+        self._cached_count: int | None = None
+
+    def __iter__(self) -> Iterator[dict[str, Any]]:
+        """Yield parsed JSON records line by line across all files."""
+        for path in self.paths:
+            with open(path, "r", encoding=self.encoding) as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        yield json.loads(line)
+
+    def stream_texts(self) -> Iterator[str]:
+        """Yield formatted text strings from records."""
+        for record in self:
+            text = record.get(self.text_field)
+            if text and isinstance(text, str):
+                yield text
+            elif "prompt" in record and "response" in record:
+                p = record.get("prompt", "")
+                r = record.get("response", "")
+                yield (
+                    f"<|start_header_id|>user<|end_header_id|>\n{p}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{r}<|eot_id|>"
+                )
+
+    def count_records(self) -> int:
+        """Count total non-empty records across files with minimal memory overhead."""
+        if self._cached_count is not None:
+            return self._cached_count
+        count = 0
+        for path in self.paths:
+            with open(path, "r", encoding=self.encoding) as f:
+                for line in f:
+                    if line.strip():
+                        count += 1
+        self._cached_count = count
+        return count
+
+    def __len__(self) -> int:
+        return self.count_records()
+
+
+class StreamingTextDataLoader:
+    """Streaming text dataloader consuming JSONL datasets on-the-fly with cursor resumption."""
+
+    def __init__(
+        self,
+        dataset: StreamingJsonlDataset | Path | str | Sequence[Path | str],
+        tokenizer: Any | None = None,
+        batch_size: int = 8,
+        seq_len: int = 256,
+        device: torch.device | str = "cpu",
+        max_epochs: int | None = None,
+    ) -> None:
+        if isinstance(dataset, StreamingJsonlDataset):
+            self.dataset = dataset
+        else:
+            self.dataset = StreamingJsonlDataset(dataset)
+
+        self.tokenizer = tokenizer
+        self.batch_size = max(1, batch_size)
+        self.seq_len = max(1, seq_len)
+        self.tokens_per_batch = self.batch_size * self.seq_len
+        self.device = torch.device(device) if isinstance(device, str) else device
+        self.max_epochs = max_epochs
+
+        self.cursor = DataloaderCursor()
+        self._token_buffer: list[int] = []
+
+    def _encode_text(self, text: str) -> list[int]:
+        if self.tokenizer is not None:
+            if hasattr(self.tokenizer, "encode"):
+                return list(self.tokenizer.encode(text))
+            if callable(self.tokenizer):
+                return list(self.tokenizer(text))
+        return [b for b in text.encode("utf-8")]
+
+    def __iter__(self) -> Iterator[dict[str, torch.Tensor]]:
+        return self
+
+    def __next__(self) -> dict[str, torch.Tensor]:
+        if self.max_epochs is not None and self.cursor.epoch >= self.max_epochs:
+            raise StopIteration
+
+        while len(self._token_buffer) < self.tokens_per_batch:
+            found_any = False
+            for path in self.dataset.paths:
+                with open(path, "r", encoding=self.dataset.encoding) as f:
+                    for line_idx, line in enumerate(f):
+                        if line_idx < self.cursor.sample_cursor:
+                            continue
+                        line = line.strip()
+                        if not line:
+                            continue
+                        found_any = True
+                        data = json.loads(line)
+                        txt = data.get(self.dataset.text_field)
+                        if not txt and "prompt" in data and "response" in data:
+                            txt = f"{data['prompt']}\n{data['response']}"
+                        tokens = self._encode_text(txt or "")
+                        self._token_buffer.extend(tokens)
+                        self.cursor.sample_cursor = line_idx + 1
+
+                        if len(self._token_buffer) >= self.tokens_per_batch:
+                            break
+                    if len(self._token_buffer) >= self.tokens_per_batch:
+                        break
+
+            if len(self._token_buffer) < self.tokens_per_batch:
+                self.cursor.epoch += 1
+                self.cursor.sample_cursor = 0
+                if self.max_epochs is not None and self.cursor.epoch >= self.max_epochs:
+                    if len(self._token_buffer) == 0:
+                        raise StopIteration
+                    break
+                if not found_any and len(self._token_buffer) == 0:
+                    raise StopIteration
+
+        if len(self._token_buffer) < self.tokens_per_batch:
+            if len(self._token_buffer) == 0:
+                raise StopIteration
+            pad_needed = self.tokens_per_batch - len(self._token_buffer)
+            self._token_buffer.extend([0] * pad_needed)
+
+        batch_slice = self._token_buffer[: self.tokens_per_batch]
+        self._token_buffer = self._token_buffer[self.tokens_per_batch :]
+
+        token_tensor = torch.tensor(batch_slice, dtype=torch.long, device=self.device)
+        batch_tokens = token_tensor.view(self.batch_size, self.seq_len)
+
+        self.cursor.batch_idx += 1
+        self.cursor.global_step += 1
+        self.cursor.token_offset += self.tokens_per_batch
+        self.cursor.total_tokens_seen += self.tokens_per_batch
+
+        return {
+            "input_ids": batch_tokens,
+            "labels": batch_tokens.clone(),
+        }
+
+    def get_state(self) -> dict[str, Any]:
+        """Return immutable serializable cursor dictionary for checkpointing."""
+        state = self.cursor.to_dict()
+        state["token_buffer"] = list(self._token_buffer)
+        return state
+
+    def load_state(self, state: dict[str, Any]) -> None:
+        """Restore exact cursor position for deterministic continuation."""
+        self.cursor = DataloaderCursor.from_dict(state)
+        self._token_buffer = list(state.get("token_buffer", []))
+
+    def seek(self, sample_cursor: int = 0, token_offset: int = 0, epoch: int = 0) -> None:
+        """Seek directly to specified line offset, token offset, and epoch."""
+        self.cursor.sample_cursor = sample_cursor
+        self.cursor.token_offset = token_offset
+        self.cursor.epoch = epoch
+        self._token_buffer.clear()
+
+    def reset(self) -> None:
+        """Reset cursor to beginning of epoch 0."""
+        self.cursor = DataloaderCursor()
+        self._token_buffer.clear()
+
