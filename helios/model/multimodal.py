@@ -105,15 +105,11 @@ class HeliosVisionEncoder(nn.Module):
             torch.randn(1, num_patches, self.config.hidden_size) * self.config.initializer_range
         )
 
-        self.pre_layernorm = nn.LayerNorm(
-            self.config.hidden_size, eps=self.config.layer_norm_eps
-        )
+        self.pre_layernorm = nn.LayerNorm(self.config.hidden_size, eps=self.config.layer_norm_eps)
         self.layers = nn.ModuleList(
             [HeliosVisionBlock(self.config) for _ in range(self.config.num_hidden_layers)]
         )
-        self.post_layernorm = nn.LayerNorm(
-            self.config.hidden_size, eps=self.config.layer_norm_eps
-        )
+        self.post_layernorm = nn.LayerNorm(self.config.hidden_size, eps=self.config.layer_norm_eps)
 
     def interpolate_pos_encoding(self, h: int, w: int) -> torch.Tensor:
         """Dynamically interpolate 2D positional embeddings for arbitrary image resolutions."""

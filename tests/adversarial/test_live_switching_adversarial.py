@@ -124,7 +124,9 @@ class TestRapidConsecutiveModelSwitching:
             assert expected_tier in resolve_tier_key(session.preset)
             assert "Switched active model" in msg or "already" in msg
             # Enforce <20.0s execution time per switch (budget accounts for physical USB 3.0 external disk I/O)
-            assert t_elapsed < 20.0, f"Switch to {target_tier} took {t_elapsed:.3f}s (budget: <20.0s for external disk I/O)"
+            assert t_elapsed < 20.0, (
+                f"Switch to {target_tier} took {t_elapsed:.3f}s (budget: <20.0s for external disk I/O)"
+            )
 
             # Ensure switched model is fully functional by running a turn
             reply = session.handle_turn("Ping test", max_new_tokens=4, stream=False)

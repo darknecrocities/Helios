@@ -408,4 +408,3 @@ class StreamingTextDataLoader:
         """Reset cursor to beginning of epoch 0."""
         self.cursor = DataloaderCursor()
         self._token_buffer.clear()
-

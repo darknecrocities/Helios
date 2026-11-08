@@ -109,9 +109,7 @@ def test_adversarial_multimodal_gradient_flow_and_freezing(
     compact_vision_config: HeliosVisionConfig,
 ) -> None:
     """Stress-test full gradient flow and freeze isolation across all 3 sub-architectures."""
-    model = HeliosForMultimodalLM(
-        config=compact_llm_config, vision_config=compact_vision_config
-    )
+    model = HeliosForMultimodalLM(config=compact_llm_config, vision_config=compact_vision_config)
 
     # 1. Full end-to-end backprop with loss on prompt and response tokens
     input_ids = torch.tensor([[10, IMAGE_TOKEN_ID, 20, 30]])
@@ -199,9 +197,7 @@ def test_adversarial_placeholder_token_handling_and_clamping(
     compact_vision_config: HeliosVisionConfig,
 ) -> None:
     """Stress-test out-of-vocab placeholder token handling, splicing, prepending, and image_mask."""
-    model = HeliosForMultimodalLM(
-        config=compact_llm_config, vision_config=compact_vision_config
-    )
+    model = HeliosForMultimodalLM(config=compact_llm_config, vision_config=compact_vision_config)
     n_patches = (compact_vision_config.image_size // compact_vision_config.patch_size) ** 2  # 4
     pixels = torch.randn(1, 3, compact_vision_config.image_size, compact_vision_config.image_size)
 
@@ -338,15 +334,99 @@ def test_adversarial_all_six_tiers_specifications_and_parameters() -> None:
     """Stress-test configuration invariants and theoretical parameter calculations for all 6 tiers."""
     tier_specs = [
         # tier_name, config_fn, exp_V, exp_d, exp_L, exp_Hq, exp_Hkv, exp_dffn, exp_ctx, exp_theta, exp_tied_calc
-        ("Nano (20M)", HeliosConfig.nano_20m(), 32000, 320, 7, 8, 2, 864, 16384, 100000.0, 17842880),
-        ("Alpha (100M)", HeliosConfig.alpha_100m(), 32000, 768, 12, 12, 4, 2048, 32768, 500000.0, 100092672),
-        ("Beta (300M)", HeliosConfig.beta_300m(), 32000, 1024, 24, 16, 4, 2816, 65536, 1000000.0, 303350784),
-        ("Core (1.1B)", HeliosConfig.core_1b(), 32000, 2048, 24, 16, 4, 5504, 131072, 5000000.0, 1128892416),
-        ("Pro (3.3B)", HeliosConfig.pro_3b(), 32000, 3072, 32, 24, 8, 8192, 131072, 5000000.0, 3319729152),
-        ("Flagship (5.8B)", HeliosConfig.flagship_6b(), 32000, 4096, 32, 32, 8, 11008, 262144, 10000000.0, 5802037248),
+        (
+            "Nano (20M)",
+            HeliosConfig.nano_20m(),
+            32000,
+            320,
+            7,
+            8,
+            2,
+            864,
+            16384,
+            100000.0,
+            17842880,
+        ),
+        (
+            "Alpha (100M)",
+            HeliosConfig.alpha_100m(),
+            32000,
+            768,
+            12,
+            12,
+            4,
+            2048,
+            32768,
+            500000.0,
+            100092672,
+        ),
+        (
+            "Beta (300M)",
+            HeliosConfig.beta_300m(),
+            32000,
+            1024,
+            24,
+            16,
+            4,
+            2816,
+            65536,
+            1000000.0,
+            303350784,
+        ),
+        (
+            "Core (1.1B)",
+            HeliosConfig.core_1b(),
+            32000,
+            2048,
+            24,
+            16,
+            4,
+            5504,
+            131072,
+            5000000.0,
+            1128892416,
+        ),
+        (
+            "Pro (3.3B)",
+            HeliosConfig.pro_3b(),
+            32000,
+            3072,
+            32,
+            24,
+            8,
+            8192,
+            131072,
+            5000000.0,
+            3319729152,
+        ),
+        (
+            "Flagship (5.8B)",
+            HeliosConfig.flagship_6b(),
+            32000,
+            4096,
+            32,
+            32,
+            8,
+            11008,
+            262144,
+            10000000.0,
+            5802037248,
+        ),
     ]
 
-    for name, cfg, exp_v, exp_d, exp_l, exp_hq, exp_hkv, exp_dff, exp_ctx, exp_theta, exp_tied in tier_specs:
+    for (
+        name,
+        cfg,
+        exp_v,
+        exp_d,
+        exp_l,
+        exp_hq,
+        exp_hkv,
+        exp_dff,
+        exp_ctx,
+        exp_theta,
+        exp_tied,
+    ) in tier_specs:
         # Check architecture dimensions
         assert cfg.vocab_size == exp_v, f"{name}: vocab mismatch"
         assert cfg.d_model == exp_d, f"{name}: d_model mismatch"
@@ -364,7 +444,9 @@ def test_adversarial_all_six_tiers_specifications_and_parameters() -> None:
 
         # Check calculated parameter counts
         cal_params = calculate_theoretical_parameters(cfg)["total_parameters"]
-        assert cal_params == exp_tied, f"{name}: parameter calculation mismatch {cal_params} != {exp_tied}"
+        assert cal_params == exp_tied, (
+            f"{name}: parameter calculation mismatch {cal_params} != {exp_tied}"
+        )
 
 
 def test_adversarial_file_line_limits_compliance() -> None:

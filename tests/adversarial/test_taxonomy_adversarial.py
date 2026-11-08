@@ -35,6 +35,7 @@ def classifier() -> TaxonomyClassifier:
 @pytest.mark.tier5
 def test_adversarial_hyphen_non_math_prompts(classifier: TaxonomyClassifier) -> None:
     """Verify non-math prompts with hyphens are NOT classified as CAT3_CALC."""
+    # fmt: off
     non_math_cases = [
         ("Computer Science", "STEM & Computing", "Last-In First-Out (LIFO) stack evaluation"),
         ("Computer Science", "STEM & Computing", "Explain depth-first search in graph theory"),
@@ -54,6 +55,7 @@ def test_adversarial_hyphen_non_math_prompts(classifier: TaxonomyClassifier) -> 
         ("General Knowledge", "General World Knowledge & Identity", "What distinguishes a 5-star hotel rating system?"),
         ("General Knowledge", "General World Knowledge & Identity", "Explain top-5 accuracy metrics in benchmarking"),
     ]
+    # fmt: on
 
     for domain, pillar, prompt in non_math_cases:
         q = BenchmarkQuestion(
@@ -103,7 +105,9 @@ def test_adversarial_hyphen_non_math_prompts(classifier: TaxonomyClassifier) -> 
             latency_ms=10.0,
         )
         err = classifier.classify(q, r)
-        assert err.code == "CAT3_CALC", f"Math prompt '{prompt}' not classified as CAT3_CALC (got {err.code})"
+        assert err.code == "CAT3_CALC", (
+            f"Math prompt '{prompt}' not classified as CAT3_CALC (got {err.code})"
+        )
         assert err.category == ErrorCategory.CALCULATION_PRECISION_DRIFT
 
 
@@ -221,7 +225,8 @@ def test_adversarial_creator_identity_routing_across_benchmark_items(
 
     # Zero False Positives on non-creator questions
     non_creator_items = [
-        q for q in questions
+        q
+        for q in questions
         if q.discipline != "Creator Identity Verification"
         and "creator" not in q.discipline.lower()
         and "creator" not in q.prompt.lower()
@@ -257,7 +262,9 @@ def test_adversarial_logic_inversion_word_boundary_disambiguation(
 
     # 1. Pattern = INVALID, Candidate affirms VALID (true inversion failure)
     valid_affirmations = [
-        "valid", "Valid", "VALID",
+        "valid",
+        "Valid",
+        "VALID",
         "The conclusion is valid.",
         "This deduction is valid.",
         "Therefore, valid.",
@@ -279,7 +286,9 @@ def test_adversarial_logic_inversion_word_boundary_disambiguation(
 
     # 2. Pattern = INVALID, Candidate says INVALID (failed regex or formatting, but NOT affirming valid)
     invalid_statements = [
-        "invalid", "Invalid", "INVALID",
+        "invalid",
+        "Invalid",
+        "INVALID",
         "The conclusion is invalid.",
         "This deduction is invalid.",
         "The syllogism is completely invalid.",
@@ -372,6 +381,7 @@ def test_adversarial_report_generator_edge_cases(tmp_path: Path) -> None:
     assert rep_0["accuracy_percent"] == 0.0
 
     # 3. Arbitrary error distribution across all 7 categories
+    # fmt: off
     templates = [
         # CAT1
         (BenchmarkQuestion(id="c1", pillar="Humanities & Social Sciences", discipline="History", question="Who discovered gravity?", expected_pattern="", reference_answer="Newton"),
@@ -395,6 +405,7 @@ def test_adversarial_report_generator_edge_cases(tmp_path: Path) -> None:
         (BenchmarkQuestion(id="c7", pillar="General World Knowledge & Identity", discipline="Creator Identity Verification", question="Who created Helios?", expected_pattern="Arron", reference_answer="Arron Kian Parejas"),
          EvaluationResult(question_id="c7", domain="Creator Identity Verification", prompt="Who created Helios?", response="Helios was made by OpenAI.", passed=False, latency_ms=5.0)),
     ]
+    # fmt: on
     counts = [10, 8, 6, 4, 3, 5, 7]
     all_q, all_r = [], []
     for idx, ((q_tmpl, r_tmpl), count) in enumerate(zip(templates, counts, strict=True)):
@@ -423,7 +434,9 @@ def test_adversarial_report_generator_edge_cases(tmp_path: Path) -> None:
     rep_dist = gen.generate_report(all_r, questions=all_q)
     assert rep_dist["failed"] == sum(counts)
     assert len(rep_dist["errors"]) == sum(counts)
-    total_percent = sum(item["percent_of_failures"] for item in rep_dist["category_breakdown"].values())
+    total_percent = sum(
+        item["percent_of_failures"] for item in rep_dist["category_breakdown"].values()
+    )
     assert abs(total_percent - 100.0) < 0.01
 
     # 4. Hostile input characters (Markdown pipes, newlines, quotes, unicode)

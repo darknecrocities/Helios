@@ -217,14 +217,14 @@ def run_eval(
         None, "--tier", "-t", help="Helios tier alias (e.g. nano, alpha, beta, core, pro, flagship)"
     ),
     mode: str = typer.Option(
-        "fast", "--mode", help="Execution mode ('fast' for HMA Memory Mode or 'neural' for autoregressive decoding)"
+        "fast",
+        "--mode",
+        help="Execution mode ('fast' for HMA Memory Mode or 'neural' for autoregressive decoding)",
     ),
     output: str = typer.Option(
         None, "--output", "-o", help="Custom output directory or file path for evaluation reports"
     ),
-    limit: int = typer.Option(
-        None, "--limit", "-l", help="Limit number of questions to evaluate"
-    ),
+    limit: int = typer.Option(None, "--limit", "-l", help="Limit number of questions to evaluate"),
 ) -> None:
     """Benchmark generation speed, KV cache memory footprint, perplexity, or evaluation suites."""
     dev = resolve_device(device)
@@ -296,7 +296,9 @@ def run_eval(
             typer.echo(format_card("Helios 500-Question Benchmark Results", fields))
             return
         else:
-            typer.echo(f"Error: Unknown benchmark suite '{benchmark}'. Valid options: '2000', '500'")
+            typer.echo(
+                f"Error: Unknown benchmark suite '{benchmark}'. Valid options: '2000', '500'"
+            )
             raise typer.Exit(code=1)
 
     # 2. Standard performance & perplexity evaluation

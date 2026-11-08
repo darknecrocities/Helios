@@ -155,7 +155,9 @@ def test_six_state_checkpoint_resumption(tmp_path: Path) -> None:
 
     # 1. Weights match bit-for-bit
     for k in model.state_dict():
-        assert torch.equal(model.state_dict()[k], new_model.state_dict()[k]), f"Weight mismatch for {k}"
+        assert torch.equal(model.state_dict()[k], new_model.state_dict()[k]), (
+            f"Weight mismatch for {k}"
+        )
 
     # 2. Optimizer momentum / step matches
     for k in optimizer.state_dict()["state"]:

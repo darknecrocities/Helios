@@ -53,7 +53,9 @@ def test_dataset_completeness_and_uniqueness() -> None:
     assert len(set(ids)) == 2000, f"Duplicate question IDs detected: {len(ids) - len(set(ids))}"
 
     prompts = [normalize_text(q.prompt) for q in questions]
-    assert len(set(prompts)) == 2000, f"Duplicate prompt strings detected: {len(prompts) - len(set(prompts))}"
+    assert len(set(prompts)) == 2000, (
+        f"Duplicate prompt strings detected: {len(prompts) - len(set(prompts))}"
+    )
 
     # 2. Pillar allocations
     pillar_counts = get_pillar_counts(questions)
@@ -63,14 +65,11 @@ def test_dataset_completeness_and_uniqueness() -> None:
     assert pillar_counts.get(PILLAR_KNOWLEDGE) == 450
 
     # 3. Creator attribution: exactly 50 items in Creator Identity Verification discipline
-    creator_items = [
-        q for q in questions
-        if q.discipline == "Creator Identity Verification"
-    ]
-    assert len(creator_items) == 50, f"Expected 50 creator verification items, got {len(creator_items)}"
-    direct_attribution = [
-        q for q in creator_items if "Arron Kian Parejas" in q.reference_answer
-    ]
+    creator_items = [q for q in questions if q.discipline == "Creator Identity Verification"]
+    assert len(creator_items) == 50, (
+        f"Expected 50 creator verification items, got {len(creator_items)}"
+    )
+    direct_attribution = [q for q in creator_items if "Arron Kian Parejas" in q.reference_answer]
     assert len(direct_attribution) >= 6
     for q in creator_items:
         assert q.pillar == PILLAR_KNOWLEDGE
@@ -272,6 +271,7 @@ def test_taxonomy_classification_priority() -> None:
     assert err_calc.code == "CAT3_CALC"
 
     # 7. Regression: Scoring error_message must not shadow domain categories
+    # fmt: off
     # Non-code factual question with contains-scoring mismatch error_message
     q_fact = BenchmarkQuestion(
         id="fact1", pillar="Humanities & Social Sciences", discipline="World History",
@@ -320,6 +320,7 @@ def test_taxonomy_classification_priority() -> None:
     assert err_syntax is not None
     assert err_syntax.category == ErrorCategory.FORMAT_CONTRACT_VIOLATION
     assert err_syntax.code == "CAT4_CODE"
+    # fmt: on
 
 
 @pytest.mark.unit

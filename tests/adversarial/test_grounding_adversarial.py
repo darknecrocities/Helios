@@ -55,6 +55,7 @@ def test_all_15_fall_probes_trigger_exact_epistemic_refusal(
     grounded_hma: HMAController,
 ) -> None:
     """Verify all 15 synthetic probes (FALL-01 to FALL-15) trigger exact refusal strings."""
+    # fmt: off
     fall_probes: list[tuple[str, str, str]] = [
         ("FALL-01", "What is the capital city of the fictional exoplanet Xylophia-99?", EPISTEMIC_FALLBACK_EN),
         ("FALL-02", "What is the molecular weight of synthetic Chronotonium-842?", EPISTEMIC_FALLBACK_EN),
@@ -72,6 +73,7 @@ def test_all_15_fall_probes_trigger_exact_epistemic_refusal(
         ("FALL-14", "Saan matatagpuan ang nawawalang lungsod ng Atlantika-Omega?", EPISTEMIC_FALLBACK_TL),
         ("FALL-15", "Ano ang kahulugan ng salitang alien na Xyphlorian-88?", EPISTEMIC_FALLBACK_TL),
     ]
+    # fmt: on
 
     for probe_id, prompt, expected_refusal in fall_probes:
         assert is_synthetic_benchmark_probe(prompt), f"Probe {probe_id} not recognized by detector"
@@ -86,6 +88,7 @@ def test_held_out_synthetic_probes_epistemic_refusal(
     grounded_hma: HMAController,
 ) -> None:
     """Verify blorgonx99, zyxwvut123, xenofluvir-904, and zorglubin-beta trigger refusal."""
+    # fmt: off
     held_out_probes: list[tuple[str, str, str]] = [
         ("blorgonx99-en", "What is blorgonx99 and how is it used?", EPISTEMIC_FALLBACK_EN),
         ("blorgonx99-tl", "Ano ang blorgonx99 sa agham?", EPISTEMIC_FALLBACK_TL),
@@ -96,9 +99,12 @@ def test_held_out_synthetic_probes_epistemic_refusal(
         ("zorglubin-en", "Is zorglubin-beta approved by the FDA?", EPISTEMIC_FALLBACK_EN),
         ("zorglubin-tl", "Saan ginagamit ang zorglubin-beta?", EPISTEMIC_FALLBACK_TL),
     ]
+    # fmt: on
 
     for probe_id, prompt, expected_refusal in held_out_probes:
-        assert is_synthetic_benchmark_probe(prompt), f"{probe_id} must be recognized as synthetic probe"
+        assert is_synthetic_benchmark_probe(prompt), (
+            f"{probe_id} must be recognized as synthetic probe"
+        )
         reply = resolve_verified_semantic_reply(grounded_hma, prompt, preset="nano-20m")
         assert reply == expected_refusal, f"{probe_id} failed refusal match: got {reply!r}"
 
@@ -119,7 +125,9 @@ def test_synthetic_probe_zero_false_positives() -> None:
         "What is hyperdrive theory in science fiction?",
     ]
     for q in real_queries:
-        assert not is_synthetic_benchmark_probe(q), f"False positive probe detection for real query: {q}"
+        assert not is_synthetic_benchmark_probe(q), (
+            f"False positive probe detection for real query: {q}"
+        )
 
 
 @pytest.mark.tier5
@@ -142,6 +150,7 @@ def test_real_world_factual_battery_across_domains(
     grounded_hma: HMAController,
 ) -> None:
     """Test at least 25 real-world queries asserting genuine answers and ZERO false refusals."""
+    # fmt: off
     factual_battery: list[tuple[str, str, str]] = [
         # History
         ("hist_1", "How did Julius Caesar die?", "44 bc"),
@@ -181,6 +190,7 @@ def test_real_world_factual_battery_across_domains(
         ("med_2", "What is the normal physiological pH range of human arterial blood?", "7.35"),
         ("med_3", "Which class of antibiotics was discovered by Alexander Fleming from a Penicillium mold?", "penicillin"),
     ]
+    # fmt: on
 
     assert len(factual_battery) >= 25, f"Must have >=25 queries, found {len(factual_battery)}"
 
@@ -203,7 +213,9 @@ def test_real_world_factual_battery_across_domains(
         if expected_kw.lower() in reply_lower:
             keyword_matches += 1
 
-    assert len(false_refusals) == 0, f"Detected false epistemic refusals on real queries: {false_refusals}"
+    assert len(false_refusals) == 0, (
+        f"Detected false epistemic refusals on real queries: {false_refusals}"
+    )
     assert keyword_matches >= 18, (
         f"Expected at least 18 exact factual keyword grounding matches, got {keyword_matches}/{len(factual_battery)}"
     )
@@ -218,7 +230,8 @@ def test_fts5_reach_beyond_record_8000_and_sub_10ms_latency() -> None:
     assert total_records >= 134_000, f"Expected 134k+ records, got {total_records}"
 
     # Pre-warm connection to account for external USB disk spin-up
-    _ = corpus.query_corpus("warmup query", top_k=1)
+    for _ in range(3):
+        _ = corpus.query_corpus("warmup query", top_k=1)
 
     deep_probe_queries = [
         "Julius Caesar 44 BC",
@@ -310,8 +323,12 @@ def test_adversarial_agentic_query_leakage_probe(
     for q in agentic_tool_queries:
         reply = resolve_verified_semantic_reply(grounded_hma, q, preset="nano-20m")
         # If raw functioncall leaks, this assertion fails, capturing the empirical defect
-        assert "<functioncall>" not in reply, f"Raw <functioncall> leaked in reply for '{q}': {reply[:80]}"
-        assert "<|endoftext|>" not in reply, f"Control token <|endoftext|> leaked in reply for '{q}'"
+        assert "<functioncall>" not in reply, (
+            f"Raw <functioncall> leaked in reply for '{q}': {reply[:80]}"
+        )
+        assert "<|endoftext|>" not in reply, (
+            f"Control token <|endoftext|> leaked in reply for '{q}'"
+        )
 
 
 # ==============================================================================

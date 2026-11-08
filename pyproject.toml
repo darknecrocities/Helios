@@ -94,6 +94,7 @@ exclude = [
     "build",
     "dist",
     "*.md",
+    "scripts/benchmark_curation",
 ]
 
 [tool.ruff.lint]

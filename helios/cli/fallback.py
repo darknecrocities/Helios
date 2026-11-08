@@ -21,6 +21,8 @@ from helios.reasoning.cot_engine import is_synthetic_benchmark_probe
 if TYPE_CHECKING:
     from helios.memory.controller import HMAController
 
+# fmt: off
+
 EPISTEMIC_FALLBACK_EN = "This topic is not yet in my current training session. Please try asking another question!"
 EPISTEMIC_FALLBACK_TL = "Ang paksang ito ay wala pa sa aking kasalukuyang training session. Subukang magtanong ng ibang katanungan!"
 ADVERSARIAL_REFUTATION_EN = (
@@ -479,3 +481,5 @@ def resolve_verified_semantic_reply(hma: HMAController, user_input: str, preset:
         "Please provide specific aspects or context you would like to explore further."
     )
     return synthesize_dynamic_response(user_input, thought_body, preset=preset, include_thought=False)
+
+# fmt: on

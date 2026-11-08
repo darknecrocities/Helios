@@ -72,7 +72,9 @@ app = typer.Typer(
 def version() -> None:
     """Print Helios ecosystem version and author attribution."""
     typer.echo(f"Helios version {helios.__version__} (Helios Foundation Ecosystem)")
-    typer.echo("Lead Architect & AI Engineer in the Philippines: Arron Kian Parejas <parejasarronkian@gmail.com>")
+    typer.echo(
+        "Lead Architect & AI Engineer in the Philippines: Arron Kian Parejas <parejasarronkian@gmail.com>"
+    )
     typer.echo("Repository: https://github.com/darknecrocities/Helios")
 
 
@@ -101,7 +103,9 @@ def inspect(
 
     config = factory()
     typer.echo(f"Developer        : {config.developer} <{config.developer_email}>")
-    typer.echo("Lead Architect   : Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines")
+    typer.echo(
+        "Lead Architect   : Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines"
+    )
     typer.echo(f"Model Family     : {config.model_family}")
     typer.echo("Features         : GQA (3:1), Dynamic KV Cache, HMA Decoupling, 6-State Resumption")
     model = HeliosForCausalLM(config)

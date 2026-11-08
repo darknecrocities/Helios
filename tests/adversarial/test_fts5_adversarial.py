@@ -193,7 +193,9 @@ class TestFTS5BooleanKeywordsHardening:
             "AND OR NOT AND OR NOT photosynthesis",
         ],
     )
-    def test_boolean_keywords_quoted_and_safe(self, populated_corpus: FTSCorpus, query: str) -> None:
+    def test_boolean_keywords_quoted_and_safe(
+        self, populated_corpus: FTSCorpus, query: str
+    ) -> None:
         """Verify operators are treated as literals or sanitized into safe quoted terms."""
         sanitized = sanitize_fts5_query(query)
         # Operators must be wrapped in double quotes
@@ -201,7 +203,11 @@ class TestFTS5BooleanKeywordsHardening:
             assert '"AND"' in sanitized or "and" in sanitized.lower()
         hits = populated_corpus.query_corpus(query, top_k=2)
         assert isinstance(hits, list)
-        if "photosynthesis" in query.lower() or "caesar" in query.lower() or "betaxolol" in query.lower():
+        if (
+            "photosynthesis" in query.lower()
+            or "caesar" in query.lower()
+            or "betaxolol" in query.lower()
+        ):
             assert len(hits) >= 1
 
 
@@ -227,7 +233,7 @@ class TestFTS5SQLInjectionResistance:
             "'; ATTACH DATABASE ':memory:' AS evil; --",
             "'; UPDATE corpus_fts SET content='hacked'; --",
             "') OR 1=1 --",
-            "\" OR \"\"=\"",
+            '" OR ""="',
         ],
     )
     def test_sqli_payloads_do_not_alter_database_or_leak(

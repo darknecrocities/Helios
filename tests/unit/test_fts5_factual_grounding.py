@@ -165,9 +165,7 @@ def test_fts5_query_sanitization_punctuation_and_operators() -> None:
 
 
 @pytest.mark.unit
-def test_fts5_query_latency_and_positive_bm25_score(
-    sample_jsonl: Path, tmp_path: Path
-) -> None:
+def test_fts5_query_latency_and_positive_bm25_score(sample_jsonl: Path, tmp_path: Path) -> None:
     """Verify query latency is sub-10ms SLA and BM25 scores are positive."""
     db_path = tmp_path / "latency_test.db"
     corpus = FTSCorpus(db_path=db_path)
@@ -284,7 +282,11 @@ def test_factual_queries_vs_epistemic_refusals() -> None:
     assert EPISTEMIC_FALLBACK_EN not in ans_beta
 
     ans_photo = resolve_verified_semantic_reply(hma, "What is photosynthesis?", "nano-20m")
-    assert "glucose" in ans_photo.lower() or "energy" in ans_photo.lower() or "light" in ans_photo.lower()
+    assert (
+        "glucose" in ans_photo.lower()
+        or "energy" in ans_photo.lower()
+        or "light" in ans_photo.lower()
+    )
     assert EPISTEMIC_FALLBACK_EN not in ans_photo
 
     # 2. Synthetic probes must deterministically return epistemic refusal
