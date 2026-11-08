@@ -36,7 +36,7 @@ def render_chat_banner(tier_info: dict[str, Any], device: Any) -> None:
     content = (
         f"Helios Foundation Interactive Terminal Chat (v0.3.0)\n"
         f"[bold yellow]☀️  HELIOS COGNITIVE RUNTIME[/bold yellow]\n"
-        f"[dim]Lead Architect & AI Engineer: Arron Kian Parejas <parejasarronkian@gmail.com>[/dim]\n\n"
+        f"[dim]Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>[/dim]\n\n"
         f"  [bold cyan]● Active Model  :[/bold cyan] [bold white]{tier_info['display_name']} ({tier_info['version']})[/bold white]\n"
         f"  [bold cyan]● Parameters    :[/bold cyan] [white]{tier_info['params']} tied parameters[/white]\n"
         f"  [bold cyan]● Context Window:[/bold cyan] [white]{tier_info['context']} (RoPE θ={tier_info['rope_theta']})[/white]\n"

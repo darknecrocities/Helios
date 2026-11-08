@@ -14,8 +14,8 @@ from pathlib import Path
 
 import torch
 import typer
-from rich.panel import Panel
 
+from helios.cli.commands import dispatch_chat_command
 from helios.cli.fallback import (
     resolve_verified_semantic_reply,
     seed_hma_knowledge_base,
@@ -25,13 +25,13 @@ from helios.cli.ui import (
     console,
     print_typewriter_stream,
     render_chat_banner,
-    render_model_switch_card,
-    render_models_table,
     render_thought_panel,
 )
 from helios.cli.utils import (
     MODEL_FAMILY_CATALOG,
+    check_memory_capacity,
     format_card,
+    free_hardware_memory,
     load_model_and_config,
     load_or_create_tokenizer,
     reload_model_for_tier,
@@ -50,31 +50,17 @@ from helios.tokenizer.base import BaseTokenizer
 def solve_arithmetic_query(text: str) -> str | None:
     """Deterministically solve basic and multi-step arithmetic expressions."""
     cleaned = text.strip().lower().rstrip("?").strip()
-    for prefix in [
-        "what is",
-        "calculate",
-        "solve",
-        "how much is",
-        "evaluate",
-        "compute",
-        "tell me what is",
-        "tell me",
-    ]:
-        if cleaned.startswith(prefix):
-            cleaned = cleaned[len(prefix) :].strip()
+    prefix_pat = (
+        r"^(what is|calculate|solve|how much is|evaluate|compute|tell me what is|tell me)\s*"
+    )
+    cleaned = re.sub(prefix_pat, "", cleaned).strip()
 
-    # Percentage evaluation: e.g. 20% of 150
-    m_pct = re.fullmatch(r"(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned)
-    if m_pct:
-        p, tot = float(m_pct.group(1)), float(m_pct.group(2))
-        res = (p / 100.0) * tot
+    if m_pct := re.fullmatch(r"(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned):
+        res = (float(m_pct.group(1)) / 100.0) * float(m_pct.group(2))
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
 
-    # Fraction evaluation: e.g. 1/4 of 80
-    m_frac = re.fullmatch(r"(\d+)\s*/\s*(\d+)\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned)
-    if m_frac:
-        num, den, tot = float(m_frac.group(1)), float(m_frac.group(2)), float(m_frac.group(3))
-        res = (num / den) * tot
+    if m_frac := re.fullmatch(r"(\d+)\s*/\s*(\d+)\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned):
+        res = (float(m_frac.group(1)) / float(m_frac.group(2))) * float(m_frac.group(3))
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
 
     expr = cleaned.replace("^", "**").replace("x", "*").replace("×", "*").replace("÷", "/")
@@ -89,6 +75,14 @@ def solve_arithmetic_query(text: str) -> str | None:
         except Exception:
             return None
     return None
+
+
+DEFAULT_SYSTEM_INSTRUCTION: str = (
+    "You are Helios, an open-weight foundation language model personally conceived, "
+    "architected, and engineered by Arron Kian Parejas, Lead Architect and AI Engineer "
+    "in the Philippines (parejasarronkian@gmail.com). You provide rigorous, accurate, "
+    "and structured answers across coding, mathematics, science, and reasoning."
+)
 
 
 class ChatSession:
@@ -135,17 +129,49 @@ class ChatSession:
         seed_hma_knowledge_base(self.hma, self._valid_words)
 
     def switch_model(self, new_preset: str) -> str:
-        """Switch active Helios model tier during a live terminal chat session."""
+        """Switch active Helios model tier safely with pre-flight checks and rollback."""
         tier_key = resolve_tier_key(new_preset)
         tier_info = MODEL_FAMILY_CATALOG[tier_key]
-        self.preset = tier_info["preset"]
-        del self.model
-        self.model, _ = reload_model_for_tier(self.preset, device=self.device)
-        return (
-            f"✓ Switched active model to {tier_info['display_name']} "
-            f"(Preset: {self.preset} | Parameters: {tier_info['params']} | "
-            f"Context: {tier_info['context']} | Q4 Size: {tier_info['q4_size']})"
-        )
+        target_preset = tier_info["preset"]
+
+        # If already active, return immediately
+        if resolve_tier_key(self.preset) == tier_key:
+            return f"Active model is already {tier_info['display_name']}."
+
+        # 1. Pre-flight hardware memory capacity check
+        ok, msg = check_memory_capacity(tier_key, device=self.device)
+        if not ok:
+            raise MemoryError(msg)
+
+        # 2. Transactional switch: preserve current model until new model is validated
+        backup_model = self.model
+        prev_preset = self.preset
+
+        try:
+            free_hardware_memory()
+            with console.status(
+                f"[bold cyan]⠋ Live switching active model to {tier_info['display_name']} ({tier_info['params']})...[/bold cyan]",
+                spinner="dots",
+            ):
+                new_model, new_config = reload_model_for_tier(target_preset, device=self.device)
+                _ = next(new_model.parameters()).device
+                self.model = new_model
+                self.preset = target_preset
+
+            free_hardware_memory()
+            return (
+                f"✓ Switched active model to {tier_info['display_name']} "
+                f"(Preset: {self.preset} | Parameters: {tier_info['params']} | "
+                f"Context: {tier_info['context']} | Q4 Size: {tier_info['q4_size']})"
+            )
+        except Exception as exc:
+            self.model = backup_model
+            self.preset = prev_preset
+            free_hardware_memory()
+            raise RuntimeError(
+                f"Model switch to '{new_preset}' failed ({type(exc).__name__}: {exc}). "
+                f"Gracefully rolled back to active model {MODEL_FAMILY_CATALOG[resolve_tier_key(prev_preset)]['display_name']}."
+            ) from exc
 
     def _is_coherent_reply(self, reply: str) -> bool:
         """Evaluate semantic coherence ratio against known vocabulary."""
@@ -154,25 +180,9 @@ class ChatSession:
         # Catch spaced-out or byte-looping corruption artifacts
         if "   " in reply or len(re.findall(r"\b[a-zA-Z]{3,}\b", reply)) < 2:
             return False
-        if any(
-            frag in reply
-            for frag in [
-                "<|",
-                "|>",
-                "_o",
-                "|a",
-                "_a",
-                "?|",
-                "|s",
-                "||",
-                "t|",
-                "d|",
-                "_e",
-                "_s",
-                "o_",
-                "i_",
-            ]
-        ):
+        corrupt_frags = ("<|", "|>", "_o", "|a", "_a", "?|", "|s")
+        corrupt_frags += ("||", "t|", "d|", "_e", "_s", "o_", "i_")
+        if any(frag in reply for frag in corrupt_frags):
             return False
         words = [w.lower().strip(".,!?:;\"'()[]{}") for w in reply.split()]
         words = [w for w in words if len(w) >= 2]
@@ -259,11 +269,15 @@ class ChatSession:
             )
             history = self.hma.get_working_context(self.session_id, max_tokens=256)
 
-            prompt_parts: list[str] = []
+            prompt_parts: list[str] = [
+                f"<|start_header_id|>system<|end_header_id|>\n{DEFAULT_SYSTEM_INSTRUCTION}<|eot_id|>"
+            ]
             if grounded_context:
                 prompt_parts.append(grounded_context[:600])
 
             for turn in history[-4:]:
+                if turn.get("role") == "system":
+                    continue
                 role = turn["role"]
                 content = turn["content"][:300]
                 prompt_parts.append(
@@ -319,9 +333,9 @@ class ChatSession:
         if self.show_thought and stream and thought:
             render_thought_panel(thought)
 
+        gen_tok = int(telemetry.get("tokens_generated", 0)) or max(1, len(clean_reply.split()))
         if stream:
             print_typewriter_stream(f"Helios > {clean_reply}", delay=0.005)
-            gen_tok = int(telemetry.get("tokens_generated", len(clean_reply.split())))
             gen_time = max(0.01, telemetry.get("decode_s", 0.0) + telemetry.get("prefill_s", 0.0))
             tok_per_sec = gen_tok / gen_time
             console.print(
@@ -330,9 +344,7 @@ class ChatSession:
 
         self.hma.store_episodic(session_id=self.session_id, role="assistant", content=clean_reply)
         self.total_turns += 1
-        self.total_generated_tokens += int(
-            telemetry.get("tokens_generated", len(clean_reply.split()))
-        )
+        self.total_generated_tokens += gen_tok
         self.total_generation_time_s += telemetry.get("decode_s", 0.0) + telemetry.get(
             "prefill_s", 0.0
         )
@@ -341,12 +353,7 @@ class ChatSession:
 
 
 def run_chat(
-    preset: str = typer.Option(
-        "nano-20m",
-        "--preset",
-        "-m",
-        help="Helios model tier (nano, alpha, beta, core, pro, flagship)",
-    ),
+    preset: str = typer.Option("nano-20m", "--preset", "-m", help="Helios model tier"),
     model_path: str = typer.Option(
         None, "--model-path", help="Path to checkpoint directory or state.pt"
     ),
@@ -424,57 +431,16 @@ def run_chat(
         if not user_input:
             continue
 
-        cmd = user_input.lower()
-        if cmd in ("/exit", "/quit"):
-            console.print("[yellow]Exiting Helios Chat. Goodbye![/yellow]")
-            break
-        elif cmd in ("/reset", "/clear"):
-            session.clear()
-            console.print("[bold green]✓ Session working memory context cleared.[/bold green]")
-        elif cmd in ("/models", "/model"):
-            render_models_table(session.preset, MODEL_FAMILY_CATALOG)
-        elif cmd.startswith("/model ") or cmd.startswith("/switch "):
-            target = user_input.split(None, 1)[1].strip()
-            try:
-                session.switch_model(target)
-                tier_k = resolve_tier_key(target)
-                render_model_switch_card(MODEL_FAMILY_CATALOG[tier_k])
-            except KeyError as exc:
-                console.print(f"[bold red]✗ {exc.args[0]}[/bold red]")
-                render_models_table(session.preset, MODEL_FAMILY_CATALOG)
-        elif cmd == "/think":
-            session.show_thought = not session.show_thought
-            st = "enabled" if session.show_thought else "disabled"
-            console.print(f"[bold cyan]ℹ Chain-of-Thought (CoT) display {st}.[/bold cyan]")
-        elif cmd == "/think on":
-            session.show_thought = True
-            console.print("[bold cyan]ℹ Chain-of-Thought (CoT) display enabled.[/bold cyan]")
-        elif cmd == "/think off":
-            session.show_thought = False
-            console.print("[bold cyan]ℹ Chain-of-Thought (CoT) display disabled.[/bold cyan]")
-        elif cmd == "/memory":
-            console.print(session.memory_status())
-        elif cmd == "/stats":
-            console.print(session.stats_status())
-        elif cmd == "/help":
-            help_text = (
-                "Special Chat Commands:\n"
-                "  /models          : List all 6 Helios models with parameters, context, and memory specs\n"
-                "  /model <tier>    : Switch active model live (e.g. /model alpha, /model flagship)\n"
-                "  /think on|off    : Toggle display of Chain-of-Thought (CoT) reasoning panel\n"
-                "  /reset, /clear   : Clear working memory context and turn history\n"
-                "  /memory          : Display HMA memory state and SQLite persistence details\n"
-                "  /stats           : Display session generation performance and throughput\n"
-                "  /exit, /quit     : Terminate chat session"
-            )
-            console.print(
-                Panel(help_text, border_style="cyan", title="[bold]Chat Command Reference[/bold]")
-            )
-        else:
-            session.handle_turn(
-                user_input=user_input,
-                temperature=temperature,
-                top_k=top_k,
-                max_new_tokens=max_new_tokens,
-                stream=True,
-            )
+        cmd_result = dispatch_chat_command(user_input, session)
+        if cmd_result.handled:
+            if cmd_result.should_exit:
+                break
+            continue
+
+        session.handle_turn(
+            user_input=user_input,
+            temperature=temperature,
+            top_k=top_k,
+            max_new_tokens=max_new_tokens,
+            stream=True,
+        )

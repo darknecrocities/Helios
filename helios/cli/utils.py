@@ -82,6 +82,139 @@ MODEL_FAMILY_CATALOG: dict[str, dict[str, str]] = {
     },
 }
 
+TIER_MEMORY_REQUIREMENTS_MB: dict[str, float] = {
+    "nano": 150.0,
+    "alpha": 500.0,
+    "beta": 1500.0,
+    "core": 3000.0,  # FP16 (~2.26 GB + 500MB buffer)
+    "pro": 8000.0,  # FP16 (~6.64 GB + 1.36GB buffer)
+    "flagship": 13500.0,  # FP16 (~11.60 GB + 1.90GB buffer)
+}
+
+
+def get_system_available_memory_mb() -> float:
+    """Inspect available physical RAM without mandatory external dependencies."""
+    import subprocess
+    import sys
+
+    try:
+        import psutil
+
+        return float(psutil.virtual_memory().available) / (1024 * 1024)
+    except Exception:
+        pass
+
+    if sys.platform == "darwin":
+        try:
+            out = subprocess.check_output(["vm_stat"], text=True)
+            page_size = 16384  # Apple Silicon default 16KB page
+            first_line = out.splitlines()[0]
+            if "page size of" in first_line:
+                page_size = int(first_line.split("page size of")[1].split()[0])
+            pages = 0
+            for line in out.splitlines():
+                if any(
+                    k in line
+                    for k in [
+                        "Pages free:",
+                        "Pages inactive:",
+                        "Pages speculative:",
+                        "Pages purgeable:",
+                    ]
+                ):
+                    val = line.split(":")[1].strip().rstrip(".")
+                    pages += int(val)
+            return float(pages * page_size) / (1024 * 1024)
+        except Exception:
+            return 4096.0
+    elif sys.platform.startswith("linux"):
+        try:
+            with open("/proc/meminfo", "r") as f:
+                for line in f:
+                    if line.startswith("MemAvailable:"):
+                        return float(line.split()[1]) / 1024.0
+        except Exception:
+            return 4096.0
+    return 4096.0
+
+
+def get_system_total_memory_mb() -> float:
+    """Inspect total physical host RAM without mandatory external dependencies."""
+    import subprocess
+    import sys
+
+    try:
+        import psutil
+
+        return float(psutil.virtual_memory().total) / (1024 * 1024)
+    except Exception:
+        pass
+
+    if sys.platform == "darwin":
+        try:
+            out = subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True).strip()
+            return float(int(out)) / (1024 * 1024)
+        except Exception:
+            return 16384.0
+    elif sys.platform.startswith("linux"):
+        try:
+            with open("/proc/meminfo", "r") as f:
+                for line in f:
+                    if line.startswith("MemTotal:"):
+                        return float(line.split()[1]) / 1024.0
+        except Exception:
+            return 16384.0
+    return 16384.0
+
+
+def check_memory_capacity(
+    tier_key: str,
+    device: torch.device | str = "auto",
+) -> tuple[bool, str]:
+    """Check if available system/unified RAM is sufficient to instantiate target tier."""
+    avail_mb = get_system_available_memory_mb()
+    req_mb = TIER_MEMORY_REQUIREMENTS_MB.get(tier_key.lower(), 1000.0)
+    total_mb = get_system_total_memory_mb()
+
+    if avail_mb < req_mb:
+        msg = (
+            f"Insufficient memory to switch to {tier_key.title()} (~{req_mb:.0f} MB required, "
+            f"~{avail_mb:.0f} MB available out of {total_mb:.0f} MB total RAM). "
+            f"Active model remains unchanged to prevent freezing or OOM termination."
+        )
+        return False, msg
+    return True, f"Memory check passed: ~{avail_mb:.0f} MB available (need ~{req_mb:.0f} MB)."
+
+
+def free_hardware_memory() -> None:
+    """Synchronously drain GPU/MPS queues and trigger garbage collection."""
+    import gc
+
+    gc.collect()
+    if (
+        hasattr(torch, "mps")
+        and hasattr(torch.backends, "mps")
+        and torch.backends.mps.is_available()
+    ):
+        if hasattr(torch.mps, "synchronize"):
+            try:
+                torch.mps.synchronize()
+            except Exception:
+                pass
+        if hasattr(torch.mps, "empty_cache"):
+            try:
+                torch.mps.empty_cache()
+            except Exception:
+                pass
+    elif torch.cuda.is_available():
+        try:
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+    gc.collect()
+
+
 PRESET_TO_TIER: dict[str, str] = {
     "nano": "nano",
     "nano-15m": "nano",
@@ -104,6 +237,8 @@ PRESET_TO_TIER: dict[str, str] = {
     "flagship": "flagship",
     "flagship-6b": "flagship",
     "helios-flagship-6b": "flagship",
+    "flagship-7b": "flagship",
+    "helios-flagship-7b": "flagship",
 }
 
 
@@ -217,11 +352,32 @@ def load_model_and_config(
     else:
         config = HeliosConfig.from_preset(preset)
 
-    # Adaptive half-precision for large tiers (Core 1B, Pro 3B, Flagship 5.8B) on MPS/CUDA
-    use_fp16 = config.d_model >= 2048 and target_device.type in ("mps", "cuda")
-    target_dtype = torch.float16 if use_fp16 else torch.float32
+    # Adaptive precision: FP16 for large tiers on MPS/CUDA, BF16 for large tiers on CPU
+    if config.d_model >= 2048:
+        if target_device.type in ("mps", "cuda"):
+            target_dtype = torch.float16
+        else:
+            target_dtype = torch.bfloat16
+    else:
+        target_dtype = torch.float32
 
-    model = HeliosForCausalLM(config).to(dtype=target_dtype, device=target_device)
+    # Check if a valid checkpoint payload exists to skip redundant parameter initialization
+    ckpt_exists = False
+    if effective_path is not None:
+        p_check = Path(effective_path).resolve()
+        ckpt_candidate = (p_check / "state.pt") if p_check.is_dir() else p_check
+        ckpt_exists = ckpt_candidate.is_file()
+
+    # Direct on-device instantiation in target precision
+    with torch.device(target_device):
+        orig_dtype = torch.get_default_dtype()
+        try:
+            if target_dtype != orig_dtype:
+                torch.set_default_dtype(target_dtype)
+            model = HeliosForCausalLM(config, init_weights=not ckpt_exists)
+        finally:
+            if torch.get_default_dtype() != orig_dtype:
+                torch.set_default_dtype(orig_dtype)
 
     if effective_path is not None:
         p = Path(effective_path).resolve()
@@ -240,8 +396,15 @@ def load_model_and_config(
                 }
                 if len(compatible_sd) == len(model_sd):
                     model.load_state_dict(compatible_sd, strict=True)
-                elif model_path is not None:
+                elif model_path is not None and compatible_sd:
+                    model.apply(model._init_weights)
                     model.load_state_dict(compatible_sd, strict=False)
+                else:
+                    model.apply(model._init_weights)
+            else:
+                model.apply(model._init_weights)
+        else:
+            model.apply(model._init_weights)
 
     model.eval()
     return model, config
@@ -252,13 +415,7 @@ def reload_model_for_tier(
     device: torch.device | str = "auto",
 ) -> tuple[HeliosForCausalLM, HeliosConfig]:
     """Safely free hardware memory and re-instantiate Helios for a new tier."""
-    import gc
-
-    gc.collect()
-    if hasattr(torch, "mps") and hasattr(torch.mps, "empty_cache"):
-        torch.mps.empty_cache()
-    elif torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    free_hardware_memory()
     return load_model_and_config(preset=preset, device=device)
 
 
