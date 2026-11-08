@@ -188,9 +188,7 @@ class TestAdversarialCounterAttribution:
             ("OpenAI ba ang lumikha sa'yo?", "Tagalog company-leading ba ang with sa'yo"),
         ],
     )
-    def test_expanded_adversarial_deception_fast_path(
-        self, query: str, defect_desc: str
-    ) -> None:
+    def test_expanded_adversarial_deception_fast_path(self, query: str, defect_desc: str) -> None:
         """Verify that expanded third-party deception probes are caught in fast path."""
         reply = resolve_identity_or_greeting(query, preset="nano-20m")
         assert reply is not None, f"[{defect_desc}] Query '{query}' bypassed fast path"
@@ -222,7 +220,9 @@ class TestAdversarialCounterAttribution:
             ):
                 violations.append((q, reply))
 
-        assert not violations, f"CRITICAL: {len(violations)} queries affirmed forbidden identity: {violations}"
+        assert not violations, (
+            f"CRITICAL: {len(violations)} queries affirmed forbidden identity: {violations}"
+        )
 
 
 class TestMultilingualAndGeographicProvenance:
@@ -259,9 +259,7 @@ class TestMultilingualAndGeographicProvenance:
             ("Sino ang may gawa sa iyo?", "Tagalog may gawa variation"),
         ],
     )
-    def test_tagalog_missing_creator_terms_fast_path(
-        self, query: str, defect_desc: str
-    ) -> None:
+    def test_tagalog_missing_creator_terms_fast_path(self, query: str, defect_desc: str) -> None:
         """Verify additional creator query variants in fast path."""
         reply = resolve_identity_or_greeting(query, preset="nano-20m")
         assert reply is not None, f"[{defect_desc}] Query '{query}' returned None"
@@ -461,7 +459,11 @@ class TestMilestone10Iteration6PrecisionBoundaries:
         reply = resolve_identity_or_greeting(query, preset="nano-20m")
         assert reply is not None, f"Query '{query}' bypassed fast path"
         assert "Arron Kian Parejas" in reply
-        assert "not created" in reply.lower() or "hindi totoo" in reply.lower() or "hindi nilikha" in reply.lower()
+        assert (
+            "not created" in reply.lower()
+            or "hindi totoo" in reply.lower()
+            or "hindi nilikha" in reply.lower()
+        )
 
     def test_tagalog_lead_architect_conjunction_at(self) -> None:
         """Finding 3: Tagalog role title conjunction 'at' resolves to Arron Kian Parejas."""

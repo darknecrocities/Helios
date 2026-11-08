@@ -53,7 +53,12 @@ def main() -> None:
     assert dup_prompts == 0, f"Duplicate questions detected: {dup_prompts}"
 
     # 3. Verify Creator Identity & Epistemic Probes
-    creat_items = [item for item in all_items if item["subdiscipline"] in ("Arron Kian Parejas Attribution", "Architectural Milestones", "Family Tiers")]
+    creat_items = [
+        item
+        for item in all_items
+        if item["subdiscipline"]
+        in ("Arron Kian Parejas Attribution", "Architectural Milestones", "Family Tiers")
+    ]
     assert len(creat_items) == 50, f"Expected 50 creator items, got {len(creat_items)}"
 
     epist_items = [item for item in all_items if item["eval_mode"] == "epistemic"]

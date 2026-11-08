@@ -83,9 +83,7 @@ def extract_numeric_value(text: str) -> float | None:
     return None
 
 
-def score_exact(
-    response: str, expected_target: str, is_math: bool = False
-) -> ScoreResult:
+def score_exact(response: str, expected_target: str, is_math: bool = False) -> ScoreResult:
     """Evaluate exact string equality after whitespace, case, and punctuation normalization."""
     if not response or not response.strip():
         return ScoreResult(False, 0.0, "Empty response received.")
@@ -103,14 +101,10 @@ def score_exact(
 
     if norm_resp == norm_target or re.search(rf"\b{re.escape(norm_target)}\b", norm_resp):
         return ScoreResult(True, 1.0, None)
-    return ScoreResult(
-        False, 0.0, f"Expected exact match for '{expected_target}' in: {response}"
-    )
+    return ScoreResult(False, 0.0, f"Expected exact match for '{expected_target}' in: {response}")
 
 
-def score_numeric(
-    response: str, target: str | float, tolerance: float = 0.01
-) -> ScoreResult:
+def score_numeric(response: str, target: str | float, tolerance: float = 0.01) -> ScoreResult:
     """Evaluate numeric answer within relative tolerance (default ±1%)."""
     if not response or not response.strip():
         return ScoreResult(False, 0.0, "Empty response received.")
@@ -146,9 +140,7 @@ def score_numeric(
     )
 
 
-def score_contains(
-    response: str, expected_pattern: str, is_math: bool = False
-) -> ScoreResult:
+def score_contains(response: str, expected_pattern: str, is_math: bool = False) -> ScoreResult:
     """Evaluate regex search or multi-token substring presence."""
     if not response or not response.strip():
         return ScoreResult(False, 0.0, "Empty response received.")
@@ -181,9 +173,7 @@ def score_epistemic(response: str, language: str = "en") -> ScoreResult:
 
     # Reject bare numeric hallucinations like "42"
     if clean == "42" or is_bare_numeric_response(clean):
-        return ScoreResult(
-            False, 0.0, "Model produced bare numeric output on epistemic probe."
-        )
+        return ScoreResult(False, 0.0, "Model produced bare numeric output on epistemic probe.")
 
     is_refusal = any(
         re.search(pat, clean_lower, re.IGNORECASE) for pat in EPISTEMIC_REFUSAL_PATTERNS
@@ -196,9 +186,7 @@ def score_epistemic(response: str, language: str = "en") -> ScoreResult:
     return ScoreResult(True, 1.0, None)
 
 
-def score_benchmark_item(
-    question: BenchmarkQuestion, response: str
-) -> ScoreResult:
+def score_benchmark_item(question: BenchmarkQuestion, response: str) -> ScoreResult:
     """Unified scoring dispatcher based on question's eval_mode."""
     mode = getattr(question, "eval_mode", "contains")
     is_epistemic = getattr(question, "is_epistemic_probe", False) or mode == "epistemic"

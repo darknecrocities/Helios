@@ -328,7 +328,9 @@ class TestKVHoleAndRollbackDefects:
         engine = SpeculativeDecodingEngine(
             target_model=target,
             draft_model=draft,
-            config=SpeculativeConfig(lookahead_k=3, temperature=0.0, max_new_tokens=10, eos_token_id=eos_id),
+            config=SpeculativeConfig(
+                lookahead_k=3, temperature=0.0, max_new_tokens=10, eos_token_id=eos_id
+            ),
         )
 
         orig_init = engine._init_caches
@@ -465,5 +467,3 @@ class TestKVHoleAndRollbackDefects:
         )
         assert d_c[0].cur_len == total_len
         assert t_c[0].cur_len == total_len
-
-

@@ -37,6 +37,7 @@ from helios.cli.utils import (
     resolve_device,
 )
 from helios.evaluation.benchmark_2000 import load_benchmark_questions
+from helios.evaluation.procedural import solve_procedural_skill
 from helios.evaluation.schema import BenchmarkQuestion, EvaluationResult
 from helios.evaluation.scoring import normalize_text, score_benchmark_item
 from helios.evaluation.taxonomy import TaxonomyReportGenerator
@@ -45,6 +46,7 @@ from helios.memory.episodic import EpisodicMemory
 
 logger = logging.getLogger("helios.eval.2000")
 
+# fmt: off
 _FTS_STOPWORDS: frozenset[str] = frozenset({
     "what", "which", "where", "when", "who", "whom", "this", "that", "these",
     "those", "from", "with", "about", "into", "through", "during", "before",
@@ -52,6 +54,7 @@ _FTS_STOPWORDS: frozenset[str] = frozenset({
     "and", "or", "is", "are", "was", "were", "be", "been", "being", "have",
     "has", "had", "do", "does", "did", "the", "a", "an",
 })
+# fmt: on
 
 
 class HeliosEvaluator2000:
@@ -96,6 +99,7 @@ class HeliosEvaluator2000:
         self._fts = None
         try:
             from helios.memory.fts_corpus import FTSCorpus, resolve_corpus_db_path
+
             db_p = Path("data/hma_full_corpus.db")
             if not db_p.exists():
                 db_p = Path(str(resolve_corpus_db_path()))
@@ -192,7 +196,8 @@ class HeliosEvaluator2000:
         # Stage 5: Tier 2 Memory-Mapped SQLite FTS5 Full Corpus Knowledge Grounding
         if self._fts is not None:
             tokens = [
-                t for t in re.findall(r"\b[a-zA-Z0-9_-]+\b", query)
+                t
+                for t in re.findall(r"\b[a-zA-Z0-9_-]+\b", query)
                 if len(t) > 3 and t.lower() not in _FTS_STOPWORDS
             ]
             if tokens:
@@ -206,8 +211,16 @@ class HeliosEvaluator2000:
                     row = cursor.fetchone()
                     if row:
                         content = row[0]
-                        ans = content.split("\nA: ", 1)[1].strip() if "\nA: " in content else content.strip()
-                        if ans and not is_bare_numeric_response(ans) and not contains_forbidden_identity_claim(ans):
+                        ans = (
+                            content.split("\nA: ", 1)[1].strip()
+                            if "\nA: " in content
+                            else content.strip()
+                        )
+                        if (
+                            ans
+                            and not is_bare_numeric_response(ans)
+                            and not contains_forbidden_identity_claim(ans)
+                        ):
                             return ans, (time.perf_counter() - t0) * 1000.0
                 except Exception:
                     pass
@@ -218,51 +231,7 @@ class HeliosEvaluator2000:
 
     def _solve_procedural_skill(self, query: str) -> str | None:
         """Procedural calculator for linear equations, geometry, calculus, statistics, and logic."""
-        # 1. Linear equations: ax + b = c
-        if m := re.search(r"linear\s+equation:\s*(\d+)x\s*([\+\-])\s*(\d+)\s*=\s*(\d+)", query, re.I):
-            a, sign, b, c = float(m.group(1)), m.group(2), float(m.group(3)), float(m.group(4))
-            b_val = b if sign == "+" else -b
-            x = (c - b_val) / a
-            return f"{int(x) if x.is_integer() else x}"
-
-        # 2. Geometry: area of square
-        if m := re.search(r"area\s+of\s+a\s+square\s+whose\s+side\s+length\s+is\s+(\d+(?:\.\d+)?)\s*units", query, re.I):
-            s = float(m.group(1))
-            area = s * s
-            return f"{int(area) if area.is_integer() else area}"
-
-        # 3. Calculus: derivative of f(x) = coeff*x^2 at x
-        if m := re.search(r"derivative\s+of\s+f\(x\)\s*=\s*(\d+)x\^2\s+evaluated\s+at\s+x\s*=\s*(\d+)", query, re.I):
-            coeff, pt = float(m.group(1)), float(m.group(2))
-            deriv = 2 * coeff * pt
-            return f"{int(deriv) if deriv.is_integer() else deriv}"
-
-        # 4. Statistics: arithmetic mean
-        if m := re.search(r"arithmetic\s+mean\s+of\s+the\s+numbers\s+([\d\s,]+(?:and\s+\d+)?)", query, re.I):
-            nums = [float(n) for n in re.findall(r"\d+", m.group(1))]
-            if nums:
-                mean = sum(nums) / len(nums)
-                return f"{int(mean) if mean.is_integer() else mean}"
-
-        # 5. Syllogisms & Logic Deductions
-        if re.search(r"Premise 1: All \w+ have \w+\. Premise 2: All \w+ are \w+\. Is the conclusion 'All \w+ have \w+' valid or invalid\?", query, re.I):
-            return "Valid"
-        if re.search(r"Premise 1: Some \w+ have \w+\. Premise 2: Some \w+ are \w+\. Is the conclusion 'Some \w+ have \w+' valid or invalid\?", query, re.I):
-            return "Invalid"
-        if re.search(r"What\s+must\s+be\s+true\s+about\s+\w+\s*\(true\s+or\s+false\)\?", query, re.I):
-            return "True"
-        if re.search(r"By\s+modus\s+tollens,\s+is\s+\w+\s+true\s+or\s+false\?", query, re.I):
-            return "False"
-        if re.search(r"Does\s+it\s+necessarily\s+follow\s+that\s+\w+\s+is\s+true\s*\(yes\s+or\s+no\)\?", query, re.I):
-            return "No"
-        if re.search(r"does\s+this\s+correlation\s+prove\s+that\s+.*directly\s+causes\s+.*\(yes\s+or\s+no\)\?", query, re.I):
-            return "No"
-        if re.search(r"Counterfactual\s+#\d+:.*\(yes\s+or\s+no\)\?", query, re.I):
-            return "No"
-        if m := re.search(r"Given rule chain: .*\. Fact: (\w+) is active\. Which state is guaranteed to be active: (\w+) or none\?", query, re.I):
-            return m.group(2)
-
-        return None
+        return solve_procedural_skill(query)
 
     def evaluate_item_neural(self, question: BenchmarkQuestion) -> tuple[str, float]:
         """Execute neural token-by-token decoding evaluation."""
@@ -336,7 +305,9 @@ class HeliosEvaluator2000:
 
         logger.info(
             "Executing Helios 2000 Benchmark (Mode: %s | Items: %d | Preset: %s)...",
-            self.mode, len(items), self.preset,
+            self.mode,
+            len(items),
+            self.preset,
         )
 
         results: list[EvaluationResult] = []
@@ -390,8 +361,12 @@ class HeliosEvaluator2000:
                     "total": st["total"],
                     "passed": st["passed"],
                     "failed": st["failed"],
-                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0 if st["total"] > 0 else 0.0,
-                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"]) if st["latencies"] else 0.0,
+                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0
+                    if st["total"] > 0
+                    else 0.0,
+                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"])
+                    if st["latencies"]
+                    else 0.0,
                 }
                 for p, st in pillar_stats.items()
             },
@@ -400,8 +375,12 @@ class HeliosEvaluator2000:
                     "total": st["total"],
                     "passed": st["passed"],
                     "failed": st["failed"],
-                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0 if st["total"] > 0 else 0.0,
-                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"]) if st["latencies"] else 0.0,
+                    "accuracy_percent": (st["passed"] / st["total"]) * 100.0
+                    if st["total"] > 0
+                    else 0.0,
+                    "avg_latency_ms": sum(st["latencies"]) / len(st["latencies"])
+                    if st["latencies"]
+                    else 0.0,
                 }
                 for d, st in discipline_stats.items()
             },
@@ -426,7 +405,8 @@ class HeliosEvaluator2000:
         art_dir.mkdir(parents=True, exist_ok=True)
 
         json_file = (
-            self.output_path if self.output_path and self.output_path.suffix == ".json"
+            self.output_path
+            if self.output_path and self.output_path.suffix == ".json"
             else art_dir / "benchmark_2000_results.json"
         )
         with open(json_file, "w", encoding="utf-8") as f:
@@ -455,13 +435,15 @@ class HeliosEvaluator2000:
                 f"{st['accuracy_percent']:.1f}% | {st['avg_latency_ms']:.2f} ms |"
             )
 
-        lines.extend([
-            "",
-            "## Specific Disciplines Breakdown",
-            "",
-            "| Discipline | Total | Passed | Failed | Accuracy (%) | Mean Latency (ms) |",
-            "| :--- | :---: | :---: | :---: | :---: | :---: |",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Specific Disciplines Breakdown",
+                "",
+                "| Discipline | Total | Passed | Failed | Accuracy (%) | Mean Latency (ms) |",
+                "| :--- | :---: | :---: | :---: | :---: | :---: |",
+            ]
+        )
         for d, st in summary["discipline_breakdown"].items():
             lines.append(
                 f"| {d} | {st['total']} | {st['passed']} | {st['failed']} | "
@@ -474,7 +456,9 @@ class HeliosEvaluator2000:
         # Also generate taxonomy error report if results are provided
         if results is not None:
             tax_gen = TaxonomyReportGenerator()
-            tax_report = tax_gen.generate_report(results, questions=questions, model_name=f"Helios ({self.preset})")
+            tax_report = tax_gen.generate_report(
+                results, questions=questions, model_name=f"Helios ({self.preset})"
+            )
             tax_gen.export_markdown(tax_report, output_path=art_dir / "benchmark_2000_report.md")
             tax_gen.export_json(tax_report, output_path=art_dir / "benchmark_2000_errors.json")
 

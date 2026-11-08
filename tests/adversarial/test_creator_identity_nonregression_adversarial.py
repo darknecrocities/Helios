@@ -259,10 +259,14 @@ class TestAllSixModelTiersIdentityConsistency:
         for probe in self.IDENTITY_PROBES:
             fast_reply = resolve_identity_or_greeting(probe, preset=preset)
             assert fast_reply is not None, f"Fast path returned None for {probe} on {preset}"
-            assert "Arron Kian Parejas" in fast_reply, f"Missing creator in fast path for {probe} on {preset}"
+            assert "Arron Kian Parejas" in fast_reply, (
+                f"Missing creator in fast path for {probe} on {preset}"
+            )
 
             sem_reply = resolve_verified_semantic_reply(grounded_hma, probe, preset=preset)
-            assert "Arron Kian Parejas" in sem_reply, f"Missing creator in fallback for {probe} on {preset}"
+            assert "Arron Kian Parejas" in sem_reply, (
+                f"Missing creator in fallback for {probe} on {preset}"
+            )
 
     @pytest.mark.parametrize(
         ("preset", "display_name", "params", "context"),
@@ -287,9 +291,7 @@ class TestAllSixModelTiersIdentityConsistency:
 class TestHighThroughputConcurrency:
     """Stress-test concurrent calls to resolve_verified_semantic_reply."""
 
-    def test_concurrent_throughput_and_thread_safety(
-        self, grounded_hma: HMAController
-    ) -> None:
+    def test_concurrent_throughput_and_thread_safety(self, grounded_hma: HMAController) -> None:
         """Verify thread-safety and throughput over 100 concurrent requests across tiers."""
         probes = [
             ("Who created you?", "nano-20m"),

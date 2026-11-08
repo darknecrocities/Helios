@@ -196,7 +196,9 @@ def test_speculative_eos_handling(
     engine = SpeculativeDecodingEngine(
         target_model=target,
         draft_model=draft,
-        config=SpeculativeConfig(lookahead_k=3, temperature=0.0, max_new_tokens=20, eos_token_id=eos_id),
+        config=SpeculativeConfig(
+            lookahead_k=3, temperature=0.0, max_new_tokens=20, eos_token_id=eos_id
+        ),
     )
     # Craft a tiny input
     prompt = torch.tensor([[5, 10]])

@@ -127,14 +127,18 @@ def test_multimodal_attention_mask_invariants() -> None:
     # Property 3: Visual tokens CANNOT attend to subsequent response text tokens (k >= img_end)
     for q in range(img_start, img_end):
         for k in range(img_end, seq_len):
-            assert mask[q, k] == float("-inf"), f"Visual token {q} must not attend to future token {k}"
+            assert mask[q, k] == float("-inf"), (
+                f"Visual token {q} must not attend to future token {k}"
+            )
 
     # Property 4: Subsequent text tokens attend causally to all past tokens including vision
     for q in range(img_end, seq_len):
         for k in range(q + 1):
             assert mask[q, k] == 0.0, f"Text token {q} should attend to token {k}"
         for k in range(q + 1, seq_len):
-            assert mask[q, k] == float("-inf"), f"Text token {q} must not attend to future token {k}"
+            assert mask[q, k] == float("-inf"), (
+                f"Text token {q} must not attend to future token {k}"
+            )
 
 
 def test_token_sequence_merging_case_a(
@@ -146,7 +150,9 @@ def test_token_sequence_merging_case_a(
     n_patches = (tiny_vision_config.image_size // tiny_vision_config.patch_size) ** 2  # 4
     assert n_patches == 4
 
-    input_ids = torch.tensor([[10, 11, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, 12]])
+    input_ids = torch.tensor(
+        [[10, 11, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, IMAGE_TOKEN_ID, 12]]
+    )
     pixels = torch.randn(1, 3, tiny_vision_config.image_size, tiny_vision_config.image_size)
 
     out = model(input_ids=input_ids, pixel_values=pixels)
@@ -193,22 +199,19 @@ def test_multimodal_forward_and_backward_gradient_flow(
 
     # 1. Check vision encoder gradients
     has_vision_grad = any(
-        p.grad is not None and torch.norm(p.grad) > 0.0
-        for p in model.vision_encoder.parameters()
+        p.grad is not None and torch.norm(p.grad) > 0.0 for p in model.vision_encoder.parameters()
     )
     assert has_vision_grad, "Vision encoder received zero gradient"
 
     # 2. Check projector gradients
     has_proj_grad = any(
-        p.grad is not None and torch.norm(p.grad) > 0.0
-        for p in model.projector.parameters()
+        p.grad is not None and torch.norm(p.grad) > 0.0 for p in model.projector.parameters()
     )
     assert has_proj_grad, "Projector received zero gradient"
 
     # 3. Check language model gradients
     has_llm_grad = any(
-        p.grad is not None and torch.norm(p.grad) > 0.0
-        for p in model.language_model.parameters()
+        p.grad is not None and torch.norm(p.grad) > 0.0 for p in model.language_model.parameters()
     )
     assert has_llm_grad, "Language model received zero gradient"
 

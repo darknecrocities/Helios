@@ -23,6 +23,7 @@ from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
 from helios.memory.fts_corpus import (
     FTSCorpus,
+    resolve_corpus_db_path,
     sanitize_fts5_query,
 )
 from helios.reasoning.cot_engine import (
@@ -165,9 +166,7 @@ def test_fts5_query_sanitization_punctuation_and_operators() -> None:
 
 
 @pytest.mark.unit
-def test_fts5_query_latency_and_positive_bm25_score(
-    sample_jsonl: Path, tmp_path: Path
-) -> None:
+def test_fts5_query_latency_and_positive_bm25_score(sample_jsonl: Path, tmp_path: Path) -> None:
     """Verify query latency is sub-10ms SLA and BM25 scores are positive."""
     db_path = tmp_path / "latency_test.db"
     corpus = FTSCorpus(db_path=db_path)
@@ -269,6 +268,10 @@ def test_synthetic_probe_markers_coverage() -> None:
 @pytest.mark.integration
 def test_factual_queries_vs_epistemic_refusals() -> None:
     """Verify real-world factual queries retrieve knowledge while probes return refusal."""
+    db_path = resolve_corpus_db_path()
+    if not Path(str(db_path)).exists():
+        pytest.skip("Full 134k corpus DB not present on disk")
+
     hma = HMAController(episodic_memory=EpisodicMemory(db_path=":memory:"))
     seed_hma_knowledge_base(hma, set())
 
@@ -284,7 +287,11 @@ def test_factual_queries_vs_epistemic_refusals() -> None:
     assert EPISTEMIC_FALLBACK_EN not in ans_beta
 
     ans_photo = resolve_verified_semantic_reply(hma, "What is photosynthesis?", "nano-20m")
-    assert "glucose" in ans_photo.lower() or "energy" in ans_photo.lower() or "light" in ans_photo.lower()
+    assert (
+        "glucose" in ans_photo.lower()
+        or "energy" in ans_photo.lower()
+        or "light" in ans_photo.lower()
+    )
     assert EPISTEMIC_FALLBACK_EN not in ans_photo
 
     # 2. Synthetic probes must deterministically return epistemic refusal

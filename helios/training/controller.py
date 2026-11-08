@@ -69,12 +69,15 @@ def adapt_block_streamed_weights(
 
         if cur_vocab < target_vocab:
             std = getattr(target_config, "initializer_range", 0.02)
-            full_embed = torch.randn(
-                target_vocab,
-                d_model,
-                device=cur_embed.device,
-                dtype=cur_embed.dtype,
-            ) * std
+            full_embed = (
+                torch.randn(
+                    target_vocab,
+                    d_model,
+                    device=cur_embed.device,
+                    dtype=cur_embed.dtype,
+                )
+                * std
+            )
             full_embed[:cur_vocab, :] = cur_embed
             adapted["embed_tokens.weight"] = full_embed
         else:
@@ -97,12 +100,15 @@ def adapt_block_streamed_weights(
             cur_lm = state_dict["lm_head.weight"]
             if cur_lm.shape[0] < target_config.vocab_size:
                 std = getattr(target_config, "initializer_range", 0.02)
-                full_lm = torch.randn(
-                    target_config.vocab_size,
-                    target_config.d_model,
-                    device=cur_lm.device,
-                    dtype=cur_lm.dtype,
-                ) * std
+                full_lm = (
+                    torch.randn(
+                        target_config.vocab_size,
+                        target_config.d_model,
+                        device=cur_lm.device,
+                        dtype=cur_lm.dtype,
+                    )
+                    * std
+                )
                 full_lm[: cur_lm.shape[0], :] = cur_lm
                 adapted["lm_head.weight"] = full_lm
             else:
@@ -174,7 +180,9 @@ def load_multi_tier_checkpoint(
     try:
         payload = torch.load(weights_file, map_location=device, weights_only=False)
     except Exception as e:
-        raise CheckpointCorruptionError(f"Corrupted checkpoint payload in {weights_file}: {e}") from e
+        raise CheckpointCorruptionError(
+            f"Corrupted checkpoint payload in {weights_file}: {e}"
+        ) from e
 
     raw_sd = payload.get("model_state_dict", payload)
 
