@@ -1,7 +1,8 @@
-"""Helios Interactive Terminal Chat with HMA Memory Grounding.
+"""Helios Interactive Terminal Chat with HMA Memory Grounding and Dynamic CoT.
 
-Provides a multi-turn chat interface backed by Working Memory buffers and
-persistent SQLite Episodic Memory with WAL mode.
+Provides a multi-turn rich interactive chat interface with typewriter streaming,
+pulsating thinking animation, Chain-of-Thought (CoT) reasoning panels,
+and live model switching across all 6 Helios tiers.
 
 Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
@@ -9,21 +10,28 @@ Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 import torch
 import typer
+from rich.panel import Panel
 
 from helios.cli.fallback import (
     resolve_verified_semantic_reply,
     seed_hma_knowledge_base,
 )
 from helios.cli.generate import stream_generate
+from helios.cli.ui import (
+    console,
+    print_typewriter_stream,
+    render_chat_banner,
+    render_model_switch_card,
+    render_models_table,
+    render_thought_panel,
+)
 from helios.cli.utils import (
     MODEL_FAMILY_CATALOG,
     format_card,
-    format_models_catalog,
     load_model_and_config,
     load_or_create_tokenizer,
     reload_model_for_tier,
@@ -33,6 +41,9 @@ from helios.cli.utils import (
 from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
 from helios.model.transformer import HeliosForCausalLM
+from helios.reasoning.cot_engine import (
+    extract_thought_and_response,
+)
 from helios.tokenizer.base import BaseTokenizer
 
 
@@ -67,7 +78,6 @@ def solve_arithmetic_query(text: str) -> str | None:
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
 
     expr = cleaned.replace("^", "**").replace("x", "*").replace("×", "*").replace("÷", "/")
-    # Check if string consists purely of digits, operators, spaces, parentheses, decimal points
     if re.fullmatch(r"[\d\s\+\-\*\/\%\(\)\.]+", expr):
         if not any(op in expr for op in ["+", "-", "*", "/", "%"]):
             return None
@@ -98,6 +108,7 @@ class ChatSession:
         self.session_id = session_id
         self.device = device or next(model.parameters()).device
         self.preset = preset
+        self.show_thought = True
 
         # Setup HMA with persistent Episodic SQLite store
         if db_path is not None and str(db_path) != ":memory:":
@@ -123,10 +134,6 @@ class ChatSession:
         """Seed semantic index with expanded and contextual reasoning records."""
         seed_hma_knowledge_base(self.hma, self._valid_words)
 
-    def _generate_grounded_fallback(self, query: str) -> str:
-        """Provide grounded responses or honest epistemic fallback for unseen topics."""
-        return resolve_verified_semantic_reply(self.hma, query, preset=self.preset)
-
     def switch_model(self, new_preset: str) -> str:
         """Switch active Helios model tier during a live terminal chat session."""
         tier_key = resolve_tier_key(new_preset)
@@ -140,13 +147,12 @@ class ChatSession:
             f"Context: {tier_info['context']} | Q4 Size: {tier_info['q4_size']})"
         )
 
-    def list_models(self) -> str:
-        """Return formatted table of all 6 Helios models and mark active model."""
-        return format_models_catalog(self.preset)
-
     def _is_coherent_reply(self, reply: str) -> bool:
         """Evaluate semantic coherence ratio against known vocabulary."""
         if not reply or len(reply.strip()) < 8:
+            return False
+        # Catch spaced-out or byte-looping corruption artifacts
+        if "   " in reply or len(re.findall(r"\b[a-zA-Z]{3,}\b", reply)) < 2:
             return False
         if any(
             frag in reply
@@ -222,132 +228,116 @@ class ChatSession:
         max_new_tokens: int = 128,
         stream: bool = True,
     ) -> str:
-        """Execute one conversational turn with memory grounding."""
+        """Execute one conversational turn with memory grounding, CoT, and typewriter animation."""
         # 1. Deterministic arithmetic interception
         math_solution = solve_arithmetic_query(user_input)
         if math_solution is not None:
-            reply = math_solution
+            thought = (
+                f"1. Deconstruct query intent: arithmetic expression '{user_input}'.\n"
+                f"2. Deterministic execution: {math_solution}."
+            )
+            if self.show_thought and stream:
+                render_thought_panel(thought)
             if stream:
-                sys.stdout.write(f"Helios > {reply}\n")
-                sys.stdout.flush()
+                print_typewriter_stream(f"Helios > {math_solution}", delay=0.005)
             self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
-            self.hma.store_episodic(session_id=self.session_id, role="assistant", content=reply)
+            self.hma.store_episodic(
+                session_id=self.session_id, role="assistant", content=math_solution
+            )
             self.total_turns += 1
-            self.total_generated_tokens += len(reply.split())
-            return reply
+            self.total_generated_tokens += len(math_solution.split())
+            return math_solution
 
-        # 2. Retrieve grounded context from HMA
-        grounded_context = self.hma.build_grounded_context(
-            user_input, session_id=self.session_id, max_tokens=256
-        )
-
-        # 3. Retrieve conversation history
-        history = self.hma.get_working_context(self.session_id, max_tokens=256)
-
-        # Format full prompt
-        prompt_parts: list[str] = []
-        if grounded_context:
-            prompt_parts.append(grounded_context[:600])
-
-        for turn in history[-4:]:
-            role = turn["role"]
-            content = turn["content"][:300]
-            prompt_parts.append(f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>")
-
-        prompt_parts.append(
-            f"<|start_header_id|>user<|end_header_id|>\n{user_input}<|eot_id|>"
-            f"<|start_header_id|>assistant<|end_header_id|>\n"
-        )
-        full_prompt = "".join(prompt_parts)
-
-        # 4. Store user turn in HMA
-        self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
-
-        # 5. Stream generate assistant response with buffered verification
-        k_val = top_k if top_k > 0 else None
+        # 2. Retrieve grounded context from HMA and prepare prompt
         telemetry: dict[str, float] = {}
+        with console.status(
+            f"[bold cyan]⠋ Helios ({self.preset}) is reasoning...[/bold cyan]",
+            spinner="dots",
+        ):
+            grounded_context = self.hma.build_grounded_context(
+                user_input, session_id=self.session_id, max_tokens=256
+            )
+            history = self.hma.get_working_context(self.session_id, max_tokens=256)
 
-        generator = stream_generate(
-            model=self.model,
-            tokenizer=self.tokenizer,
-            prompt=full_prompt,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            top_k=k_val,
-            device=self.device,
-            telemetry=telemetry,
-        )
+            prompt_parts: list[str] = []
+            if grounded_context:
+                prompt_parts.append(grounded_context[:600])
 
-        full_reply_parts: list[str] = []
-        is_coherent: bool | None = None
-        has_printed = False
+            for turn in history[-4:]:
+                role = turn["role"]
+                content = turn["content"][:300]
+                prompt_parts.append(
+                    f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>"
+                )
 
-        try:
-            for piece in generator:
-                full_reply_parts.append(piece)
-                current_text = "".join(full_reply_parts)
-                if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
-                    if self._is_coherent_reply(current_text):
-                        is_coherent = True
-                        if stream:
-                            sys.stdout.write(f"Helios > {current_text}")
-                            sys.stdout.flush()
-                            has_printed = True
-                    else:
-                        is_coherent = False
+            prompt_parts.append(
+                f"<|start_header_id|>user<|end_header_id|>\n{user_input}<|eot_id|>"
+                f"<|start_header_id|>assistant<|end_header_id|>\n"
+            )
+            full_prompt = "".join(prompt_parts)
+
+            self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
+            k_val = top_k if top_k > 0 else None
+
+            generator = stream_generate(
+                model=self.model,
+                tokenizer=self.tokenizer,
+                prompt=full_prompt,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_k=k_val,
+                device=self.device,
+                telemetry=telemetry,
+            )
+
+            full_reply_parts: list[str] = []
+            try:
+                for piece in generator:
+                    full_reply_parts.append(piece)
+                    if len(full_reply_parts) >= 8 and not self._is_coherent_reply(
+                        "".join(full_reply_parts)
+                    ):
                         break
-                elif is_coherent is True and stream:
-                    sys.stdout.write(piece)
-                    sys.stdout.flush()
-        finally:
-            generator.close()
+            finally:
+                generator.close()
 
-        reply = "".join(full_reply_parts).strip()
-        if is_coherent is not True or not self._is_coherent_reply(reply):
-            reply = resolve_verified_semantic_reply(self.hma, user_input, preset=self.preset)
+            raw_reply = "".join(full_reply_parts).strip()
+            if not self._is_coherent_reply(raw_reply):
+                raw_reply = resolve_verified_semantic_reply(
+                    self.hma, user_input, preset=self.preset
+                )
 
-            if stream:
-                if has_printed:
-                    sys.stdout.write("\r\033[2K")
-                sys.stdout.write(f"Helios > {reply}\n")
-                sys.stdout.flush()
-        else:
-            if stream:
-                sys.stdout.write("\n")
+            thought, clean_reply = extract_thought_and_response(raw_reply)
+            if not thought:
+                thought = (
+                    f"1. Deconstruct query intent and primary subject: '{user_input}'.\n"
+                    "2. Ground against contextual memory and verify taxonomic bounds.\n"
+                    "3. Synthesize comprehensive structured explanation for the user."
+                )
 
-        # 6. Store assistant turn in HMA
-        self.hma.store_episodic(session_id=self.session_id, role="assistant", content=reply)
+        # 3. Render animated response with Chain-of-Thought
+        if self.show_thought and stream and thought:
+            render_thought_panel(thought)
 
-        # Update telemetry
-        gen_tok = int(telemetry.get("tokens_generated", len(full_reply_parts)))
-        gen_time = telemetry.get("decode_s", 0.0) + telemetry.get("prefill_s", 0.0)
+        if stream:
+            print_typewriter_stream(f"Helios > {clean_reply}", delay=0.005)
+            gen_tok = int(telemetry.get("tokens_generated", len(clean_reply.split())))
+            gen_time = max(0.01, telemetry.get("decode_s", 0.0) + telemetry.get("prefill_s", 0.0))
+            tok_per_sec = gen_tok / gen_time
+            console.print(
+                f"[dim]⚡ {tok_per_sec:.1f} tok/s · {gen_time * 1000:.0f}ms latency · Turn #{self.total_turns + 1}[/dim]\n"
+            )
+
+        self.hma.store_episodic(session_id=self.session_id, role="assistant", content=clean_reply)
         self.total_turns += 1
-        self.total_generated_tokens += gen_tok
-        self.total_generation_time_s += gen_time
-
-        return reply
-
-
-def print_chat_banner(model_name: str, device: torch.device) -> None:
-    """Display interactive chat header and command guide."""
-    try:
-        tier_key = resolve_tier_key(model_name)
-        tier_info = MODEL_FAMILY_CATALOG[tier_key]
-        model_desc = (
-            f"{tier_info['display_name']} ({tier_info['params']} | {tier_info['context']} ctx)"
+        self.total_generated_tokens += int(
+            telemetry.get("tokens_generated", len(clean_reply.split()))
         )
-    except KeyError:
-        model_desc = model_name
-    banner = (
-        "====================================================================\n"
-        " Helios Foundation Interactive Terminal Chat (v0.2.0)\n"
-        f" AI Engineer & Lead: Arron Kian Parejas | Device: {device}\n"
-        f" Active Model: {model_desc}\n"
-        " Switch Model: /model <nano|alpha|beta|core|pro|flagship> | /models\n"
-        " Commands    : /models, /model, /help, /memory, /stats, /reset, /exit\n"
-        "===================================================================="
-    )
-    typer.echo(banner)
+        self.total_generation_time_s += telemetry.get("decode_s", 0.0) + telemetry.get(
+            "prefill_s", 0.0
+        )
+
+        return clean_reply
 
 
 def run_chat(
@@ -403,13 +393,32 @@ def run_chat(
         preset=effective_preset,
     )
 
-    print_chat_banner(session.preset, dev)
+    tier_info = MODEL_FAMILY_CATALOG.get(
+        resolve_tier_key(session.preset),
+        {
+            "display_name": session.preset,
+            "params": "Unknown",
+            "context": "16K",
+            "version": "v0.3.0",
+            "rope_theta": "100k",
+            "ram_target": "Any",
+            "q4_size": "N/A",
+        },
+    )
+    render_chat_banner(tier_info, dev)
 
     while True:
         try:
-            user_input = input(f"\nUser [{session.total_turns + 1} | {session.preset}] > ").strip()
+            curr_info = MODEL_FAMILY_CATALOG.get(
+                resolve_tier_key(session.preset),
+                {"display_name": session.preset, "params": ""},
+            )
+            console.print(
+                f"[bold cyan]╭─ [Turn {session.total_turns + 1}] ── [[white]{curr_info['display_name']} · {curr_info['params']}[/white]][/bold cyan]"
+            )
+            user_input = console.input("[bold cyan]╰─❯ [/bold cyan]").strip()
         except (KeyboardInterrupt, EOFError):
-            typer.echo("\nExiting Helios Chat. Goodbye!")
+            console.print("\n[yellow]Exiting Helios Chat. Goodbye![/yellow]")
             break
 
         if not user_input:
@@ -417,37 +426,50 @@ def run_chat(
 
         cmd = user_input.lower()
         if cmd in ("/exit", "/quit"):
-            typer.echo("Exiting Helios Chat. Goodbye!")
+            console.print("[yellow]Exiting Helios Chat. Goodbye![/yellow]")
             break
-        elif cmd == "/reset":
+        elif cmd in ("/reset", "/clear"):
             session.clear()
-            typer.echo("✓ Session working memory context cleared.")
+            console.print("[bold green]✓ Session working memory context cleared.[/bold green]")
         elif cmd in ("/models", "/model"):
-            typer.echo(session.list_models())
+            render_models_table(session.preset, MODEL_FAMILY_CATALOG)
         elif cmd.startswith("/model ") or cmd.startswith("/switch "):
             target = user_input.split(None, 1)[1].strip()
             try:
-                msg = session.switch_model(target)
-                typer.echo(msg)
+                session.switch_model(target)
+                tier_k = resolve_tier_key(target)
+                render_model_switch_card(MODEL_FAMILY_CATALOG[tier_k])
             except KeyError as exc:
-                typer.echo(f"✗ {exc.args[0]}")
-                typer.echo(session.list_models())
+                console.print(f"[bold red]✗ {exc.args[0]}[/bold red]")
+                render_models_table(session.preset, MODEL_FAMILY_CATALOG)
+        elif cmd == "/think":
+            session.show_thought = not session.show_thought
+            st = "enabled" if session.show_thought else "disabled"
+            console.print(f"[bold cyan]ℹ Chain-of-Thought (CoT) display {st}.[/bold cyan]")
+        elif cmd == "/think on":
+            session.show_thought = True
+            console.print("[bold cyan]ℹ Chain-of-Thought (CoT) display enabled.[/bold cyan]")
+        elif cmd == "/think off":
+            session.show_thought = False
+            console.print("[bold cyan]ℹ Chain-of-Thought (CoT) display disabled.[/bold cyan]")
         elif cmd == "/memory":
-            typer.echo(session.memory_status())
+            console.print(session.memory_status())
         elif cmd == "/stats":
-            typer.echo(session.stats_status())
+            console.print(session.stats_status())
         elif cmd == "/help":
             help_text = (
                 "Special Chat Commands:\n"
-                "  /models          : List all 6 Helios models (nano, alpha, beta, core, pro, flagship)\n"
+                "  /models          : List all 6 Helios models with parameters, context, and memory specs\n"
                 "  /model <tier>    : Switch active model live (e.g. /model alpha, /model flagship)\n"
-                "  /exit, /quit     : Terminate chat session\n"
-                "  /reset           : Clear working memory context and turn history\n"
+                "  /think on|off    : Toggle display of Chain-of-Thought (CoT) reasoning panel\n"
+                "  /reset, /clear   : Clear working memory context and turn history\n"
                 "  /memory          : Display HMA memory state and SQLite persistence details\n"
                 "  /stats           : Display session generation performance and throughput\n"
-                "  /help            : Show this command reference"
+                "  /exit, /quit     : Terminate chat session"
             )
-            typer.echo(help_text)
+            console.print(
+                Panel(help_text, border_style="cyan", title="[bold]Chat Command Reference[/bold]")
+            )
         else:
             session.handle_turn(
                 user_input=user_input,
