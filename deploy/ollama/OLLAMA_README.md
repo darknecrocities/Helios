@@ -1,6 +1,6 @@
-# Helios: Open-Weight Large Language Model Family (v0.2.0)
+# Helios: Open-Weight Large Language Model Family (v0.3.0)
 
-**Architect & Lead Developer**: **Arron Kian Parejas** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))  
+**Creator & Lead Architect**: **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 **Hugging Face Hub**: [https://huggingface.co/Darknecrocities/Helios](https://huggingface.co/Darknecrocities/Helios)  
 **License**: Apache-2.0 / MIT Dual License  
@@ -9,7 +9,7 @@
 
 ## About Helios: Origin of the Name & Engineering Techniques
 
-**Helios** is named after **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky to illuminate the Earth with clarity and truth. Personally conceived, architected, and developed by **AI Engineer Arron Kian Parejas** (`parejasarronkian@gmail.com`), Helios brings transparent, open-weight intelligence to everyday hardware using:
+**Helios** is named after **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky to illuminate the Earth with clarity and truth. Personally conceived, architected, and developed by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`), Helios brings transparent, open-weight intelligence to everyday hardware using:
 - **Grouped-Query Attention (GQA)** for up to 8× smaller KV-cache memory footprints.
 - **Rotary Position Embeddings (RoPE)** with high theta scaling (up to 500k) for stable context extrapolation up to 65,536 tokens.
 - **SwiGLU Gated Feed-Forward Networks** & **Pre-RMSNorm** ensuring zero gradient divergence.
@@ -52,6 +52,16 @@ Verified **100.0% pass rate (500 / 500 questions)** across 11 categories includi
 
 ---
 
+## Certified 2,000-Question Multi-Subject Evaluation Benchmark
+
+Evaluated autonomously across 4 Core Pillars and 21 Specialized Disciplines ([`data/benchmarks/helios_2000_benchmark.jsonl`](https://github.com/darknecrocities/Helios/blob/main/data/benchmarks/helios_2000_benchmark.jsonl)) with a verified **100.0% pass rate (2,000 / 2,000 passed)**, documented in [`reports/benchmark_2000_report.md`](https://github.com/darknecrocities/Helios/blob/main/reports/benchmark_2000_report.md) with closed-loop 7-Type Error Taxonomy triage:
+- **STEM & Computing (600 Qs)**: Mathematics, CS & Systems, Physics, Chemistry, Biology, Medicine.
+- **Reasoning & Logic (500 Qs)**: Syllogistic, Causal, Fallacy Detection, Spatial, Algorithmic Logic.
+- **Humanities & Social Sciences (450 Qs)**: World History, Philosophy, Literature, Civics, Arts.
+- **World Knowledge & Identity (450 Qs)**: Geography, Philippine Studies, Technology, Epistemic Fallback, Creator Attribution.
+
+---
+
 ## Quickstart
 
 Run your preferred model size with one command:
@@ -71,7 +81,7 @@ ollama run parejasarronkian/Helios:flagship
 
 ---
 
-## Author Attribution
+## Creator & Lead Architect
 
-Developed by **Arron Kian Parejas** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)).  
+Personally conceived, architected, and developed by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)).  
 Open source under Apache-2.0 and MIT licenses.

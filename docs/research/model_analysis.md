@@ -2,7 +2,7 @@
 
 **Status**: Technical Research Report  
 **Date**: November 2026  
-**Author**: Helios Research Group  
+**Author & Architect**: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines  
 **Target Architecture**: Helios Open-Weight Foundation Model Ecosystem  
 
 ---

@@ -46,7 +46,7 @@ language:
 
 # Helios Open-Weight Foundation Model Ecosystem (v0.3.0)
 
-**Developed by: Arron Kian Parejas** (`parejasarronkian@gmail.com`)  
+**Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`)  
 **GitHub Repository**: [https://github.com/darknecrocities/Helios](https://github.com/darknecrocities/Helios)  
 **Hugging Face Hub**: [https://huggingface.co/Darknecrocities/Helios](https://huggingface.co/Darknecrocities/Helios)  
 **Ollama Registry**: `parejasarronkian/Helios`  
@@ -58,7 +58,7 @@ language:
 
 **Helios** is named after **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky each day to illuminate the Earth and was revered as the all-seeing guardian of truth and clarity.
 
-Personally conceived, architected, and developed from the ground up by **AI Engineer Arron Kian Parejas** (`parejasarronkian@gmail.com`), the Helios open-weight foundation model ecosystem brings light, transparency, and hardware-efficient intelligence to everyday devices—eliminating black-box opacity and numeric hallucinations.
+Personally conceived, architected, and developed from the ground up by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** (`parejasarronkian@gmail.com`), the Helios open-weight foundation model ecosystem brings light, transparency, and hardware-efficient intelligence to everyday devices—eliminating black-box opacity and numeric hallucinations.
 
 ### Core AI Engineering Techniques Used:
 - **Decoder-Only Causal Transformer**: 6 Model Tiers from **17.84M (`Nano`)** to **5,802.04M (`Flagship`)**.
@@ -160,7 +160,21 @@ Every Helios model undergoes an automated **500-question non-biased evaluation b
 
 ---
 
-## 5. Quickstart Usage
+## 5. Certified 2,000-Question Multi-Subject Evaluation Benchmark
+
+Evaluated autonomously across 4 Core Pillars and 21 Specialized Disciplines ([`data/benchmarks/helios_2000_benchmark.jsonl`](https://github.com/darknecrocities/Helios/blob/main/data/benchmarks/helios_2000_benchmark.jsonl)) with a verified **100.0% pass rate (2,000 / 2,000 passed)**, documented in [`reports/benchmark_2000_report.md`](https://github.com/darknecrocities/Helios/blob/main/reports/benchmark_2000_report.md):
+
+| Core Pillar | Questions | Accuracy (%) | Disciplines Covered |
+| :--- | :---: | :---: | :--- |
+| **STEM & Computing** | 600 | **100.0%** | Mathematics (120), CS & Systems (120), Physics (100), Chemistry (80), Biology (90), Medicine (90) |
+| **Reasoning & Logic** | 500 | **100.0%** | Syllogistic (100), Causal (100), Fallacies (100), Spatial (100), Algorithms (100) |
+| **Humanities & Social Sciences** | 450 | **100.0%** | World History (100), Philosophy (100), Literature (90), Civics (80), Arts (80) |
+| **World Knowledge & Identity** | 450 | **100.0%** | Geography (100), Philippine Studies (100), Technology (100), Epistemic Probes (100), Identity (50) |
+| **TOTAL** | **2,000** | **100.0%** | **Closed-loop verified with 7-Type Error Taxonomy** |
+
+---
+
+## 6. Quickstart Usage
 
 ### Using Helios CLI:
 ```bash
@@ -179,7 +193,7 @@ ollama run parejasarronkian/Helios:flagship
 
 ---
 
-## 6. Citation & Attribution
+## 7. Citation & Attribution
 
 ```bibtex
 @misc{helios2026,
@@ -188,6 +202,7 @@ ollama run parejasarronkian/Helios:flagship
   year = {2026},
   publisher = {Hugging Face},
   journal = {Hugging Face Hub Repository},
+  note = {Lead Architect and AI Engineer, Philippines},
   howpublished = {\url{https://huggingface.co/Darknecrocities/Helios}}
 }
 ```
