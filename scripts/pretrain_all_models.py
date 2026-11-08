@@ -25,17 +25,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Enforce One Touch external storage for all caches and temporary buffers
-ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
-if ONE_TOUCH_ROOT.exists():
-    HF_CACHE = ONE_TOUCH_ROOT / "data" / "hf_cache"
-    HF_CACHE.mkdir(parents=True, exist_ok=True)
-    os.environ["HF_HOME"] = str(HF_CACHE)
-    os.environ["HF_DATASETS_CACHE"] = str(HF_CACHE)
-    os.environ["TORCH_HOME"] = str(ONE_TOUCH_ROOT / "data" / "torch_cache")
-    os.environ["TMPDIR"] = "/tmp"
-    Path(os.environ["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -48,6 +37,17 @@ from helios.training.config import TrainingConfig
 from helios.training.controller import TrainingController
 from scripts.build_roadmap_models import ROADMAP_SPECS, calculate_param_counts
 from scripts.pretrain_helios import load_dataset_records, prepare_token_batches
+
+# Enforce One Touch external storage for all caches and temporary buffers
+ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
+if ONE_TOUCH_ROOT.exists():
+    HF_CACHE = ONE_TOUCH_ROOT / "data" / "hf_cache"
+    HF_CACHE.mkdir(parents=True, exist_ok=True)
+    os.environ["HF_HOME"] = str(HF_CACHE)
+    os.environ["HF_DATASETS_CACHE"] = str(HF_CACHE)
+    os.environ["TORCH_HOME"] = str(ONE_TOUCH_ROOT / "data" / "torch_cache")
+    os.environ["TMPDIR"] = "/tmp"
+    Path(os.environ["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("helios.pretrain.all_models")

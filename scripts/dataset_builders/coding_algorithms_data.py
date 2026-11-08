@@ -126,17 +126,19 @@ def build_coding_algorithms_records() -> list[dict[str, Any]]:
     """Return ChatML records for Coding & Algorithms."""
     records = []
     for prompt, response in CODING_ALGO_RECORDS:
-        records.append({
-            "domain": "coding_and_algorithms",
-            "prompt": prompt,
-            "response": response,
-            "text": (
-                f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
-                f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
-            ),
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ],
-        })
+        records.append(
+            {
+                "domain": "coding_and_algorithms",
+                "prompt": prompt,
+                "response": response,
+                "text": (
+                    f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
+                ),
+                "messages": [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ],
+            }
+        )
     return records

@@ -18,6 +18,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
+from scripts.dataset_builders.omni_domain_curated import build_omni_domain_records
+from scripts.harvest_reasoning_datasets import MCP_SYNTHETIC_TEMPLATES, format_mcp_turn
+
 # Configure Hugging Face and PyTorch caches to reside strictly on One Touch external drive
 ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
 if ONE_TOUCH_ROOT.exists():
@@ -28,10 +32,6 @@ if ONE_TOUCH_ROOT.exists():
     os.environ["TORCH_HOME"] = str(ONE_TOUCH_ROOT / "data" / "torch_cache")
     os.environ["TMPDIR"] = "/tmp"
     Path(os.environ["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
-
-from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
-from scripts.dataset_builders.omni_domain_curated import build_omni_domain_records
-from scripts.harvest_reasoning_datasets import MCP_SYNTHETIC_TEMPLATES, format_mcp_turn
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("helios.data.massive_harvester")
@@ -165,17 +165,23 @@ def stream_hf_datasets_to_one_touch(
         logger.info("✓ Harvested %d Coding & Algorithm records.", code_count)
 
         # 4. Stream Python Software Engineering (iamtarun/python_code_instructions_18k_alpaca)
-        logger.info("Streaming Python Software Engineering (iamtarun/python_code_instructions_18k_alpaca)...")
+        logger.info(
+            "Streaming Python Software Engineering (iamtarun/python_code_instructions_18k_alpaca)..."
+        )
         py_count = 0
         try:
-            py_ds = load_dataset("iamtarun/python_code_instructions_18k_alpaca", split="train", streaming=True)
+            py_ds = load_dataset(
+                "iamtarun/python_code_instructions_18k_alpaca", split="train", streaming=True
+            )
             for item in py_ds:
                 inst = str(item.get("instruction", "")).strip()
                 inp = str(item.get("input", "")).strip()
                 out = str(item.get("output", "")).strip()
                 prompt = f"{inst}\n{inp}".strip() if inp else inst
                 if prompt and out:
-                    records.append(make_chatml_record(prompt, out, "software_engineering_and_architecture"))
+                    records.append(
+                        make_chatml_record(prompt, out, "software_engineering_and_architecture")
+                    )
                     py_count += 1
         except Exception as e:
             logger.warning("Python instructions stream fallback (%s)", e)
@@ -215,7 +221,9 @@ def stream_hf_datasets_to_one_touch(
                     ans_idx = item.get("answer", -1)
                     if q and isinstance(choices, list) and 0 <= ans_idx < len(choices):
                         ans_str = str(choices[ans_idx])
-                        full_ans = f"Correct Answer: {ans_str}. Subject: {subj.replace('_', ' ').title()}."
+                        full_ans = (
+                            f"Correct Answer: {ans_str}. Subject: {subj.replace('_', ' ').title()}."
+                        )
                         records.append(make_chatml_record(q, full_ans, domain))
                         mmlu_count += 1
             except Exception as e:
@@ -341,7 +349,9 @@ def stream_hf_datasets_to_one_touch(
         logger.info("Streaming OSS Coding & Algorithms (ise-uiuc/Magicoder-OSS-Instruct-75K)...")
         mag_count = 0
         try:
-            mag_ds = load_dataset("ise-uiuc/Magicoder-OSS-Instruct-75K", split="train", streaming=True)
+            mag_ds = load_dataset(
+                "ise-uiuc/Magicoder-OSS-Instruct-75K", split="train", streaming=True
+            )
             for item in mag_ds:
                 prob = str(item.get("problem", "")).strip()
                 sol = str(item.get("solution", "")).strip()
@@ -359,7 +369,9 @@ def stream_hf_datasets_to_one_touch(
         logger.info("Streaming Agentic Function Calling (glaiveai/glaive-function-calling-v2)...")
         fn_count = 0
         try:
-            fn_ds = load_dataset("glaiveai/glaive-function-calling-v2", split="train", streaming=True)
+            fn_ds = load_dataset(
+                "glaiveai/glaive-function-calling-v2", split="train", streaming=True
+            )
             for item in fn_ds:
                 sys_prompt = str(item.get("system", "")).strip()
                 chat_text = str(item.get("chat", "")).strip()
@@ -409,7 +421,9 @@ def stream_hf_datasets_to_one_touch(
                 query = str(item.get("query", "")).strip()
                 resp = str(item.get("response", "")).strip()
                 if query and resp:
-                    records.append(make_chatml_record(query, resp, "complex_mathematical_reasoning"))
+                    records.append(
+                        make_chatml_record(query, resp, "complex_mathematical_reasoning")
+                    )
                     math_count += 1
                     if math_count >= 10000:
                         break

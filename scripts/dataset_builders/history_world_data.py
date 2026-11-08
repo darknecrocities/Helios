@@ -55,17 +55,19 @@ def build_history_world_records() -> list[dict[str, Any]]:
     """Return ChatML records for World History."""
     records = []
     for prompt, response in HISTORY_WORLD_RECORDS:
-        records.append({
-            "domain": "world_history_and_timelines",
-            "prompt": prompt,
-            "response": response,
-            "text": (
-                f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
-                f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
-            ),
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ],
-        })
+        records.append(
+            {
+                "domain": "world_history_and_timelines",
+                "prompt": prompt,
+                "response": response,
+                "text": (
+                    f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
+                ),
+                "messages": [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ],
+            }
+        )
     return records

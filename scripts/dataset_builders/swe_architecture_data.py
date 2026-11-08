@@ -43,17 +43,19 @@ def build_swe_architecture_records() -> list[dict[str, Any]]:
     """Return ChatML records for Software Engineering & Architecture."""
     records = []
     for prompt, response in SWE_ARCH_RECORDS:
-        records.append({
-            "domain": "software_engineering_and_architecture",
-            "prompt": prompt,
-            "response": response,
-            "text": (
-                f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
-                f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
-            ),
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ],
-        })
+        records.append(
+            {
+                "domain": "software_engineering_and_architecture",
+                "prompt": prompt,
+                "response": response,
+                "text": (
+                    f"<|start_header_id|>user<|end_header_id|>\n{prompt}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n{response}<|eot_id|>"
+                ),
+                "messages": [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ],
+            }
+        )
     return records
