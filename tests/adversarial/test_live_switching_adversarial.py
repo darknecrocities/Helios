@@ -183,9 +183,13 @@ class TestMemoryLeakageAcrossCycles:
             assert nano_memories[-1] <= nano_memories[0] + 2.0
             assert beta_memories[-1] <= beta_memories[0] + 2.0
         else:
-            # On CPU host memory, verify RSS does not explode (>300MB drift)
+            # On CPU host memory, verify RSS does not explode (>800MB drift)
+            # Accommodates 300M-parameter Beta model allocation retained in process RSS by OS allocator
             rss_delta = abs(nano_memories[-1] - initial_device_mem)
-            assert rss_delta < 300.0, f"Host RSS drifted by {rss_delta:.2f}MB"
+            assert rss_delta < 800.0, f"Host RSS drifted by {rss_delta:.2f}MB"
+            # Verify no unbounded leak across post-warmup cycles
+            post_warmup_drift = abs(nano_memories[-1] - nano_memories[1])
+            assert post_warmup_drift < 50.0, f"Post-warmup RSS drifted by {post_warmup_drift:.2f}MB"
 
 
 @pytest.mark.tier5

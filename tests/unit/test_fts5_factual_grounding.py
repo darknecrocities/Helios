@@ -23,6 +23,7 @@ from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
 from helios.memory.fts_corpus import (
     FTSCorpus,
+    resolve_corpus_db_path,
     sanitize_fts5_query,
 )
 from helios.reasoning.cot_engine import (
@@ -267,6 +268,10 @@ def test_synthetic_probe_markers_coverage() -> None:
 @pytest.mark.integration
 def test_factual_queries_vs_epistemic_refusals() -> None:
     """Verify real-world factual queries retrieve knowledge while probes return refusal."""
+    db_path = resolve_corpus_db_path()
+    if not Path(str(db_path)).exists():
+        pytest.skip("Full 134k corpus DB not present on disk")
+
     hma = HMAController(episodic_memory=EpisodicMemory(db_path=":memory:"))
     seed_hma_knowledge_base(hma, set())
 
