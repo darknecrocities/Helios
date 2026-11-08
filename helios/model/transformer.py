@@ -25,7 +25,7 @@ class HeliosForCausalLM(nn.Module):
     GQA, SwiGLU, tied embeddings, and optimized KV caching.
     """
 
-    def __init__(self, config: HeliosConfig) -> None:
+    def __init__(self, config: HeliosConfig, init_weights: bool = True) -> None:
         super().__init__()
         self.config = config
 
@@ -39,8 +39,9 @@ class HeliosForCausalLM(nn.Module):
         if tie:
             self.lm_head.weight = self.embed_tokens.weight
 
-        # Parameter initialization
-        self.apply(self._init_weights)
+        # Parameter initialization (can be bypassed when restoring from checkpoints)
+        if init_weights:
+            self.apply(self._init_weights)
 
     def _init_weights(self, module: nn.Module) -> None:
         """Initialize weights with Gaussian distribution scaled by initializer_range."""
@@ -73,12 +74,15 @@ class HeliosForCausalLM(nn.Module):
 
     def forward(
         self,
-        input_ids: torch.Tensor,
+        input_ids: torch.Tensor | None = None,
         labels: torch.Tensor | None = None,
         start_pos: int = 0,
         kv_cache: list[KVCache] | None = None,
         kv_caches: list[KVCache] | None = None,
         use_cache: bool = False,
+        inputs_embeds: torch.Tensor | None = None,
+        attention_mask: torch.Tensor | None = None,
+        attn_mask: torch.Tensor | None = None,
     ) -> dict[str, Any]:
         """Execute forward pass for causal language modeling.
 
@@ -89,6 +93,9 @@ class HeliosForCausalLM(nn.Module):
             kv_cache: Optional list of KVCache objects (one per layer).
             kv_caches: Alias for kv_cache.
             use_cache: If True and kv_caches is None, dynamically creates KVCache instances.
+            inputs_embeds: Optional pre-embedded activations of shape (batch_size, seq_len, d_model).
+            attention_mask: Optional attention mask tensor for prefix/multimodal masking.
+            attn_mask: Alias for attention_mask.
 
         Returns:
             Dict containing:
@@ -97,7 +104,19 @@ class HeliosForCausalLM(nn.Module):
               - 'kv_caches': List of updated KVCache objects if used.
               - 'kv_cache': Alias for kv_caches for contract compatibility.
         """
-        batch_size, seq_len = input_ids.shape
+        if inputs_embeds is not None:
+            batch_size, seq_len = inputs_embeds.shape[:2]
+            h = inputs_embeds
+            device = inputs_embeds.device
+            dtype = inputs_embeds.dtype
+        elif input_ids is not None:
+            batch_size, seq_len = input_ids.shape
+            h = self.embed_tokens(input_ids)
+            device = input_ids.device
+            dtype = self.embed_tokens.weight.dtype
+        else:
+            raise ValueError("Either input_ids or inputs_embeds must be specified.")
+
         active_caches = kv_caches or kv_cache
 
         # Initialize KV caches if requested and not provided
@@ -109,19 +128,18 @@ class HeliosForCausalLM(nn.Module):
                     max_seq_len=self.config.max_seq_len,
                     n_kv_heads=self.config.n_kv_heads,
                     head_dim=head_dim,
-                    dtype=self.embed_tokens.weight.dtype,
-                    device=input_ids.device,
+                    dtype=dtype,
+                    device=device,
                 )
                 for _ in range(self.config.n_layers)
             ]
 
-        # Embed input token IDs
-        h = self.embed_tokens(input_ids)
+        mask = attention_mask if attention_mask is not None else attn_mask
 
         # Pass through all transformer blocks
         for i, layer in enumerate(self.layers):
             layer_cache = active_caches[i] if active_caches is not None else None
-            h = layer(h, start_pos=start_pos, kv_cache=layer_cache)
+            h = layer(h, start_pos=start_pos, kv_cache=layer_cache, attn_mask=mask)
 
         # Final RMSNorm
         h = self.norm(h)
