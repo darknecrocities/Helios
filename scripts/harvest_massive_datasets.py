@@ -20,6 +20,7 @@ from typing import Any
 
 from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
 from scripts.dataset_builders.fineweb_and_philippines_streamer import (
+    stream_filipino_instructions,
     stream_fineweb_edu_records,
     stream_wikipedia_philippines_records,
 )
@@ -445,6 +446,11 @@ def stream_hf_datasets_to_one_touch(
         wiki_records = stream_wikipedia_philippines_records(limit=2500)
         records.extend(wiki_records)
         counts["wikipedia_philippines_tagalog"] = len(wiki_records)
+
+        # 17. Stream Real Filipino Instructions (saillab, TagaloGuanaco, Platypus)
+        fil_records = stream_filipino_instructions(limit=5000)
+        records.extend(fil_records)
+        counts["filipino_instructions_hf"] = len(fil_records)
 
     except Exception as exc:
         logger.warning("Dataset streaming encountered an issue: %s", exc)
