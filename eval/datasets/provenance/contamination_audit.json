@@ -1,0 +1,14 @@
+{
+  "status": "CLEAN",
+  "eval_slice_file": "eval/datasets/public_test_slices/held_out_public_benchmarks.jsonl",
+  "eval_slice_sha256": "ba9724f517a2b6c6c9c619e0ecdf034bc119253879633e5f13e704ce9455153e",
+  "training_records_scanned": 121864,
+  "eval_items_audited": 23,
+  "contaminated_count": 0,
+  "contaminated_item_ids": [],
+  "environment": {
+    "python_version": "3.13.3",
+    "pytorch_version": "2.15.0",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O"
+  }
+}

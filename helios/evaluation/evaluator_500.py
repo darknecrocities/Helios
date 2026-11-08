@@ -60,6 +60,7 @@ class HeliosEvaluator500:
         """Evaluate a single test question with latency tracking and regex criteria."""
         start_t = time.perf_counter()
         try:
+            self.session.clear()
             response = self.session.handle_turn(
                 user_input=question.prompt,
                 max_new_tokens=64,

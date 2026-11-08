@@ -1,0 +1,14 @@
+benchmark: mmlu
+dataset_id: cais/mmlu
+split: test
+subset: all
+evaluation_protocol: 5-shot-multiple-choice
+temperature: 0.0
+max_new_tokens: 4
+choices: ["A", "B", "C", "D"]
+metrics:
+  - accuracy
+  - subject_macro_accuracy
+contamination_check:
+  ngram_size: 13
+  enforce_zero_overlap: true

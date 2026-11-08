@@ -71,3 +71,8 @@ jobs:
       - name: Run Test Suite
         run: |
           uv run pytest -v --tb=short
+
+      - name: Automated Public Benchmark & Anti-Fabrication Gate (eval/)
+        run: |
+          uv run python -m eval.runner.evaluate --ci-verify
+          uv run python -m eval.runner.generate_report --check

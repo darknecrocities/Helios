@@ -1,0 +1,49 @@
+{
+  "manifest_version": "1.0.0",
+  "created_by": "AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>",
+  "held_out_slice_file": "eval/datasets/public_test_slices/held_out_public_benchmarks.jsonl",
+  "public_benchmarks": [
+    {
+      "benchmark": "mmlu",
+      "hf_dataset_id": "cais/mmlu",
+      "url": "https://huggingface.co/datasets/cais/mmlu",
+      "split": "test",
+      "shot_setting": "5-shot"
+    },
+    {
+      "benchmark": "gsm8k",
+      "hf_dataset_id": "openai/gsm8k",
+      "url": "https://huggingface.co/datasets/openai/gsm8k",
+      "split": "test",
+      "shot_setting": "8-shot CoT / Procedural"
+    },
+    {
+      "benchmark": "medmcqa",
+      "hf_dataset_id": "openlifescienceai/medmcqa",
+      "url": "https://huggingface.co/datasets/openlifescienceai/medmcqa",
+      "split": "validation",
+      "shot_setting": "0-shot with Epistemic Abstention"
+    },
+    {
+      "benchmark": "sciq",
+      "hf_dataset_id": "allenai/sciq",
+      "url": "https://huggingface.co/datasets/allenai/sciq",
+      "split": "test",
+      "shot_setting": "0-shot"
+    },
+    {
+      "benchmark": "humaneval",
+      "hf_dataset_id": "openai/openai_humaneval",
+      "url": "https://huggingface.co/datasets/openai/openai_humaneval",
+      "split": "test",
+      "shot_setting": "0-shot pass@1"
+    },
+    {
+      "benchmark": "mcp",
+      "hf_dataset_id": "Salesforce/xlam-function-calling-60k",
+      "url": "https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k",
+      "split": "test",
+      "shot_setting": "6-Metric JSON-RPC Sandbox"
+    }
+  ]
+}

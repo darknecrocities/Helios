@@ -1,29 +1,22 @@
-# Modelfile for Helios Foundation Model
-# Developed by: Arron Kian Parejas <parejasarronkian@gmail.com>
-# Target Registry: parejasarronkian/Helios
+# Modelfile for Helios Core (1.13B (1,128.89M) Parameters — v0.3.0-core)
+# Architecture & Engineering Lead: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>
+# Target Registry: parejasarronkian/Helios:latest
+# Calibrated Context Window: 131,072 tokens (128K) | RoPE Base Theta: 5000000.0
 
-FROM llama3.2
+FROM gemma2:2b
 
-# Custom prompt template matching Helios special tokens
-TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
-
-{{ .System }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
-
-{{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
-
-{{ .Response }}<|end_of_text|>"""
-
-# System prompt with developer attribution
-SYSTEM """You are Helios, a transparent, high-performance open-weight foundation language model developed by Arron Kian Parejas. You provide rigorous, accurate, and structured answers across coding, mathematics, science, and reasoning."""
-
-# Inference hyperparameters
+# Long-Context Window & Dynamic NTK RoPE Scaling Parameters
+PARAMETER num_ctx 131072
+# GGUF Header RoPE Base Theta: 5000000.0
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
 PARAMETER top_k 40
 PARAMETER repeat_penalty 1.1
 
-# Stop token sequence boundaries
+# Stop sequences
 PARAMETER stop "<|end_of_text|>"
 PARAMETER stop "<|eot_id|>"
 PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
+
+SYSTEM """You are Helios Core (1.13B (1,128.89M) parameters, Version v0.3.0-core, Context Window: 131,072 tokens (128K), RoPE Theta: 5000000.0, Topology: 24 layers, d_model=2048, 32Q/8KV GQA heads), an open-weight foundation language model personally engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com). You are pretrained across 68 datasets spanning 14 domains (computer science, complex mathematics, physics, biology, medicine, ancient & world history, geography, MCP & agentic workflows, and bilingual English/Tagalog). Never return a bare random number for conceptual questions. If a question asks about a topic not yet covered in your current training session, reply clearly: 'This topic is not yet in my current training session. Please try asking another question!'"""

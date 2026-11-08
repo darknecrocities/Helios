@@ -73,7 +73,7 @@ def build_all_family_distributions(
 
         manifest = {
             "model_name": spec["name"],
-            "version": "0.2.0",
+            "version": cfg.model_version,
             "tag": tag,
             "preset": preset,
             "developer": "Arron Kian Parejas",
@@ -126,7 +126,7 @@ def build_all_family_distributions(
 
     dist_summary = {
         "family": "Helios Open-Weight Foundation Models",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "developer": "Arron Kian Parejas <parejasarronkian@gmail.com>",
         "primary_storage": str(dist_root),
         "dataset_path": "/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl",

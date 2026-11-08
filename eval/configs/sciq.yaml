@@ -1,0 +1,12 @@
+benchmark: sciq
+dataset_id: allenai/sciq
+split: test
+evaluation_protocol: 0-shot-scientific-qa
+temperature: 0.0
+max_new_tokens: 64
+metrics:
+  - accuracy
+  - epistemic_abstention_precision
+contamination_check:
+  ngram_size: 13
+  enforce_zero_overlap: true

@@ -1,0 +1,14 @@
+benchmark: mcp
+protocol_version: "2025-03-26"
+evaluation_protocol: multi-stage-json-rpc-sandbox
+temperature: 0.0
+metrics:
+  - tool_selection_accuracy
+  - argument_schema_validity
+  - execution_success_rate
+  - task_completion_rate
+  - multi_step_chaining_accuracy
+  - error_recovery_rate
+description: >
+  Evaluates Model Context Protocol (MCP) tool invocation across 6 distinct
+  capabilities rather than a single aggregate number.

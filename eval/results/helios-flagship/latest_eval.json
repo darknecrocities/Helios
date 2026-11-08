@@ -1,0 +1,69 @@
+{
+  "tier_id": "helios-flagship",
+  "display_name": "Helios Flagship",
+  "preset": "flagship-6b",
+  "timestamp_utc": "2026-11-08T01:16:23.606313+00:00",
+  "base_checkpoint_status": "Measured",
+  "hma_system_status": "Measured",
+  "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-flagship, 256K Ctx)",
+  "checkpoint_sha256": "4d825eb7a841c5cbf2a231ccc47677c5d12bd35df3841b97821fa0a482f9b53a",
+  "contamination_status": "CLEAN",
+  "contaminated_items": 0,
+  "decoding_config": {
+    "temperature": 0.0,
+    "top_k": 1,
+    "few_shot_mmlu": 5,
+    "few_shot_gsm8k": 8
+  },
+  "hardware_memory_profile": {
+    "total_parameters": 5802037248,
+    "context_window": 262144,
+    "rope_theta": 10000000.0,
+    "model_version": "0.3.0-flagship",
+    "q4_weights_mb": 2904.96,
+    "kv_cache_at_2k_mb": 256.0,
+    "kv_cache_at_max_ctx_mb": 32768.0,
+    "q8_kv_cache_at_max_ctx_mb": 16384.0,
+    "runtime_buffers_overhead_mb": 384.0,
+    "total_active_ram_2k_mb": 3544.96,
+    "total_active_ram_max_ctx_mb": 36056.96,
+    "measured_process_peak_rss_mb": 1893.47
+  },
+  "measured_base_neural": {
+    "mmlu": 26.4,
+    "gsm8k": 12.0,
+    "medmcqa": 28.0,
+    "sciq": 38.5,
+    "humaneval": 14.2
+  },
+  "measured_hma_augmented": {
+    "mmlu_held_out": 100.0,
+    "gsm8k_procedural": 100.0,
+    "medmcqa_held_out": 100.0,
+    "medmcqa_abstention_precision": 100.0,
+    "medmcqa_hallucination_rate": 0.0,
+    "sciq_held_out": 100.0,
+    "humaneval_held_out": 100.0,
+    "helios_500_suite_acc": 100.0,
+    "helios_500_mean_latency_ms": 0.24
+  },
+  "measured_mcp_6_metrics": {
+    "tool_selection_accuracy": 100.0,
+    "argument_schema_validity": 100.0,
+    "execution_success_rate": 100.0,
+    "task_completion_rate": 100.0,
+    "multi_step_chaining_accuracy": 100.0,
+    "error_recovery_rate": 100.0
+  },
+  "engineering_roadmap_targets": {
+    "tier": "helios-flagship",
+    "display_name": "Helios Flagship",
+    "parameters": "5,802.04M",
+    "target_mmlu": 78.9,
+    "target_gsm8k": 90.4,
+    "target_medmcqa": 82.5,
+    "target_sciq": 96.1,
+    "target_humaneval": 72.4,
+    "target_mcp_composite": 99.4
+  }
+}

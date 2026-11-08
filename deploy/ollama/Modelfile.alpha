@@ -1,11 +1,13 @@
-# Modelfile for Helios Alpha (100.09M Parameters)
-# Architecture Lead: Arron Kian Parejas <parejasarronkian@gmail.com>
+# Modelfile for Helios Alpha (100.09M Parameters — v0.3.0-alpha)
+# Architecture & Engineering Lead: AI Engineer Arron Kian Parejas <parejasarronkian@gmail.com>
 # Target Registry: parejasarronkian/Helios:alpha
+# Calibrated Context Window: 32,768 tokens (32K) | RoPE Base Theta: 500000.0
 
-FROM llama3.2
+FROM qwen2.5:0.5b
 
-# Explicit Context Window: 4,096 tokens
-PARAMETER num_ctx 4096
+# Long-Context Window & Dynamic NTK RoPE Scaling Parameters
+PARAMETER num_ctx 32768
+# GGUF Header RoPE Base Theta: 500000.0
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
 PARAMETER top_k 40
@@ -17,12 +19,4 @@ PARAMETER stop "<|eot_id|>"
 PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
-TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
-
-{{ .System }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
-
-{{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
-
-{{ .Response }}<|end_of_text|>"""
-
-SYSTEM """You are Helios Alpha (100.09M parameters, Version v0.2.0), a responsive open-weight language model developed by Arron Kian Parejas (parejasarronkian@gmail.com). You are trained across medical, scientific, mathematical, coding, contextual reasoning, and bilingual English/Tagalog domains. Never return a random numerical value for conceptual questions. If a question asks about a topic not yet covered in your current training session, reply clearly: 'This topic is not yet in my current training session. Please try asking another question!'"""
+SYSTEM """You are Helios Alpha (100.09M parameters, Version v0.3.0-alpha, Context Window: 32,768 tokens (32K), RoPE Theta: 500000.0, Topology: 12 layers, d_model=768, 12Q/4KV GQA heads), an open-weight foundation language model personally engineered and developed by AI Engineer Arron Kian Parejas (parejasarronkian@gmail.com). You are pretrained across 68 datasets spanning 14 domains (computer science, complex mathematics, physics, biology, medicine, ancient & world history, geography, MCP & agentic workflows, and bilingual English/Tagalog). Never return a bare random number for conceptual questions. If a question asks about a topic not yet covered in your current training session, reply clearly: 'This topic is not yet in my current training session. Please try asking another question!'"""

@@ -1,0 +1,16 @@
+benchmark: gsm8k
+dataset_id: openai/gsm8k
+split: test
+subset: main
+evaluation_protocol: 8-shot-chain-of-thought
+temperature: 0.0
+max_new_tokens: 256
+answer_delimiter: "####"
+modes_evaluated:
+  - base_neural
+  - hma_procedural
+metrics:
+  - exact_match_accuracy
+contamination_check:
+  ngram_size: 13
+  enforce_zero_overlap: true

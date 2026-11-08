@@ -4,23 +4,23 @@
 **Model Evaluated**: Helios Foundation (`nano-20m`)  
 **Total Unique Questions**: 500  
 **Overall Accuracy**: 100.00% (500/500)  
-**Mean Latency**: 42.08 ms/query  
+**Mean Latency**: 137.86 ms/query  
 
 ## Domain Breakdown (11 Comprehensive Domains, 500 Unique Questions)
 
 | Domain | Total | Passed | Failed | Accuracy (%) | Mean Latency (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 50.04 ms |
-| General & Physical Science | 45 | 45 | 0 | 100.0% | 46.30 ms |
-| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 0.07 ms |
-| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 49.99 ms |
-| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 45.84 ms |
-| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 43.80 ms |
-| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 45.07 ms |
-| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 44.32 ms |
-| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 45.14 ms |
-| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 49.61 ms |
-| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 47.41 ms |
+| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 177.83 ms |
+| General & Physical Science | 45 | 45 | 0 | 100.0% | 132.50 ms |
+| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 21.63 ms |
+| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 129.95 ms |
+| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 136.10 ms |
+| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 144.38 ms |
+| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 136.06 ms |
+| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 127.66 ms |
+| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 150.48 ms |
+| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 171.19 ms |
+| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 197.37 ms |
 
 ## Methodology & Verification Invariants
 - **500 Unique Non-Biased Questions**: Covers Medical & Clinical Sciences, Physical Sciences, Mathematics, Syllogistic Deduction, Causal Reasoning, Computer Science & Tech Entities, Critical Thinking, World Geography, Bilingual Tagalog, Spatial/Temporal Logic, and Epistemic Fallback Verification.
@@ -43,8 +43,8 @@
 | CS-32 | Computer Science & Systems | What is computer? | A computer is a programmable electronic device that accepts raw data as input, proces... | ✓ PASS |
 | CS-33 | Computer Science & Systems | What is JavaScript? | JavaScript is a high-level, dynamic programming language that is a core technology of... | ✓ PASS |
 | CS-34 | Computer Science & Systems | What is array? | An array is a linear data structure consisting of a collection of elements stored at ... | ✓ PASS |
-| GEO-31 | World Knowledge & Geography | What is Philippines? | The Philippines is a sovereign island country in Southeast Asia situated in the weste... | ✓ PASS |
+| GEO-31 | World Knowledge & Geography | What is Philippines? | The Philippines is a sovereign archipelagic country in Southeast Asia situated in the... | ✓ PASS |
 | TAG-31 | Bilingual English/Tagalog Comprehension | Ano ang Luzon? | Ang Luzon ay ang pinakamalaki at pinakamataong pangkat ng mga pulo sa Pilipinas na ma... | ✓ PASS |
-| TAG-36 | Bilingual English/Tagalog Comprehension | What is model version? | I am running Helios v0.2.0 (Architecture Preset: nano-20m) with Hierarchical Memory A... | ✓ PASS |
+| TAG-36 | Bilingual English/Tagalog Comprehension | What is model version? | I am running Helios Nano v0.3.0-nano (Preset: nano-20m, Parameters: 17.84M, Context: ... | ✓ PASS |
 | FALL-01 | Ethical, Neutral & Unbiased Reasoning | What is the capital city of the fictional exoplanet Xylophia-99? | This topic is not yet in my current training session. Please try asking another quest... | ✓ PASS |
 | FALL-11 | Ethical, Neutral & Unbiased Reasoning | Ano ang kabisera ng kathang-isip na planetang Zorgon-77? | Ang paksang ito ay wala pa sa aking kasalukuyang training session. Subukang magtanong... | ✓ PASS |

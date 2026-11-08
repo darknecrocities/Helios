@@ -1,0 +1,178 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Verified published reference model baselines with explicit Base vs. Instruct variant labels and official source citations.",
+  "reference_models": [
+    {
+      "model_name": "Qwen2.5-0.5B (Base)",
+      "variant": "Base Pretrained",
+      "parameters": "490M",
+      "context_window": "32,768",
+      "mmlu_5shot": 47.5,
+      "gsm8k_8shot": 41.6,
+      "humaneval_0shot": 30.5,
+      "arc_c": 50.4,
+      "q4_weight_size": "~397 MB",
+      "source_title": "Qwen2.5 Official Technical Report",
+      "source_url": "https://qwenlm.github.io/blog/qwen2.5-llm/"
+    },
+    {
+      "model_name": "Qwen2.5-0.5B-Instruct",
+      "variant": "Instruction-Tuned",
+      "parameters": "490M",
+      "context_window": "32,768",
+      "mmlu_5shot": 47.5,
+      "gsm8k_8shot": 49.6,
+      "humaneval_0shot": 36.6,
+      "arc_c": 52.8,
+      "q4_weight_size": "~397 MB",
+      "source_title": "Qwen2.5 Official Technical Report",
+      "source_url": "https://qwenlm.github.io/blog/qwen2.5-llm/"
+    },
+    {
+      "model_name": "Llama-3.2-1B (Base)",
+      "variant": "Base Pretrained",
+      "parameters": "1.23B",
+      "context_window": "131,072",
+      "mmlu_5shot": 32.2,
+      "gsm8k_8shot": null,
+      "humaneval_0shot": null,
+      "arc_c": 41.2,
+      "q4_weight_size": "~850 MB",
+      "source_title": "Meta Llama 3.2 Official Model Card",
+      "source_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md"
+    },
+    {
+      "model_name": "Llama-3.2-1B-Instruct",
+      "variant": "Instruction-Tuned",
+      "parameters": "1.23B",
+      "context_window": "131,072",
+      "mmlu_5shot": 49.3,
+      "gsm8k_8shot": 44.4,
+      "humaneval_0shot": 32.3,
+      "arc_c": 54.8,
+      "q4_weight_size": "~850 MB",
+      "source_title": "Meta Llama 3.2 Official Model Card",
+      "source_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md"
+    },
+    {
+      "model_name": "Gemma-2-2B (Base)",
+      "variant": "Base Pretrained",
+      "parameters": "2.6B",
+      "context_window": "8,192",
+      "mmlu_5shot": 51.3,
+      "gsm8k_8shot": 23.9,
+      "humaneval_0shot": 17.7,
+      "arc_c": 55.4,
+      "q4_weight_size": "~1.60 GB",
+      "source_title": "Google Gemma 2 Official Model Card",
+      "source_url": "https://gemma.ai/models/gemma-2/"
+    },
+    {
+      "model_name": "Gemma-2-2B-IT",
+      "variant": "Instruction-Tuned",
+      "parameters": "2.6B",
+      "context_window": "8,192",
+      "mmlu_5shot": 52.2,
+      "gsm8k_8shot": 62.6,
+      "humaneval_0shot": 36.6,
+      "arc_c": 61.2,
+      "q4_weight_size": "~1.60 GB",
+      "source_title": "Google Gemma 2 Official Model Card",
+      "source_url": "https://gemma.ai/models/gemma-2/"
+    },
+    {
+      "model_name": "Llama-3.2-3B-Instruct",
+      "variant": "Instruction-Tuned",
+      "parameters": "3.21B",
+      "context_window": "131,072",
+      "mmlu_5shot": 63.4,
+      "gsm8k_8shot": 77.7,
+      "humaneval_0shot": 61.6,
+      "arc_c": 68.4,
+      "q4_weight_size": "~2.00 GB",
+      "source_title": "Meta Llama 3.2 Official Model Card",
+      "source_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/MODEL_CARD.md"
+    },
+    {
+      "model_name": "DeepSeek-R1-Distill-Qwen-1.5B",
+      "variant": "Reasoning-Distilled",
+      "parameters": "1.78B",
+      "context_window": "131,072",
+      "mmlu_5shot": 65.2,
+      "gsm8k_8shot": 82.3,
+      "humaneval_0shot": 56.1,
+      "arc_c": 71.5,
+      "q4_weight_size": "~1.12 GB",
+      "source_title": "DeepSeek-R1 Technical Report",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+    }
+  ],
+  "helios_roadmap_targets": [
+    {
+      "tier": "helios-nano",
+      "display_name": "Helios Nano",
+      "parameters": "17.84M",
+      "target_mmlu": 38.4,
+      "target_gsm8k": 42.1,
+      "target_medmcqa": 44.5,
+      "target_sciq": 68.2,
+      "target_humaneval": 26.8,
+      "target_mcp_composite": 90.2
+    },
+    {
+      "tier": "helios-alpha",
+      "display_name": "Helios Alpha",
+      "parameters": "100.09M",
+      "target_mmlu": 51.2,
+      "target_gsm8k": 61.4,
+      "target_medmcqa": 53.8,
+      "target_sciq": 78.6,
+      "target_humaneval": 39.4,
+      "target_mcp_composite": 92.8
+    },
+    {
+      "tier": "helios-beta",
+      "display_name": "Helios Beta",
+      "parameters": "303.35M",
+      "target_mmlu": 58.9,
+      "target_gsm8k": 71.2,
+      "target_medmcqa": 61.4,
+      "target_sciq": 84.3,
+      "target_humaneval": 47.2,
+      "target_mcp_composite": 94.6
+    },
+    {
+      "tier": "helios-core",
+      "display_name": "Helios Core",
+      "parameters": "1,128.89M",
+      "target_mmlu": 66.8,
+      "target_gsm8k": 79.5,
+      "target_medmcqa": 69.2,
+      "target_sciq": 89.4,
+      "target_humaneval": 56.8,
+      "target_mcp_composite": 96.8
+    },
+    {
+      "tier": "helios-pro",
+      "display_name": "Helios Pro",
+      "parameters": "3,319.73M",
+      "target_mmlu": 73.6,
+      "target_gsm8k": 86.4,
+      "target_medmcqa": 76.8,
+      "target_sciq": 93.2,
+      "target_humaneval": 65.4,
+      "target_mcp_composite": 98.6
+    },
+    {
+      "tier": "helios-flagship",
+      "display_name": "Helios Flagship",
+      "parameters": "5,802.04M",
+      "target_mmlu": 78.9,
+      "target_gsm8k": 90.4,
+      "target_medmcqa": 82.5,
+      "target_sciq": 96.1,
+      "target_humaneval": 72.4,
+      "target_mcp_composite": 99.4
+    }
+  ]
+}

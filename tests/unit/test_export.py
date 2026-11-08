@@ -247,3 +247,49 @@ def test_cli_export_subcommands(tmp_path: Path) -> None:
     )
     assert res_onetouch.exit_code == 0
     assert "# External Disk Mirror Audit" in res_onetouch.stdout
+
+
+@pytest.mark.unit
+def test_long_context_presets_and_gguf_calibration(tmp_path: Path) -> None:
+    """Verify 16K-256K context windows, lazy RoPE cache, and GGUF binary header calibration."""
+    import torch
+
+    from helios.export.gguf import (
+        export_helios_native_gguf,
+        patch_gguf_header_in_place,
+        read_gguf_context_and_rope,
+    )
+    from helios.model.rotary_embedding import RotaryEmbedding
+
+    expected_tiers = {
+        "nano": (16384, 100000.0, "0.3.0-nano"),
+        "alpha": (32768, 500000.0, "0.3.0-alpha"),
+        "beta": (65536, 1000000.0, "0.3.0-beta"),
+        "core": (131072, 5000000.0, "0.3.0-core"),
+        "pro": (131072, 5000000.0, "0.3.0-pro"),
+        "flagship": (262144, 10000000.0, "0.3.0-flagship"),
+    }
+    for tier, (ctx, theta, ver) in expected_tiers.items():
+        cfg = HeliosConfig.from_preset(tier)
+        assert cfg.max_seq_len == ctx
+        assert cfg.rope_theta == theta
+        assert cfg.model_version == ver
+
+    # Verify lazy RoPE cache initialization caps initial startup cache at 4096
+    rope = RotaryEmbedding(dim=64, max_seq_len=262144, theta=10000000.0)
+    assert rope.max_seq_len_cached == 4096
+    dummy = torch.zeros(1, 2, 16, 64)
+    cos, sin = rope(dummy, seq_len=16, start_pos=8192)
+    assert cos.shape == (1, 1, 16, 64)
+    assert rope.max_seq_len_cached >= 8208
+
+    # Verify GGUF v3 binary header export and surgical in-place patching
+    nano_cfg = HeliosConfig.from_preset("nano")
+    gguf_file = export_helios_native_gguf(nano_cfg, tmp_path / "helios-nano.gguf", tier_key="nano")
+    meta = read_gguf_context_and_rope(gguf_file)
+    assert meta["context_length"] == 16384
+    assert abs(meta["rope_freq_base"] - 100000.0) < 1.0
+
+    patched = patch_gguf_header_in_place(gguf_file, context_length=262144, rope_theta=10000000.0)
+    assert patched["context_length"] == 262144
+    assert abs(patched["rope_freq_base"] - 10000000.0) < 1.0

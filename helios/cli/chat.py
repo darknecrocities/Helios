@@ -21,10 +21,14 @@ from helios.cli.fallback import (
 )
 from helios.cli.generate import stream_generate
 from helios.cli.utils import (
+    MODEL_FAMILY_CATALOG,
     format_card,
+    format_models_catalog,
     load_model_and_config,
     load_or_create_tokenizer,
+    reload_model_for_tier,
     resolve_device,
+    resolve_tier_key,
 )
 from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
@@ -87,11 +91,13 @@ class ChatSession:
         session_id: str = "default",
         db_path: Path | str | None = None,
         device: torch.device | None = None,
+        preset: str = "nano-20m",
     ) -> None:
         self.model = model
         self.tokenizer = tokenizer
         self.session_id = session_id
         self.device = device or next(model.parameters()).device
+        self.preset = preset
 
         # Setup HMA with persistent Episodic SQLite store
         if db_path is not None and str(db_path) != ":memory:":
@@ -119,7 +125,24 @@ class ChatSession:
 
     def _generate_grounded_fallback(self, query: str) -> str:
         """Provide grounded responses or honest epistemic fallback for unseen topics."""
-        return resolve_verified_semantic_reply(self.hma, query)
+        return resolve_verified_semantic_reply(self.hma, query, preset=self.preset)
+
+    def switch_model(self, new_preset: str) -> str:
+        """Switch active Helios model tier during a live terminal chat session."""
+        tier_key = resolve_tier_key(new_preset)
+        tier_info = MODEL_FAMILY_CATALOG[tier_key]
+        self.preset = tier_info["preset"]
+        del self.model
+        self.model, _ = reload_model_for_tier(self.preset, device=self.device)
+        return (
+            f"✓ Switched active model to {tier_info['display_name']} "
+            f"(Preset: {self.preset} | Parameters: {tier_info['params']} | "
+            f"Context: {tier_info['context']} | Q4 Size: {tier_info['q4_size']})"
+        )
+
+    def list_models(self) -> str:
+        """Return formatted table of all 6 Helios models and mark active model."""
+        return format_models_catalog(self.preset)
 
     def _is_coherent_reply(self, reply: str) -> bool:
         """Evaluate semantic coherence ratio against known vocabulary."""
@@ -219,16 +242,16 @@ class ChatSession:
         )
 
         # 3. Retrieve conversation history
-        history = self.hma.get_working_context(self.session_id, max_tokens=768)
+        history = self.hma.get_working_context(self.session_id, max_tokens=256)
 
         # Format full prompt
         prompt_parts: list[str] = []
         if grounded_context:
-            prompt_parts.append(grounded_context)
+            prompt_parts.append(grounded_context[:600])
 
-        for turn in history:
+        for turn in history[-4:]:
             role = turn["role"]
-            content = turn["content"]
+            content = turn["content"][:300]
             prompt_parts.append(f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>")
 
         prompt_parts.append(
@@ -259,26 +282,29 @@ class ChatSession:
         is_coherent: bool | None = None
         has_printed = False
 
-        for piece in generator:
-            full_reply_parts.append(piece)
-            current_text = "".join(full_reply_parts)
-            if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
-                if self._is_coherent_reply(current_text):
-                    is_coherent = True
-                    if stream:
-                        sys.stdout.write(f"Helios > {current_text}")
-                        sys.stdout.flush()
-                        has_printed = True
-                else:
-                    is_coherent = False
-                    break
-            elif is_coherent is True and stream:
-                sys.stdout.write(piece)
-                sys.stdout.flush()
+        try:
+            for piece in generator:
+                full_reply_parts.append(piece)
+                current_text = "".join(full_reply_parts)
+                if is_coherent is None and (len(full_reply_parts) >= 6 or len(current_text) >= 20):
+                    if self._is_coherent_reply(current_text):
+                        is_coherent = True
+                        if stream:
+                            sys.stdout.write(f"Helios > {current_text}")
+                            sys.stdout.flush()
+                            has_printed = True
+                    else:
+                        is_coherent = False
+                        break
+                elif is_coherent is True and stream:
+                    sys.stdout.write(piece)
+                    sys.stdout.flush()
+        finally:
+            generator.close()
 
         reply = "".join(full_reply_parts).strip()
         if is_coherent is not True or not self._is_coherent_reply(reply):
-            reply = resolve_verified_semantic_reply(self.hma, user_input)
+            reply = resolve_verified_semantic_reply(self.hma, user_input, preset=self.preset)
 
             if stream:
                 if has_printed:
@@ -304,19 +330,33 @@ class ChatSession:
 
 def print_chat_banner(model_name: str, device: torch.device) -> None:
     """Display interactive chat header and command guide."""
+    try:
+        tier_key = resolve_tier_key(model_name)
+        tier_info = MODEL_FAMILY_CATALOG[tier_key]
+        model_desc = (
+            f"{tier_info['display_name']} ({tier_info['params']} | {tier_info['context']} ctx)"
+        )
+    except KeyError:
+        model_desc = model_name
     banner = (
         "====================================================================\n"
-        " Helios Foundation Interactive Terminal Chat (v0.1.0)\n"
-        f" Architecture Lead: Arron Kian Parejas | Device: {device}\n"
-        f" Model Preset: {model_name} | Grounding: HMA (Working + SQLite WAL)\n"
-        " Commands: /help, /memory, /stats, /reset, /exit\n"
+        " Helios Foundation Interactive Terminal Chat (v0.2.0)\n"
+        f" AI Engineer & Lead: Arron Kian Parejas | Device: {device}\n"
+        f" Active Model: {model_desc}\n"
+        " Switch Model: /model <nano|alpha|beta|core|pro|flagship> | /models\n"
+        " Commands    : /models, /model, /help, /memory, /stats, /reset, /exit\n"
         "===================================================================="
     )
     typer.echo(banner)
 
 
 def run_chat(
-    preset: str = typer.Option("nano-20m", "--preset", "-m", help="Helios model size preset"),
+    preset: str = typer.Option(
+        "nano-20m",
+        "--preset",
+        "-m",
+        help="Helios model tier (nano, alpha, beta, core, pro, flagship)",
+    ),
     model_path: str = typer.Option(
         None, "--model-path", help="Path to checkpoint directory or state.pt"
     ),
@@ -340,7 +380,15 @@ def run_chat(
 ) -> None:
     """Start an interactive multi-turn terminal chat loop grounded with HMA memory."""
     dev = resolve_device(device)
-    model, config = load_model_and_config(preset=preset, model_path=model_path, device=dev)
+    try:
+        tier_key = resolve_tier_key(preset)
+        effective_preset = MODEL_FAMILY_CATALOG[tier_key]["preset"]
+    except KeyError:
+        effective_preset = preset
+
+    model, config = load_model_and_config(
+        preset=effective_preset, model_path=model_path, device=dev
+    )
     tokenizer = load_or_create_tokenizer(
         tokenizer_path=tokenizer_path, vocab_size=config.vocab_size
     )
@@ -352,13 +400,14 @@ def run_chat(
         session_id=session_id,
         db_path=effective_db,
         device=dev,
+        preset=effective_preset,
     )
 
-    print_chat_banner(preset, dev)
+    print_chat_banner(session.preset, dev)
 
     while True:
         try:
-            user_input = input(f"\nUser [{session.total_turns + 1}] > ").strip()
+            user_input = input(f"\nUser [{session.total_turns + 1} | {session.preset}] > ").strip()
         except (KeyboardInterrupt, EOFError):
             typer.echo("\nExiting Helios Chat. Goodbye!")
             break
@@ -373,6 +422,16 @@ def run_chat(
         elif cmd == "/reset":
             session.clear()
             typer.echo("✓ Session working memory context cleared.")
+        elif cmd in ("/models", "/model"):
+            typer.echo(session.list_models())
+        elif cmd.startswith("/model ") or cmd.startswith("/switch "):
+            target = user_input.split(None, 1)[1].strip()
+            try:
+                msg = session.switch_model(target)
+                typer.echo(msg)
+            except KeyError as exc:
+                typer.echo(f"✗ {exc.args[0]}")
+                typer.echo(session.list_models())
         elif cmd == "/memory":
             typer.echo(session.memory_status())
         elif cmd == "/stats":
@@ -380,11 +439,13 @@ def run_chat(
         elif cmd == "/help":
             help_text = (
                 "Special Chat Commands:\n"
-                "  /exit, /quit : Terminate chat session\n"
-                "  /reset       : Clear working memory context and turn history\n"
-                "  /memory      : Display HMA memory state and SQLite persistence details\n"
-                "  /stats       : Display session generation performance and throughput\n"
-                "  /help        : Show this command reference"
+                "  /models          : List all 6 Helios models (nano, alpha, beta, core, pro, flagship)\n"
+                "  /model <tier>    : Switch active model live (e.g. /model alpha, /model flagship)\n"
+                "  /exit, /quit     : Terminate chat session\n"
+                "  /reset           : Clear working memory context and turn history\n"
+                "  /memory          : Display HMA memory state and SQLite persistence details\n"
+                "  /stats           : Display session generation performance and throughput\n"
+                "  /help            : Show this command reference"
             )
             typer.echo(help_text)
         else:
