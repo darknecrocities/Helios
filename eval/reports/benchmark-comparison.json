@@ -5,7 +5,7 @@
     "status": "CLEAN",
     "eval_slice_file": "eval/datasets/public_test_slices/held_out_public_benchmarks.jsonl",
     "eval_slice_sha256": "ba9724f517a2b6c6c9c619e0ecdf034bc119253879633e5f13e704ce9455153e",
-    "training_records_scanned": 27557,
+    "training_records_scanned": 82741,
     "eval_items_audited": 23,
     "contaminated_count": 0,
     "contaminated_item_ids": [],
@@ -20,11 +20,11 @@
       "tier_id": "helios-nano",
       "display_name": "Helios Nano",
       "preset": "nano-20m",
-      "timestamp_utc": "2026-11-07T23:55:44.753022+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.843968+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-nano, 16K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -45,7 +45,7 @@
         "runtime_buffers_overhead_mb": 48.0,
         "total_active_ram_2k_mb": 61.31,
         "total_active_ram_max_ctx_mb": 91.93,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -63,7 +63,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,
@@ -89,11 +89,11 @@
       "tier_id": "helios-alpha",
       "display_name": "Helios Alpha",
       "preset": "alpha-100m",
-      "timestamp_utc": "2026-11-07T23:55:44.772334+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.864506+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-alpha, 32K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -114,7 +114,7 @@
         "runtime_buffers_overhead_mb": 64.0,
         "total_active_ram_2k_mb": 138.11,
         "total_active_ram_max_ctx_mb": 498.11,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -132,7 +132,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,
@@ -158,11 +158,11 @@
       "tier_id": "helios-beta",
       "display_name": "Helios Beta",
       "preset": "beta-300m",
-      "timestamp_utc": "2026-11-07T23:55:44.791758+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.886130+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-beta, 64K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -183,7 +183,7 @@
         "runtime_buffers_overhead_mb": 96.0,
         "total_active_ram_2k_mb": 295.88,
         "total_active_ram_max_ctx_mb": 1783.88,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -201,7 +201,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,
@@ -227,11 +227,11 @@
       "tier_id": "helios-core",
       "display_name": "Helios Core",
       "preset": "core-1b",
-      "timestamp_utc": "2026-11-07T23:55:44.810976+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.906537+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-core, 128K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -252,7 +252,7 @@
         "runtime_buffers_overhead_mb": 160.0,
         "total_active_ram_2k_mb": 821.21,
         "total_active_ram_max_ctx_mb": 6869.21,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -270,7 +270,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,
@@ -296,11 +296,11 @@
       "tier_id": "helios-pro",
       "display_name": "Helios Pro",
       "preset": "pro-3b",
-      "timestamp_utc": "2026-11-07T23:55:44.830726+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.927159+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-pro, 128K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -321,7 +321,7 @@
         "runtime_buffers_overhead_mb": 256.0,
         "total_active_ram_2k_mb": 2174.12,
         "total_active_ram_max_ctx_mb": 18302.12,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -339,7 +339,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,
@@ -365,11 +365,11 @@
       "tier_id": "helios-flagship",
       "display_name": "Helios Flagship",
       "preset": "flagship-6b",
-      "timestamp_utc": "2026-11-07T23:55:44.849997+00:00",
+      "timestamp_utc": "2026-11-08T00:26:44.948039+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-flagship, 256K Ctx)",
-      "checkpoint_sha256": "f95c31db50a153f0321be9ba78d038e867ea4f9b99f74544f97e56c97316bd93",
+      "checkpoint_sha256": "b8cb3ac67fe5b9bea11faf045da53fd52fd54de817456e2c1fb92c2bca6d861d",
       "contamination_status": "CLEAN",
       "contaminated_items": 0,
       "decoding_config": {
@@ -390,7 +390,7 @@
         "runtime_buffers_overhead_mb": 384.0,
         "total_active_ram_2k_mb": 3544.96,
         "total_active_ram_max_ctx_mb": 36056.96,
-        "measured_process_peak_rss_mb": 282.98
+        "measured_process_peak_rss_mb": 1495.81
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -408,7 +408,7 @@
         "sciq_held_out": 100.0,
         "humaneval_held_out": 100.0,
         "helios_500_suite_acc": 100.0,
-        "helios_500_mean_latency_ms": 0.22
+        "helios_500_mean_latency_ms": 0.23
       },
       "measured_mcp_6_metrics": {
         "tool_selection_accuracy": 100.0,

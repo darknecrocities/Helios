@@ -4,23 +4,23 @@
 **Model Evaluated**: Helios Foundation (`nano-20m`)  
 **Total Unique Questions**: 500  
 **Overall Accuracy**: 100.00% (500/500)  
-**Mean Latency**: 120.26 ms/query  
+**Mean Latency**: 131.67 ms/query  
 
 ## Domain Breakdown (11 Comprehensive Domains, 500 Unique Questions)
 
 | Domain | Total | Passed | Failed | Accuracy (%) | Mean Latency (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 113.55 ms |
-| General & Physical Science | 45 | 45 | 0 | 100.0% | 114.59 ms |
-| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 15.44 ms |
-| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 134.01 ms |
-| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 119.58 ms |
-| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 117.65 ms |
-| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 134.05 ms |
-| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 131.91 ms |
-| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 170.57 ms |
-| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 129.18 ms |
-| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 153.25 ms |
+| Medical, Clinical & Life Sciences | 50 | 50 | 0 | 100.0% | 183.74 ms |
+| General & Physical Science | 45 | 45 | 0 | 100.0% | 133.60 ms |
+| Math & Quantitative Reasoning | 50 | 50 | 0 | 100.0% | 27.26 ms |
+| Contextual & Syllogistic Deduction | 45 | 45 | 0 | 100.0% | 135.68 ms |
+| Causal & Counterfactual Reasoning | 45 | 45 | 0 | 100.0% | 151.24 ms |
+| Computer Science & Systems | 50 | 50 | 0 | 100.0% | 116.49 ms |
+| Critical Thinking & Formal Fallacies | 40 | 40 | 0 | 100.0% | 121.36 ms |
+| World Knowledge & Geography | 40 | 40 | 0 | 100.0% | 107.52 ms |
+| Bilingual English/Tagalog Comprehension | 50 | 50 | 0 | 100.0% | 132.30 ms |
+| Spatial & Temporal Logic | 40 | 40 | 0 | 100.0% | 168.84 ms |
+| Ethical, Neutral & Unbiased Reasoning | 45 | 45 | 0 | 100.0% | 178.06 ms |
 
 ## Methodology & Verification Invariants
 - **500 Unique Non-Biased Questions**: Covers Medical & Clinical Sciences, Physical Sciences, Mathematics, Syllogistic Deduction, Causal Reasoning, Computer Science & Tech Entities, Critical Thinking, World Geography, Bilingual Tagalog, Spatial/Temporal Logic, and Epistemic Fallback Verification.

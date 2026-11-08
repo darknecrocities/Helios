@@ -18,11 +18,23 @@ from __future__ import annotations
 import gc
 import json
 import logging
+import os
 import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+# Enforce One Touch external storage for all caches and temporary buffers
+ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
+if ONE_TOUCH_ROOT.exists():
+    HF_CACHE = ONE_TOUCH_ROOT / "data" / "hf_cache"
+    HF_CACHE.mkdir(parents=True, exist_ok=True)
+    os.environ["HF_HOME"] = str(HF_CACHE)
+    os.environ["HF_DATASETS_CACHE"] = str(HF_CACHE)
+    os.environ["TORCH_HOME"] = str(ONE_TOUCH_ROOT / "data" / "torch_cache")
+    os.environ["TMPDIR"] = "/tmp"
+    Path(os.environ["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
 
 import torch
 import torch.nn as nn
@@ -298,7 +310,7 @@ def pretrain_all_family_models(
             "target_size": spec["param_target"],
             "role": spec["role"],
             "hardware_target": spec["hw_target"],
-            "stage_status": "Pretrained on Massive Omni-Domain Corpus (14 Domains, 68 Datasets)",
+            "stage_status": "Pretrained on Massive Omni-Domain Corpus (16 Domains, 177 Datasets)",
             "developer": "Arron Kian Parejas",
             "developer_email": "parejasarronkian@gmail.com",
             "license": "Apache-2.0 / MIT",
@@ -309,8 +321,8 @@ def pretrain_all_family_models(
                 **train_metrics,
                 "corpus_path": str(corpus_path),
                 "corpus_total_records": len(all_records),
-                "total_external_datasets": 68,
-                "domains_trained": 14,
+                "total_external_datasets": 177,
+                "domains_trained": 16,
             },
         }
 

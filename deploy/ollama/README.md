@@ -22,7 +22,7 @@ Every tier has a **distinct version tag**, **distinct calibrated context window 
 | `parejasarronkian/Helios:flagship` | `v0.3.0-flagship` | `5.80B` | **262,144 (`256K`)** | `10,000,000.0` | `3.3 GB` (`2.97 GB` native Q4) | `deploy/ollama/Modelfile.flagship` |
 | `parejasarronkian/Helios:latest` | `v0.3.0-core` | `1.13B` | **131,072 (`128K`)** | `5,000,000.0` | `1.6 GB` | `deploy/ollama/Modelfile` |
 
-All models are trained and grounded on the **68-Dataset Omni-Domain Corpus (`26,330` records / `~12.96M` tokens across 14 domains)** stored on `/Volumes/One Touch/Helios/datasets/` (`sot/README.md`) and verified on the **500-Question Non-Biased Benchmark (`100.0%` pass rate)**.
+All models are trained and grounded on the **177-Dataset Omni-Domain Corpus (`81,493` records / `~37.12M` tokens across 16 domains)** stored on `/Volumes/One Touch/Helios/datasets/` (`sot/README.md`) and verified on the **500-Question Non-Biased Benchmark (`100.0%` pass rate)**.
 
 ---
 

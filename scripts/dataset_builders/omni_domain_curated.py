@@ -21,6 +21,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from scripts.dataset_builders.coding_algorithms_data import build_coding_algorithms_records
+from scripts.dataset_builders.history_world_data import build_history_world_records
+from scripts.dataset_builders.swe_architecture_data import build_swe_architecture_records
+
 OMNI_DOMAIN_RECORDS: list[tuple[str, str, str]] = [
     # 1. Ancient Civilizations & Archaeology
     (
@@ -231,4 +235,10 @@ def build_omni_domain_records() -> list[dict[str, Any]]:
                 ],
             }
         )
+    for r in build_history_world_records():
+        records.append(r)
+    for r in build_swe_architecture_records():
+        records.append(r)
+    for r in build_coding_algorithms_records():
+        records.append(r)
     return records

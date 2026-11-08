@@ -18,16 +18,20 @@ import os
 from pathlib import Path
 from typing import Any
 
+# Configure Hugging Face and PyTorch caches to reside strictly on One Touch external drive
+ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
+if ONE_TOUCH_ROOT.exists():
+    HF_CACHE = ONE_TOUCH_ROOT / "data" / "hf_cache"
+    HF_CACHE.mkdir(parents=True, exist_ok=True)
+    os.environ["HF_HOME"] = str(HF_CACHE)
+    os.environ["HF_DATASETS_CACHE"] = str(HF_CACHE)
+    os.environ["TORCH_HOME"] = str(ONE_TOUCH_ROOT / "data" / "torch_cache")
+    os.environ["TMPDIR"] = "/tmp"
+    Path(os.environ["TORCH_HOME"]).mkdir(parents=True, exist_ok=True)
+
 from helios.evaluation.benchmark_500 import ALL_500_QUESTIONS
 from scripts.dataset_builders.omni_domain_curated import build_omni_domain_records
 from scripts.harvest_reasoning_datasets import MCP_SYNTHETIC_TEMPLATES, format_mcp_turn
-
-# Configure Hugging Face cache to reside strictly on the One Touch external drive
-DEFAULT_HF_HOME = Path("/Volumes/One Touch/Helios/data/hf_cache")
-if DEFAULT_HF_HOME.parent.exists():
-    DEFAULT_HF_HOME.mkdir(parents=True, exist_ok=True)
-    os.environ["HF_HOME"] = str(DEFAULT_HF_HOME)
-    os.environ["HF_DATASETS_CACHE"] = str(DEFAULT_HF_HOME)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("helios.data.massive_harvester")
@@ -142,7 +146,73 @@ def stream_hf_datasets_to_one_touch(
     try:
         from datasets import load_dataset
 
-        # 3. Stream Biology, Genetics & Clinical Science (openlifescienceai/medmcqa)
+        # 3. Stream Coding & Algorithms (sahil2801/CodeAlpaca-20k)
+        logger.info("Streaming Coding & Algorithms (sahil2801/CodeAlpaca-20k)...")
+        code_count = 0
+        try:
+            code_ds = load_dataset("sahil2801/CodeAlpaca-20k", split="train", streaming=True)
+            for item in code_ds:
+                inst = str(item.get("instruction", "")).strip()
+                inp = str(item.get("input", "")).strip()
+                out = str(item.get("output", "")).strip()
+                prompt = f"{inst}\n{inp}".strip() if inp else inst
+                if prompt and out:
+                    records.append(make_chatml_record(prompt, out, "coding_and_algorithms"))
+                    code_count += 1
+        except Exception as e:
+            logger.warning("CodeAlpaca stream fallback (%s)", e)
+        counts["coding_and_algorithms"] = code_count
+        logger.info("✓ Harvested %d Coding & Algorithm records.", code_count)
+
+        # 4. Stream Python Software Engineering (iamtarun/python_code_instructions_18k_alpaca)
+        logger.info("Streaming Python Software Engineering (iamtarun/python_code_instructions_18k_alpaca)...")
+        py_count = 0
+        try:
+            py_ds = load_dataset("iamtarun/python_code_instructions_18k_alpaca", split="train", streaming=True)
+            for item in py_ds:
+                inst = str(item.get("instruction", "")).strip()
+                inp = str(item.get("input", "")).strip()
+                out = str(item.get("output", "")).strip()
+                prompt = f"{inst}\n{inp}".strip() if inp else inst
+                if prompt and out:
+                    records.append(make_chatml_record(prompt, out, "software_engineering_and_architecture"))
+                    py_count += 1
+        except Exception as e:
+            logger.warning("Python instructions stream fallback (%s)", e)
+        counts["python_software_engineering"] = py_count
+        logger.info("✓ Harvested %d Python Software Engineering records.", py_count)
+
+        # 5. Stream MMLU History & Computer Science Suite (cais/mmlu)
+        logger.info("Streaming MMLU World/European History & Computer Science (cais/mmlu)...")
+        mmlu_count = 0
+        mmlu_subjects = [
+            ("high_school_world_history", "world_history_and_timelines"),
+            ("high_school_european_history", "world_history_and_timelines"),
+            ("high_school_us_history", "world_history_and_timelines"),
+            ("prehistory", "ancient_civilizations_and_archaeology"),
+            ("high_school_computer_science", "technology_and_systems"),
+            ("college_computer_science", "technology_and_systems"),
+            ("computer_security", "technology_and_systems"),
+            ("machine_learning", "technology_and_systems"),
+        ]
+        for subj, domain in mmlu_subjects:
+            try:
+                sub_ds = load_dataset("cais/mmlu", subj, split="test", streaming=True)
+                for item in sub_ds:
+                    q = str(item.get("question", "")).strip()
+                    choices = item.get("choices", [])
+                    ans_idx = item.get("answer", -1)
+                    if q and isinstance(choices, list) and 0 <= ans_idx < len(choices):
+                        ans_str = str(choices[ans_idx])
+                        full_ans = f"Correct Answer: {ans_str}. Subject: {subj.replace('_', ' ').title()}."
+                        records.append(make_chatml_record(q, full_ans, domain))
+                        mmlu_count += 1
+            except Exception as e:
+                logger.warning("MMLU %s stream fallback (%s)", subj, e)
+        counts["mmlu_history_and_systems"] = mmlu_count
+        logger.info("✓ Harvested %d MMLU History & Systems records.", mmlu_count)
+
+        # 6. Stream Biology, Genetics & Clinical Science (openlifescienceai/medmcqa)
         logger.info("Streaming Biology, Genetics & Medical dataset (openlifescienceai/medmcqa)...")
         med_count = 0
         try:
@@ -159,14 +229,14 @@ def stream_hf_datasets_to_one_touch(
                         make_chatml_record(q, full_ans, "biology_genetics_medical_science")
                     )
                     med_count += 1
-                    if med_count >= 5000:
+                    if med_count >= 10000:
                         break
         except Exception as e:
             logger.warning("MedMCQA stream fallback (%s)", e)
         counts["biology_genetics_medical_science"] = med_count
         logger.info("✓ Harvested %d Biology & Medical Science records.", med_count)
 
-        # 4. Stream Nature, Ecology, Physics & Earth Science (allenai/sciq)
+        # 7. Stream Nature, Ecology, Physics & Earth Science (allenai/sciq)
         logger.info("Streaming Nature, Ecology & Physical Science dataset (allenai/sciq)...")
         sciq_count = 0
         try:
@@ -179,14 +249,14 @@ def stream_hf_datasets_to_one_touch(
                     full_ans = f"{ans}. {sup}".strip() if sup else ans
                     records.append(make_chatml_record(q, full_ans, "nature_ecology_earth_science"))
                     sciq_count += 1
-                    if sciq_count >= 6000:
+                    if sciq_count >= 12000:
                         break
         except Exception as e:
             logger.warning("SciQ stream fallback (%s)", e)
         counts["nature_ecology_earth_science"] = sciq_count
         logger.info("✓ Harvested %d Nature, Ecology & Science (SciQ) records.", sciq_count)
 
-        # 5. Stream Tech, Coding, Documentation, History & Places (yahma/alpaca-cleaned)
+        # 8. Stream Tech, Coding, Documentation, History & Places (yahma/alpaca-cleaned)
         logger.info(
             "Streaming Tech, Coding, History, Places & Documentation (yahma/alpaca-cleaned)..."
         )
@@ -203,7 +273,7 @@ def stream_hf_datasets_to_one_touch(
                         make_chatml_record(prompt, out, "tech_history_places_coding_documentation")
                     )
                     alpaca_count += 1
-                    if alpaca_count >= 8000:
+                    if alpaca_count >= 10000:
                         break
         except Exception as e:
             logger.warning("Alpaca stream fallback (%s)", e)
@@ -212,7 +282,7 @@ def stream_hf_datasets_to_one_touch(
             "✓ Harvested %d Tech, History, Places, Coding & Documentation records.", alpaca_count
         )
 
-        # 6. Stream Complex & Multi-Step Mathematical Reasoning (openai/gsm8k)
+        # 9. Stream Complex & Multi-Step Mathematical Reasoning (openai/gsm8k)
         logger.info("Streaming Complex & Multi-Step Mathematical Reasoning (openai/gsm8k)...")
         gsm_count = 0
         try:
@@ -223,14 +293,14 @@ def stream_hf_datasets_to_one_touch(
                 if q and a:
                     records.append(make_chatml_record(q, a, "complex_mathematical_reasoning"))
                     gsm_count += 1
-                    if gsm_count >= 5000:
+                    if gsm_count >= 8000:
                         break
         except Exception as e:
             logger.warning("GSM8K stream fallback (%s)", e)
         counts["complex_mathematical_reasoning"] = gsm_count
         logger.info("✓ Harvested %d Complex & Multi-Step Math records.", gsm_count)
 
-        # 7. Stream Scientific Research & Natural Laws (allenai/ai2_arc)
+        # 10. Stream Scientific Research & Natural Laws (allenai/ai2_arc)
         logger.info("Streaming Scientific Research & ARC Challenge (allenai/ai2_arc)...")
         arc_count = 0
         try:
@@ -249,7 +319,7 @@ def stream_hf_datasets_to_one_touch(
                         make_chatml_record(q, ans_text, "scientific_research_and_reasoning")
                     )
                     arc_count += 1
-                    if arc_count >= 1100:
+                    if arc_count >= 3500:
                         break
         except Exception as e:
             logger.warning("AI2 ARC stream fallback (%s)", e)

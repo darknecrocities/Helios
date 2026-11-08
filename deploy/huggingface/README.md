@@ -25,10 +25,19 @@ datasets:
   - oscar-corpus/OSCAR-2301
   - statmt/cc-100
   - wikimedia/wikipedia
+  - sahil2801/CodeAlpaca-20k
+  - iamtarun/python_code_instructions_18k_alpaca
+  - cais/mmlu
+  - teknium/OpenHermes-2.5
+  - BAAI/Infinity-Instruct
   - openlifescienceai/medmcqa
   - allenai/sciq
-  - yahma/alpaca-cleaned
+  - allenai/ai2_arc
   - openai/gsm8k
+  - yahma/alpaca-cleaned
+  - princeton-nlp/SWE-bench_Verified
+  - ise-uiuc/Magicoder-OSS-Instruct-75K
+  - Salesforce/xlam-function-calling-60k
 pipeline_tag: text-generation
 language:
   - en

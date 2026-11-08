@@ -34,9 +34,9 @@ Personally engineered by **AI Engineer Arron Kian Parejas**, Helios integrates m
 
 ## Dataset Single Source of Truth (`sot/`)
 
-All **68 external datasets** across **14 comprehensive domains** (Foundational Web, Technology & Cloud, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Software Engineering, Agentic Skills, Model Context Protocol [MCP], Technical Documentation, Scientific Research, and Bilingual Tagalog) and the **12.96M-token (26,330-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/`) are cataloged with direct links in the dedicated Single Source of Truth folder:
-- **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, 14 domain breakdowns, and direct Hugging Face & open scientific platform URLs.
-- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 68 datasets and consolidated corpora (`26,330` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,226` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
+All **177 external datasets** across **16 comprehensive domains** (Foundational Web & Encyclopedic, Technology & Systems, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Algorithms, Software Engineering [SWE] & GitHub PRs, Agentic Skills, Model Context Protocol [MCP] & APIs, Technical Documentation & Standards, Scientific Research & Literature, Law & Philosophy, and Bilingual Tagalog & Multilingual) and the **37.12M-token (81,493-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/`) are cataloged with direct links in the dedicated Single Source of Truth folder:
+- **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, 16 domain breakdowns, and direct Hugging Face & open scientific platform URLs.
+- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 177 datasets and consolidated corpora (`81,493` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,248` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
 
 ---
 
