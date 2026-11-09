@@ -168,3 +168,6 @@ class OneTouchStorageManager:
             "helios_usage_gb": helios_gb,
             "status": "HEALTHY",
         }
+
+
+StorageManager = OneTouchStorageManager

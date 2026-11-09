@@ -80,7 +80,7 @@ Issues = "https://github.com/darknecrocities/Helios/issues"
 
 # Explicit wheel packaging discovery
 [tool.hatch.build.targets.wheel]
-packages = ["helios"]
+packages = ["helios", "helios_pipeline"]
 
 # Tool configuration: Ruff
 [tool.ruff]

@@ -21,3 +21,7 @@ Machine-verified inventory of all ingested dataset sources and curriculum alloca
 | `cluster_b816c1f8_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `54701200e3b0...` | 2026-11-09T09:49:36.720528+00:00 |
 | `cluster_6fb4f835_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `4d65318d4496...` | 2026-11-09T09:50:44.745076+00:00 |
 | `cluster_d2f41309_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `db6f48ece7af...` | 2026-11-09T09:50:44.822650+00:00 |
+| `cluster_7b5d0ba9_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `0f05b3735928...` | 2026-11-09T10:16:00.494602+00:00 |
+| `cluster_df31376c_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `314329e97ac5...` | 2026-11-09T10:16:00.579300+00:00 |
+| `cluster_cc64fc4e_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `8cad8114f631...` | 2026-11-09T10:28:26.497093+00:00 |
+| `cluster_93c3052b_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `73f4f33dd5ea...` | 2026-11-09T10:28:26.609209+00:00 |

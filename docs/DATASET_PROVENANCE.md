@@ -21,3 +21,7 @@ Cryptographic provenance, source URLs, and license terms for ingested training d
 | `cluster_b816c1f8_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `54701200e3b04e51951b36324d2153e4` | COMPLETED |
 | `cluster_6fb4f835_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `4d65318d4496458aad2453e8efee4310` | COMPLETED |
 | `cluster_d2f41309_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `db6f48ece7af495e93671bc982fd0dac` | COMPLETED |
+| `cluster_7b5d0ba9_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `0f05b3735928461e96dd629a238fd017` | COMPLETED |
+| `cluster_df31376c_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `314329e97ac549548cb67c51e0cbcf5f` | COMPLETED |
+| `cluster_cc64fc4e_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `8cad8114f63145679c123dc762936c1a` | COMPLETED |
+| `cluster_93c3052b_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `73f4f33dd5ea4336820083b4363bedd9` | COMPLETED |

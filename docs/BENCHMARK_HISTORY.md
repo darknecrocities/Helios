@@ -16,3 +16,7 @@ Standardized evaluation harness results across academic reasoning, code, and age
 | 2026-11-09 09:49:36 | `4c0fd2ecb5d68953...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
 | 2026-11-09 09:50:44 | `c1f8d7892cbf562a...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
 | 2026-11-09 09:50:44 | `0e7ec8f2db2c516b...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 10:16:00 | `c89afeb79f45890e...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 10:16:00 | `dee0e7855802ae15...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 10:28:26 | `8cfba4fc451a2e84...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 10:28:26 | `62648b5a8a2b8d0a...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
