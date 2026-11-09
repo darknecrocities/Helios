@@ -137,24 +137,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDocs }) => {
           className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-b from-[#FFA040]/30 via-[#FBF9F5] to-[#FBF9F5]"
         />
 
-        {/* Top Developer Status Bar */}
-        <motion.div
-          style={{ opacity: contentOpacity }}
-          className="relative z-30 w-full max-w-4xl mx-auto flex items-center justify-between text-[10px] sm:text-[11px] font-mono-tabular tracking-wider text-white/60 px-1"
-        >
-          <div className="inline-flex items-center gap-2 truncate">
-            <span className="w-2 h-2 rounded-full bg-[#FF5500] animate-pulse shrink-0" />
-            <span className="uppercase text-white/80 font-medium truncate">OPEN-WEIGHT FOUNDATION ECOSYSTEM</span>
-          </div>
-          <div className="hidden sm:inline-flex items-center gap-3 text-white/50 shrink-0">
-            <span>OPENCLAW & HERMES READY</span>
-            <span>·</span>
-            <span>17.84M → 5.80B</span>
-            <span>·</span>
-            <span>256K ROPE CTX</span>
-          </div>
-        </motion.div>
-
         {/* Central Hero Header & Value Proposition */}
         <motion.div
           style={{ y: contentY, opacity: contentOpacity }}
