@@ -8,9 +8,13 @@
     --font-mono: 'JetBrains Mono', monospace;
   }
 
+  html, body {
+    overflow-x: clip;
+  }
+
   body {
     font-family: var(--font-sans);
-    background-color: #F5F0E6;
+    background-color: #FBF9F5;
     color: #141312;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
@@ -28,6 +32,17 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1, "zero" 1;
   }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* Minimalist warm beige scrollbar */

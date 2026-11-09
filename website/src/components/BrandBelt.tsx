@@ -11,6 +11,10 @@ import {
   FaissLogo,
   SqliteLogo,
   OnnxLogo,
+  OpenClawLogo,
+  HermesAgentLogo,
+  GoogleColabLogo,
+  JupyterLogo,
 } from './PlatformLogos';
 
 const BRAND_ITEMS = [
@@ -18,6 +22,10 @@ const BRAND_ITEMS = [
   { name: 'Google Antigravity', Logo: AntigravityLogo },
   { name: 'Hugging Face', Logo: HuggingFaceLogo },
   { name: 'Ollama', Logo: OllamaLogo },
+  { name: 'OpenClaw Agent', Logo: OpenClawLogo },
+  { name: 'Hermes Agent', Logo: HermesAgentLogo },
+  { name: 'Google Colab', Logo: GoogleColabLogo },
+  { name: 'Jupyter Notebook', Logo: JupyterLogo },
   { name: 'Python', Logo: PythonLogo },
   { name: 'PyTorch', Logo: PyTorchLogo },
   { name: 'SafeTensors', Logo: PyTorchSafeTensorsLogo },
@@ -27,18 +35,17 @@ const BRAND_ITEMS = [
 ];
 
 export const BrandBelt: React.FC = () => {
-  // Duplicate array 3 times for seamless infinite marquee loop
   const marqueeList = [...BRAND_ITEMS, ...BRAND_ITEMS, ...BRAND_ITEMS];
 
   return (
-    <div className="relative w-full py-12 bg-[#F5F0E6] border-y border-[#141312]/10 overflow-hidden select-none">
-      {/* Subtle left & right fade masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-40 bg-gradient-to-r from-[#F5F0E6] to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-40 bg-gradient-to-l from-[#F5F0E6] to-transparent z-10" />
+    <div className="relative w-full py-10 bg-[#FBF9F5] border-y border-[#141312]/8 overflow-hidden select-none">
+      {/* Subtle left & right gradient fade masks */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-36 bg-gradient-to-r from-[#FBF9F5] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-36 bg-gradient-to-l from-[#FBF9F5] to-transparent z-10" />
 
-      <div className="max-w-[1320px] mx-auto px-4 mb-6 text-center">
-        <span className="font-mono-tabular text-[11px] uppercase tracking-[0.26em] text-[#141312]/50">
-          ENGINEERED & POWERED BY OPEN ECOSYSTEM TECHNOLOGIES
+      <div className="max-w-6xl mx-auto px-4 mb-5 text-center">
+        <span className="font-mono-tabular text-[10px] uppercase tracking-[0.28em] text-[#141312]/50">
+          ENGINEERED & VERIFIED ACROSS THE OPEN ECOSYSTEM
         </span>
       </div>
 
@@ -46,21 +53,21 @@ export const BrandBelt: React.FC = () => {
         <motion.div
           animate={{ x: ['0%', '-33.333%'] }}
           transition={{
-            duration: 32,
+            duration: 35,
             repeat: Infinity,
             ease: 'linear',
           }}
-          className="flex items-center gap-14 sm:gap-20 whitespace-nowrap px-8"
+          className="flex items-center gap-12 sm:gap-16 whitespace-nowrap px-6"
         >
           {marqueeList.map((item, idx) => {
             const Icon = item.Logo;
             return (
               <div
                 key={`${item.name}-${idx}`}
-                className="flex items-center gap-3.5 text-[#141312]/80 hover:text-[#FF5500] transition-colors duration-300"
+                className="flex items-center gap-3 text-[#141312]/70 hover:text-[#FF5500] transition-colors duration-300 group cursor-default"
               >
-                <Icon size={34} />
-                <span className="font-display font-semibold text-sm sm:text-base tracking-[0.12em] uppercase">
+                <Icon size={28} className="opacity-80 group-hover:opacity-100 transition-opacity" />
+                <span className="font-display font-medium text-xs sm:text-sm tracking-[0.14em] uppercase">
                   {item.name}
                 </span>
               </div>
