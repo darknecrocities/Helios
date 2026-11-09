@@ -29,3 +29,9 @@ Cryptographic provenance, source URLs, and license terms for ingested training d
 | `cluster_668bc82e_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `c79cc54ec9d34d1793ce589b0f51c5b6` | COMPLETED |
 | `cluster_f03b6933_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `694344d800954962808824b470e1ad89` | COMPLETED |
 | `cluster_2c476430_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `7c700ec1f0f241388e467801c01db75c` | COMPLETED |
+| `cluster_716368de_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `1a5d70adb8694ac1b875c0376ce6255d` | COMPLETED |
+| `cluster_9c7a4756_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `45435e3f9aeb4d5fb6038b7cf9a034a3` | COMPLETED |
+| `cluster_a79b708e_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `bb2a77ded15d47aa81aad51b726e39af` | COMPLETED |
+| `cluster_c88b45f3_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `abba077ee95c4fd585b466b3348399ea` | COMPLETED |
+| `cluster_f9a2318b_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `a719cbc033d143eda0b272204c80f36e` | COMPLETED |
+| `cluster_9ab4d819_stage_a` | Open Data / ODC-By | `synthetic` | `main` | `274e40270df34f8ebb675d8d0e0ddc95` | COMPLETED |

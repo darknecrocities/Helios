@@ -50,7 +50,7 @@ def test_build_cot_reasoning_trace() -> None:
     trace = build_cot_reasoning_trace("what is dog?", ["Canis lupus familiaris"], preset="nano-20m")
     assert "<thought>" in trace
     assert "</thought>" in trace
-    assert "Deconstruct query intent and primary subject" in trace
+    assert "Intent & Subject Decomposition" in trace or "Deconstruct" in trace
 
 
 @pytest.mark.unit

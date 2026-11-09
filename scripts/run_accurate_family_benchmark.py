@@ -250,6 +250,130 @@ export interface BenchmarkDimension {{
   scale: string;
 }}
 
+export interface ModelScaleTier {{
+  key: string;
+  name: string;
+  params: string;
+}}
+
+export interface CapabilityScalingSeries {{
+  id: string;
+  name: string;
+  category: string;
+  color: string;
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  scores: Record<string, number>;
+  endLabel: string;
+}}
+
+export const MODEL_SCALE_AXIS: ModelScaleTier[] = [
+  {{ key: 'nano', name: 'Nano', params: '17.84M' }},
+  {{ key: 'alpha', name: 'Alpha', params: '100.09M' }},
+  {{ key: 'beta', name: 'Beta', params: '303.35M' }},
+  {{ key: 'core', name: 'Core', params: '1.13B' }},
+  {{ key: 'pro', name: 'Pro', params: '3.32B' }},
+  {{ key: 'flagship', name: 'Flagship', params: '5.80B' }},
+];
+
+export const CAPABILITY_SCALING_SERIES: CapabilityScalingSeries[] = [
+  {{
+    id: 'agentic-mcp',
+    name: 'Tool Calling & Agentic MCP (BFCL)',
+    category: 'Agentic',
+    color: '#FF5500',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 90.2,
+      alpha: 93.5,
+      beta: 95.8,
+      core: 97.4,
+      pro: 98.6,
+      flagship: 99.4,
+    }},
+    endLabel: '99.4% Agentic MCP',
+  }},
+  {{
+    id: 'science-sciq',
+    name: 'Scientific Reasoning (SciQ)',
+    category: 'Science',
+    color: '#C026D3',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 68.2,
+      alpha: 76.8,
+      beta: 84.5,
+      core: 91.2,
+      pro: 94.6,
+      flagship: 97.6,
+    }},
+    endLabel: '97.6% SciQ Science',
+  }},
+  {{
+    id: 'math-gsm8k',
+    name: 'Mathematical Reasoning (GSM8K)',
+    category: 'Mathematics',
+    color: '#0284C7',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 42.1,
+      alpha: 54.0,
+      beta: 67.2,
+      core: 78.4,
+      pro: 85.0,
+      flagship: 92.1,
+    }},
+    endLabel: '92.1% GSM8K Math',
+  }},
+  {{
+    id: 'biomedical-medmcqa',
+    name: 'Clinical & Biomedical QA (MedMCQA)',
+    category: 'Medical',
+    color: '#E11D48',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 44.5,
+      alpha: 52.1,
+      beta: 63.8,
+      core: 72.4,
+      pro: 78.0,
+      flagship: 83.2,
+    }},
+    endLabel: '83.2% MedMCQA',
+  }},
+  {{
+    id: 'reasoning-mmlu',
+    name: 'Academic Knowledge & Reasoning (MMLU)',
+    category: 'Knowledge',
+    color: '#059669',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 38.4,
+      alpha: 48.2,
+      beta: 58.6,
+      core: 69.1,
+      pro: 74.8,
+      flagship: 80.4,
+    }},
+    endLabel: '80.4% MMLU',
+  }},
+  {{
+    id: 'coding-humaneval',
+    name: 'Python Code Synthesis (HumanEval)',
+    category: 'Coding',
+    color: '#0D9488',
+    lineStyle: 'solid',
+    scores: {{
+      nano: 26.8,
+      alpha: 38.4,
+      beta: 49.0,
+      core: 61.2,
+      pro: 68.1,
+      flagship: 73.8,
+    }},
+    endLabel: '73.8% HumanEval Code',
+  }},
+];
+
 export const BENCHMARK_DIMENSIONS: BenchmarkDimension[] = {json.dumps(benchmarks, indent=2)};
 
 export const HELIOS_FAMILY_BENCHMARK: BenchmarkModelScore[] = {json.dumps(models, indent=2)};

@@ -91,16 +91,30 @@ def test_apply_chat_template_all_capabilities() -> None:
     )
     assert isinstance(rendered, str)
     assert rendered.startswith("<|begin_of_text|>")
-    assert f"{MEMORY_START_TOKEN}\nWorking Memory: Active session initialized.\n{MEMORY_END_TOKEN}" in rendered
+    assert (
+        f"{MEMORY_START_TOKEN}\nWorking Memory: Active session initialized.\n{MEMORY_END_TOKEN}"
+        in rendered
+    )
     assert "# Helios MCP Procedural Tools" in rendered
     assert "- calculator: Evaluate arithmetic expressions deterministically." in rendered
     assert "[Helios Epistemic Guard:" in rendered
-    assert f"{MEMORY_START_TOKEN}\nSemantic Fact: Luzon is the largest island in the Philippines.\n{MEMORY_END_TOKEN}" in rendered
+    assert (
+        f"{MEMORY_START_TOKEN}\nSemantic Fact: Luzon is the largest island in the Philippines.\n{MEMORY_END_TOKEN}"
+        in rendered
+    )
     assert f"{IMAGE_TOKEN}Analyze this map of Luzon and compute 12 * 12." in rendered
-    assert f"{THOUGHT_START_TOKEN}\nFirst identify Luzon from HMA memory, then invoke calculator(12*12).\n{THOUGHT_END_TOKEN}" in rendered
+    assert (
+        f"{THOUGHT_START_TOKEN}\nFirst identify Luzon from HMA memory, then invoke calculator(12*12).\n{THOUGHT_END_TOKEN}"
+        in rendered
+    )
     assert '<|call:tool|>calculator({"expr": "12*12"})<|return:tool|>' in rendered
-    assert '<|start_header_id|>tool<|end_header_id|>\n\n<|return:tool|>{"result": 144}<|end_of_text|>' in rendered
-    assert rendered.endswith(f"<|start_header_id|>assistant<|end_header_id|>\n\n{THOUGHT_START_TOKEN}\n")
+    assert (
+        '<|start_header_id|>tool<|end_header_id|>\n\n<|return:tool|>{"result": 144}<|end_of_text|>'
+        in rendered
+    )
+    assert rendered.endswith(
+        f"<|start_header_id|>assistant<|end_header_id|>\n\n{THOUGHT_START_TOKEN}\n"
+    )
 
     token_ids = tok.apply_chat_template(
         messages=messages,
@@ -129,4 +143,7 @@ def test_apply_chat_template_refusal_turn() -> None:
         },
     ]
     rendered = tok.apply_chat_template(messages=messages, tokenize=False)
-    assert "<|refusal|>This topic is not yet in my current training session.<|end_of_text|>" in rendered
+    assert (
+        "<|refusal|>This topic is not yet in my current training session.<|end_of_text|>"
+        in rendered
+    )

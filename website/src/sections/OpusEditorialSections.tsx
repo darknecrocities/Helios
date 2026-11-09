@@ -1,4 +1,5 @@
 import React from 'react';
+import pretrainData from '../data/pretrain_metrics.json';
 
 interface MarginaliaItem {
   label: string;
@@ -165,16 +166,16 @@ export const EditorialTrainingSection: React.FC = () => (
     id="editorial-training"
     numeral="II"
     category="Pretraining & Architecture"
-    title="Trained from Scratch on 177 Curated Open Datasets"
+    title={`Trained from Scratch on ${pretrainData.curriculum.totalDatasets} Curated Open Datasets`}
     bgVariant="cream"
-    leadParagraph="A foundation model is only as trustworthy as the corpus it absorbs and the mathematical discipline of its attention layers. Every weight in the Helios family was trained from first principles on 177 open-access scientific, literary, and programming datasets."
+    leadParagraph={`A foundation model is only as trustworthy as the corpus it absorbs and the mathematical discipline of its attention layers. Every weight in the Helios family was trained from first principles on ${pretrainData.curriculum.totalDatasets} open-access scientific, literary, and programming datasets.`}
     paragraphs={[
-      "Rather than scraping uncurated web dumps filled with synthetic spam and duplicated boilerplate, the Helios pretraining pipeline ingests 177 vetted datasets across 16 foundational domains—including formal mathematics, systems engineering (Python, Rust, TypeScript, C, and SQL), clinical biomedicine, classical philosophy, and bilingual English and Filipino/Tagalog literature. Every document undergoes MinHash deduplication, heuristic quality filtering, and cryptographic SHA-256 provenance logging.",
+      `Rather than scraping uncurated web dumps filled with synthetic spam and duplicated boilerplate, the Helios pretraining pipeline ingests ${pretrainData.curriculum.totalDatasets} vetted datasets across 16 foundational domains—including formal mathematics, systems engineering (Python, Rust, TypeScript, C, and SQL), clinical biomedicine, classical philosophy, and bilingual English and Filipino/Tagalog literature. Every document undergoes MinHash deduplication, heuristic quality filtering, and cryptographic SHA-256 provenance logging.`,
       "Standard English-centric tokenizers fracture agglutinative Filipino morphology (such as mag-, nag-, -in-, and -um- affixes) and multi-space source code indentation into inefficient single-character fragments. Helios solves this with custom-trained Byte-Level BPE and Viterbi Unigram tokenizers engineered directly in-repo. By combining 256 raw byte fallbacks with priority syntactic merges, Helios achieves zero out-of-vocabulary (<unk>) failures across any UTF-8 stream while preserving high token fertility.",
       "At the heart of the model lies the Panoptes Transformer architecture. By pairing Pre-RMSNorm and SwiGLU feed-forward networks with Grouped-Query Attention (4:1 and 3:1 GQA) and Dynamic NTK High-Theta Rotary Position Embeddings (scaled up to θ = 10,000,000), Helios compresses its Key-Value cache by up to 8×. This architectural efficiency allows a 256,000-token context window—equivalent to an entire 500-page technical book or multi-module codebase—to run smoothly inside a standard 16GB RAM laptop."
     ]}
     marginalia={[
-      { label: "Pretraining Corpus", value: "177 Open Datasets · 16 Domains" },
+      { label: "Pretraining Corpus", value: `${pretrainData.curriculum.totalDatasets} Open Datasets · 16 Domains` },
       { label: "Tokenizer Architecture", value: "Byte-Level BPE & Viterbi Unigram" },
       { label: "Max Context Window", value: "256K Tokens (θ = 10,000,000)" },
       { label: "Attention Compression", value: "4:1 & 3:1 GQA + INT8 KV Cache" },

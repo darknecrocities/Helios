@@ -49,7 +49,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
               </span>
             </div>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#141312] leading-[1.08]">
-              177 Curated Datasets.
+              {data.curriculum.totalDatasets} Curated Datasets.
               <br />
               <span className="font-serif-editorial italic font-normal text-[#FF5500]">
                 Zero Redundancy.
@@ -59,7 +59,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
 
           <div className="lg:col-span-7 lg:pt-8 space-y-4">
             <p className="font-serif-editorial text-xl sm:text-2xl text-[#141312]/85 leading-relaxed font-normal">
-              Every token in the Helios foundation models was ingested from 177 open-access
+              Every token in the Helios foundation models was ingested from {data.curriculum.totalDatasets} open-access
               scientific, mathematical, and algorithmic corpora. Powered by a persistent
               non-repeating curriculum ledger on OneTouch storage, pretraining advances with 0.0%
               repetition across consecutive runs.
@@ -374,7 +374,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
                   rel="noopener noreferrer"
                   className="hover:text-[#FF5500] transition-colors inline-flex items-center gap-1"
                 >
-                  SOT Catalog (177 Datasets)
+                  SOT Catalog ({data.curriculum.totalDatasets} Datasets)
                   <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
                 </a>
               </div>

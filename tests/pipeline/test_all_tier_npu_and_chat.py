@@ -126,7 +126,17 @@ class TestWorkflowAndStorageHardLock:
         with pytest.raises(ValueError, match="Invalid duration"):
             parse_duration("invalid_duration")
 
-    def test_run_doctor_succeeds(self) -> None:
+    def test_run_doctor_succeeds(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        if not Path("/Volumes/One Touch").exists():
+            mock_sm = MagicMock()
+            mock_sm.return_value.check_health.return_value = {
+                "mount_path": "/Volumes/One Touch",
+                "free_gb": 850.0,
+                "total_gb": 1000.0,
+                "helios_usage_gb": 12.5,
+                "status": "HEALTHY",
+            }
+            monkeypatch.setattr("helios_pipeline.storage.manager.StorageManager", mock_sm)
         exit_code = run_doctor()
         assert exit_code == 0
 

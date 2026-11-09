@@ -6,13 +6,13 @@
       null
     ]
   },
-  "model_max_length": 1024,
+  "model_max_length": 262144,
   "bos_token": "<|begin_of_text|>",
   "eos_token": "<|end_of_text|>",
   "pad_token": "<|pad|>",
   "clean_up_tokenization_spaces": false,
   "added_tokens_decoder": {
-    "256": {
+    "0": {
       "content": "<|begin_of_text|>",
       "lstrip": false,
       "normalized": false,
@@ -20,7 +20,7 @@
       "single_word": false,
       "special": true
     },
-    "257": {
+    "1": {
       "content": "<|end_of_text|>",
       "lstrip": false,
       "normalized": false,
@@ -28,7 +28,7 @@
       "single_word": false,
       "special": true
     },
-    "258": {
+    "2": {
       "content": "<|pad|>",
       "lstrip": false,
       "normalized": false,
@@ -36,7 +36,15 @@
       "single_word": false,
       "special": true
     },
-    "259": {
+    "3": {
+      "content": "<|unk|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "4": {
       "content": "<|start_header_id|>",
       "lstrip": false,
       "normalized": false,
@@ -44,7 +52,7 @@
       "single_word": false,
       "special": true
     },
-    "260": {
+    "5": {
       "content": "<|end_header_id|>",
       "lstrip": false,
       "normalized": false,
@@ -52,24 +60,48 @@
       "single_word": false,
       "special": true
     },
-    "261": {
-      "content": "<|call:tool|>",
+    "6": {
+      "content": "<|eot_id|>",
       "lstrip": false,
       "normalized": false,
       "rstrip": false,
       "single_word": false,
       "special": true
     },
-    "262": {
-      "content": "<|return:tool|>",
+    "32000": {
+      "content": "<|image|>",
       "lstrip": false,
       "normalized": false,
       "rstrip": false,
       "single_word": false,
       "special": true
     },
-    "263": {
-      "content": "<|refusal|>",
+    "32001": {
+      "content": "<|memory_start|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "32002": {
+      "content": "<|memory_end|>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "32003": {
+      "content": "<thought>",
+      "lstrip": false,
+      "normalized": false,
+      "rstrip": false,
+      "single_word": false,
+      "special": true
+    },
+    "32004": {
+      "content": "</thought>",
       "lstrip": false,
       "normalized": false,
       "rstrip": false,
@@ -77,5 +109,5 @@
       "special": true
     }
   },
-  "chat_template": "{% for message in messages %}{{ '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n' + message['content'] + '<|end_of_text|>' }}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{% endif %}"
+  "chat_template": "{{- bos_token if bos_token is defined else '<|begin_of_text|>' -}}{%- if hma_context is defined and hma_context -%}{{- '<|start_header_id|>system<|end_header_id|>\n\n<|memory_start|>\n' + hma_context + '\n<|memory_end|><|end_of_text|>' -}}{%- endif -%}{%- if tools is defined and tools -%}{{- '<|start_header_id|>system<|end_header_id|>\n\n# Helios MCP Procedural Tools\nYou may invoke registered tools using <|call:tool|>name(json_args)<|return:tool|>.\nAvailable tools:\n' -}}{%- for tool in tools -%}{{- '- ' + (tool['name'] if tool is mapping and 'name' in tool else (tool['function']['name'] if tool is mapping and 'function' in tool else tool|string)) + ': ' + (tool['description'] if tool is mapping and 'description' in tool else (tool['function']['description'] if tool is mapping and 'function' in tool else '')) + '\n' -}}{%- endfor -%}{{- '<|end_of_text|>' -}}{%- endif -%}{%- if epistemic_guard is defined and epistemic_guard -%}{{- '<|start_header_id|>system<|end_header_id|>\n\n[Helios Epistemic Guard: Verify all claims against 4-Tier HMA memory (Working, Episodic SQLite/WAL, Semantic BM25+FAISS RRF, Procedural). Abstain honestly with <|refusal|> on unverified out-of-session probes. Bilingual EN/TL supported.]<|end_of_text|>' -}}{%- endif -%}{%- for message in messages -%}{{- '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n' -}}{%- if message['memory_context'] is defined and message['memory_context'] -%}{{- '<|memory_start|>\n' + message['memory_context'] + '\n<|memory_end|>\n\n' -}}{%- endif -%}{%- if message['images'] is defined and message['images'] -%}{%- for _ in message['images'] -%}{{- '<|image|>' -}}{%- endfor -%}{%- endif -%}{%- if message['thought'] is defined and message['thought'] -%}{{- '<thought>\n' + message['thought'] + '\n</thought>\n\n' -}}{%- elif message['reasoning_content'] is defined and message['reasoning_content'] -%}{{- '<thought>\n' + message['reasoning_content'] + '\n</thought>\n\n' -}}{%- endif -%}{%- if message['refusal'] is defined and message['refusal'] -%}{{- '<|refusal|>' + message['refusal'] + '<|end_of_text|>' -}}{%- elif message['role'] == 'tool' -%}{{- '<|return:tool|>' + (message['content'] if message['content'] is string else message['content']|tojson) + '<|end_of_text|>' -}}{%- else -%}{%- if message['content'] is iterable and message['content'] is not string -%}{%- for part in message['content'] -%}{%- if part['type'] == 'image' or part['type'] == 'image_url' -%}{{- '<|image|>' -}}{%- elif part['type'] == 'text' -%}{{- part['text'] -}}{%- endif -%}{%- endfor -%}{%- elif message['content'] is defined and message['content'] is not none -%}{{- message['content'] -}}{%- endif -%}{%- if message['tool_calls'] is defined and message['tool_calls'] -%}{%- for tc in message['tool_calls'] -%}{%- set fn = tc['function'] if 'function' in tc else tc -%}{{- '<|call:tool|>' + fn['name'] + '(' + (fn['arguments'] if fn['arguments'] is string else fn['arguments']|tojson) + ')<|return:tool|>' -}}{%- endfor -%}{%- endif -%}{{- '<|end_of_text|>' -}}{%- endif -%}{%- endfor -%}{%- if add_generation_prompt -%}{{- '<|start_header_id|>assistant<|end_header_id|>\n\n' -}}{%- if enable_thinking is defined and enable_thinking -%}{{- '<thought>\n' -}}{%- endif -%}{%- endif -%}"
 }

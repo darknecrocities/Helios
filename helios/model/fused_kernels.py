@@ -18,9 +18,7 @@ from typing import Any
 import torch
 import torch.nn.functional as F
 
-HAS_TRITON: bool = (
-    importlib.util.find_spec("triton") is not None and torch.cuda.is_available()
-)
+HAS_TRITON: bool = importlib.util.find_spec("triton") is not None and torch.cuda.is_available()
 
 
 @dataclass(frozen=True)
@@ -121,9 +119,7 @@ class FusedChunkedCrossEntropyFunction(torch.autograd.Function):
                 t_valid = t_chunk[c_mask]
                 logits_chunk = F.linear(h_chunk, weight).float()
                 lse = torch.logsumexp(logits_chunk, dim=-1)
-                target_logits = logits_chunk.gather(
-                    dim=-1, index=t_valid.unsqueeze(-1)
-                ).squeeze(-1)
+                target_logits = logits_chunk.gather(dim=-1, index=t_valid.unsqueeze(-1)).squeeze(-1)
                 ce_sum = (lse - target_logits).sum()
                 if z_loss_weight > 0.0:
                     ce_sum = ce_sum + z_loss_weight * (lse.pow(2)).sum()
@@ -132,13 +128,9 @@ class FusedChunkedCrossEntropyFunction(torch.autograd.Function):
         return (total_loss / float(valid_count)).to(orig_dtype)
 
     @staticmethod
-    def backward(
-        ctx: Any, grad_output: torch.Tensor
-    ) -> tuple[torch.Tensor | None, ...]:
+    def backward(ctx: Any, grad_output: torch.Tensor) -> tuple[torch.Tensor | None, ...]:
         if ctx.valid_count == 0:
-            grad_h = torch.zeros(
-                ctx.orig_shape, device=grad_output.device, dtype=ctx.orig_dtype
-            )
+            grad_h = torch.zeros(ctx.orig_shape, device=grad_output.device, dtype=ctx.orig_dtype)
             return grad_h, None, None, None, None, None
 
         h_flat, weight, t_flat = ctx.saved_tensors
@@ -151,9 +143,7 @@ class FusedChunkedCrossEntropyFunction(torch.autograd.Function):
         num_tokens, hidden_dim = h_flat.shape
         grad_h_flat = torch.zeros_like(h_flat)
         grad_weight = (
-            torch.zeros_like(weight, dtype=torch.float32)
-            if ctx.needs_input_grad[1]
-            else None
+            torch.zeros_like(weight, dtype=torch.float32) if ctx.needs_input_grad[1] else None
         )
         scale = grad_output.float() / valid_count
 
@@ -202,9 +192,7 @@ class FusedChunkedCrossEntropyFunction(torch.autograd.Function):
                     grad_h_flat[start:end] = chunk_grad_full
 
                 if grad_weight is not None:
-                    grad_weight.add_(
-                        torch.matmul(grad_logits.transpose(0, 1), h_chunk.float())
-                    )
+                    grad_weight.add_(torch.matmul(grad_logits.transpose(0, 1), h_chunk.float()))
 
         grad_h = grad_h_flat.reshape(ctx.orig_shape)
         grad_w_out = grad_weight.to(weight.dtype) if grad_weight is not None else None
@@ -230,9 +218,7 @@ def fused_chunked_cross_entropy(
     )
 
 
-def fused_rmsnorm(
-    x: torch.Tensor, weight: torch.Tensor, eps: float = 1e-6
-) -> torch.Tensor:
+def fused_rmsnorm(x: torch.Tensor, weight: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
     """Compute RMSNorm with high-precision float32 variance reduction."""
     input_dtype = x.dtype
     x_fp32 = x.to(torch.float32)
@@ -282,9 +268,7 @@ def benchmark_fused_vs_eager(
     loss_abs_diff = float((eager_loss.detach() - fused_loss.detach()).abs().item())
     grad_h_max_diff = float((h1.grad - h2.grad).abs().max().item())  # type: ignore[operator]
     grad_w_max_diff = float((w1.grad - w2.grad).abs().max().item())  # type: ignore[operator]
-    memory_reduction_pct = (
-        (1.0 - (fused_logit_bytes / max(1, eager_logit_bytes))) * 100.0
-    )
+    memory_reduction_pct = (1.0 - (fused_logit_bytes / max(1, eager_logit_bytes))) * 100.0
 
     return {
         "backend": get_kernel_backend_info(dev).tier,

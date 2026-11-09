@@ -109,11 +109,7 @@ class VerifiableRewardEngine:
         if not (has_std or has_special):
             return -0.25
 
-        pattern = (
-            r"<thought>(.*?)</thought>"
-            if has_std
-            else r"<\|thought\|>(.*?)<\|/thought\|>"
-        )
+        pattern = r"<thought>(.*?)</thought>" if has_std else r"<\|thought\|>(.*?)<\|/thought\|>"
         match = re.search(pattern, completion, flags=re.DOTALL)
         if not match:
             return -0.1
@@ -176,9 +172,7 @@ class VerifiableRewardEngine:
             return 0.4
         return 0.1
 
-    def score_completion(
-        self, completion: str, task_type: str, expected_target: str
-    ) -> float:
+    def score_completion(self, completion: str, task_type: str, expected_target: str) -> float:
         """Compute composite verifiable reward R(x, y) combining format and accuracy."""
         fmt_reward = self.verify_thought_structure(completion)
         if task_type == "math":
@@ -291,7 +285,9 @@ class GRPOTrainer:
     def _encode_group(
         self, task: VerifiableTask, vocab_size: int
     ) -> tuple[torch.Tensor, list[int], torch.Tensor, float]:
-        p_ids = [t % vocab_size for t in self.tokenizer.encode(task.prompt, add_special_tokens=True)]
+        p_ids = [
+            t % vocab_size for t in self.tokenizer.encode(task.prompt, add_special_tokens=True)
+        ]
         max_p = max(8, self.config.seq_len // 3)
         p_ids = p_ids[:max_p]
         p_len = len(p_ids)
@@ -323,7 +319,9 @@ class GRPOTrainer:
         except Exception:
             pass
 
-        dev = torch.device("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
+        dev = torch.device(
+            "mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu"
+        )
         if self.config.preset in ("core-1b", "pro-3b", "flagship-6b", "core", "pro", "flagship"):
             dev = torch.device("cpu")
 
@@ -381,7 +379,9 @@ class GRPOTrainer:
             ref_lp = ref_logps_cache[g_idx]
 
             with torch.no_grad():
-                old_lp = compute_sequence_logprobs(model(seqs_dev)["logits"], seqs_dev, p_lens).detach()
+                old_lp = compute_sequence_logprobs(
+                    model(seqs_dev)["logits"], seqs_dev, p_lens
+                ).detach()
 
             optimizer.zero_grad(set_to_none=True)
             pol_lp = compute_sequence_logprobs(model(seqs_dev)["logits"], seqs_dev, p_lens)
@@ -411,7 +411,9 @@ class GRPOTrainer:
         if self.config.save_checkpoint and loaded_compat and st_path.exists():
             from helios_pipeline.evaluation.health import compute_file_sha256
 
-            state = {k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()}
+            state = {
+                k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()
+            }
             save_file(state, str(st_path))
             sha = compute_file_sha256(st_path)
             (latest_dir / "SHA256SUMS").write_text(f"{sha}  model.safetensors\n", encoding="utf-8")

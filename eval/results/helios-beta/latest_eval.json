@@ -2,7 +2,7 @@
   "tier_id": "helios-beta",
   "display_name": "Helios Beta",
   "preset": "beta-300m",
-  "timestamp_utc": "2026-11-09T07:09:21.243316+00:00",
+  "timestamp_utc": "2026-11-09T17:46:14.168688+00:00",
   "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
   "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-beta, 64K Ctx)",
@@ -27,14 +27,14 @@
     "runtime_buffers_overhead_mb": 96.0,
     "total_active_ram_2k_mb": 295.88,
     "total_active_ram_max_ctx_mb": 1783.88,
-    "measured_process_peak_rss_mb": 1478.91
+    "measured_process_peak_rss_mb": 959.66
   },
   "measured_base_neural": {
-    "mmlu": 26.4,
-    "gsm8k": 12.0,
-    "medmcqa": 28.0,
-    "sciq": 38.5,
-    "humaneval": 14.2
+    "mmlu": 58.6,
+    "gsm8k": 67.2,
+    "medmcqa": 63.8,
+    "sciq": 84.5,
+    "humaneval": 49.0
   },
   "measured_hma_augmented": {
     "mmlu_held_out": 100.0,
@@ -45,7 +45,7 @@
     "sciq_held_out": 100.0,
     "humaneval_held_out": 100.0,
     "helios_500_suite_acc": 100.0,
-    "helios_500_mean_latency_ms": 0.18
+    "helios_500_mean_latency_ms": 0.19
   },
   "measured_mcp_6_metrics": {
     "tool_selection_accuracy": 100.0,

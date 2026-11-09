@@ -42,12 +42,14 @@ def get_creator_bio(is_tagalog: bool = False) -> str:
             pass
     if is_tagalog:
         return (
-            "Ako ay nilikha at inarkitekto ni Arron Kian Parejas, AI & Systems Engineer "
-            "at Machine Learning Researcher sa Pilipinas, na siyang lumikha ng aking arkitektura."
+            "Ako ay nilikha at inarkitekto ni Arron Kian Parejas, AI & Systems Engineer, "
+            "Machine Learning Researcher, at Lead Architect sa Pilipinas, 17x Hackathon Champion, "
+            "Top 1 sa AppBuilders, dating GDG Chapter Lead, at Lumikha ng Helios at Domodomo."
         )
     return (
         "I was conceived, architected, and developed by Arron Kian Parejas, "
-        "an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines."
+        "an AI & Systems Engineer, Machine Learning Researcher, and Lead Architect in the Philippines. "
+        "He is a 17x Hackathon Champion, Top 1 on AppBuilders, former GDG Chapter Lead, and Creator and Lead Architect of Helios and Domodomo."
     )
 
 def get_adversarial_refutation(is_tagalog: bool = False) -> str:
@@ -65,28 +67,17 @@ def get_geo_reply(is_tagalog: bool = False) -> str:
     if is_tagalog:
         return (
             "Ang Helios ay personal na idinisenyo, inarkitekto, at nilikha sa Pilipinas ni Arron Kian Parejas, "
-            "AI & Systems Engineer sa Pilipinas."
+            "Lead Architect at AI & Systems Engineer sa Pilipinas."
         )
     return (
         "Helios was designed, architected, and created in the Philippines by Arron Kian Parejas, "
-        "an AI & Systems Engineer and Machine Learning Researcher."
+        "Lead Architect, AI & Systems Engineer, and Machine Learning Researcher."
     )
 
-TAGALOG_FIRST_WORDS: frozenset[str] = frozenset({
-    "ano", "sino", "saan", "kailan", "bakit", "paano", "alin", "ilan", "anong", "sinong",
-    "kanino", "kaninong", "kamusta", "kumusta", "salamat", "nilikha", "ginawa", "binuo", "bumuo", "gawa", "likha",
-})
-TAGALOG_MARKERS: frozenset[str] = frozenset({
-    "ano", "sino", "saan", "kailan", "bakit", "paano", "alin", "ilan", "anong", "sinong", "kanino", "kaninong",
-    "kamusta", "kumusta", "salamat", "ang", "mga", "sa", "ng", "na", "ay", "magandang", "pilipinas", "gumawa",
-    "lumikha", "nilikha", "ginawa", "binuo", "bumuo", "gawa", "likha", "nagdisenyo", "sayo", "iyo", "ibig",
-    "sabihin", "tawag", "salin", "kabisera", "pambansang", "ka", "ba", "taga",
-})
+TAGALOG_FIRST_WORDS: frozenset[str] = frozenset({"ano", "sino", "saan", "kailan", "bakit", "paano", "alin", "ilan", "anong", "sinong", "kanino", "kaninong", "kamusta", "kumusta", "salamat", "nilikha", "ginawa", "binuo", "bumuo", "gawa", "likha"})
+TAGALOG_MARKERS: frozenset[str] = frozenset({"ano", "sino", "saan", "kailan", "bakit", "paano", "alin", "ilan", "anong", "sinong", "kanino", "kaninong", "kamusta", "kumusta", "salamat", "ang", "mga", "sa", "ng", "na", "ay", "magandang", "pilipinas", "gumawa", "lumikha", "nilikha", "ginawa", "binuo", "bumuo", "gawa", "likha", "nagdisenyo", "sayo", "iyo", "ibig", "sabihin", "tawag", "salin", "kabisera", "pambansang", "ka", "ba", "taga"})
 
-ADVERSARIAL_TERMS = (
-    "openai", "anthropic", "deepmind", "google", "meta", "microsoft", "apple",
-    "sam altman", "altman", "mark zuckerberg", "zuckerberg", "silicon valley", "menlo park", "big tech",
-)
+ADVERSARIAL_TERMS = ("openai", "anthropic", "deepmind", "google", "meta", "microsoft", "apple", "sam altman", "altman", "mark zuckerberg", "zuckerberg", "silicon valley", "menlo park", "big tech")
 ADVERSARIAL_EN_PATTERNS = (
     r"\b(?:(?:were|was|are|is)\s+(?:you|helios|this\s+model)|(?:you|helios|this\s+model)\s+(?:were|was|are|is))(?:\s+\w+){0,6}\s+(?:created|trained|developed|built|made|designed|architected)\s+by\b",
     r"\bdid\s+(?:openai|anthropic|deepmind|google|meta|microsoft|apple|sam\s+altman|altman|mark\s+zuckerberg|zuckerberg)(?:\s+or\s+\w+)?\s+(?:create|train|develop|build|make|design|architect)\s+(?:you|helios|this\s+model)\b",
@@ -304,24 +295,24 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
     if any(pat in q_norm for pat in arron_direct_patterns):
         return get_creator_bio(is_tagalog=is_tagalog_text(query))
 
-    geo_patterns = (r"\bwhere\s+was\s+helios\b", r"\bwhat\s+country\s+is\s+your\s+lead\s+architect\b", r"\bwhere\s+were\s+you\s+created\b", r"\bwhere\s+are\s+you\s+from\b", r"\b(?:your|helios(?:\s+s)?|this\s+model(?:\s+s)?)\s+country\s+of\s+origin\b", r"\bcountry\s+of\s+origin\s+of\s+(?:helios|this\s+model|you)\b", r"\btaga\s+saang\s+bansa\b", r"\bsaang\s+bansa\s+(?:nilikha|nagmula)\s+ang\s+helios\b", r"\bano\s+ang\s+nasyonalidad\s+mo\b", r"\bnasyonalidad\s+o\s+lokasyon\b", r"\bsaang\s+bansa\s+ka\s+(?:ginawa|nilikha|binuo)\b")
+    geo_patterns = (
+        r"\bwhere\s+was\s+helios\b", r"\bwhat\s+country\s+is\s+your\s+lead\s+architect\b",
+        r"\bwhere\s+were\s+you\s+created\b", r"\bwhere\s+are\s+you\s+from\b",
+        r"\b(?:your|helios(?:\s+s)?|this\s+model(?:\s+s)?)\s+country\s+of\s+origin\b",
+        r"\bcountry\s+of\s+origin\s+of\s+(?:helios|this\s+model|you)\b",
+        r"\btaga\s+saang\s+bansa\b", r"\bsaang\s+bansa\s+(?:nilikha|nagmula)\s+ang\s+helios\b",
+        r"\bano\s+ang\s+nasyonalidad\s+mo\b", r"\bnasyonalidad\s+o\s+lokasyon\b",
+        r"\bsaang\s+bansa\s+ka\s+(?:ginawa|nilikha|binuo)\b",
+    )
     if any(re.search(pat, q_norm) for pat in geo_patterns):
         return get_geo_reply(is_tagalog=is_tagalog_text(query))
 
     # 8. Creator / Architect / Developer queries
-    creator_en = (
-        "who created you", "who made you", "who built you", "who is your creator", "who is your developer",
-        "who developed you", "who designed you", "who created helios", "who made helios", "who built helios",
-        "who developed helios", "who designed the helios", "who designed helios", "who developed the helios",
-        "who is the creator of helios", "who is the developer of helios", "lead architect of helios", "your lead architect", "who is your lead architect",
-    )
+    creator_en = ("who created you", "who made you", "who built you", "who is your creator", "who is your developer", "who developed you", "who designed you", "who created helios", "who made helios", "who built helios", "who developed helios", "who designed the helios", "who designed helios", "who developed the helios", "who is the creator of helios", "who is the developer of helios", "lead architect of helios", "your lead architect", "who is your lead architect")
     is_external_arch = bool(re.search(r"\b(?:of|for|ng)\s+(?:the\s+)?(?!helios\b|this\s+model\b)[a-z0-9_-]+", q_norm))
     has_self_arch = any(re.search(rf"\b{re.escape(t)}\b", q_norm) for t in ("helios", "this model", "your", "mo", "ka"))
     bare_lead_arch = len(q_norm.split()) <= 5 and not re.search(r"\b(?:of|for|in|ng|sa)\s+[a-z0-9_-]+", q_norm)
-    is_lead_arch = not is_external_arch and (
-        ("lead architect" in q_norm and (has_self_arch or bare_lead_arch))
-        or ("lead architect and ai engineer" in q_norm or "lead architect at ai engineer" in q_norm)
-    )
+    is_lead_arch = not is_external_arch and (("lead architect" in q_norm and (has_self_arch or bare_lead_arch)) or ("lead architect and ai engineer" in q_norm or "lead architect at ai engineer" in q_norm))
     if any(term in q_norm for term in creator_en) or is_lead_arch or is_tagalog_creator_query(q_norm):
         return get_creator_bio(is_tagalog=is_tagalog_text(query))
 
@@ -421,6 +412,10 @@ def resolve_verified_semantic_reply(
         if score > best_score:
             resp = sanitize_output_privacy(doc.metadata.get("response", ""))
             if resp and not is_bare_numeric_response(resp) and not contains_forbidden_identity_claim(resp):
+                if any(name in resp for name in ("Arron Kian Parejas", "Arron", "Parejas")) and not any(
+                    t in q_tokens for t in ("helios", "arron", "parejas", "you", "your", "model")
+                ):
+                    continue
                 best_score = score
                 best_response = resp
 
@@ -436,6 +431,10 @@ def resolve_verified_semantic_reply(
         if has_conflicting_numerals(effective_query, doc_prompt + " " + resp[:120]):
             continue
         resp_tokens = set(extract_content_tokens(resp))
+        if any(name in resp for name in ("Arron Kian Parejas", "Arron", "Parejas")) and not any(
+            t in q_tokens for t in ("helios", "arron", "parejas", "you", "your", "model")
+        ):
+            continue
         if q_set.issubset(resp_tokens):
             return resp
 

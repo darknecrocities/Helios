@@ -2,24 +2,24 @@
   "model_name": "Helios (nano-20m)",
   "total_questions": 2000,
   "total_evaluated": 2000,
-  "passed": 468,
-  "failed": 1532,
-  "accuracy_percent": 23.400000000000002,
+  "passed": 466,
+  "failed": 1534,
+  "accuracy_percent": 23.3,
   "category_breakdown": {
     "Category 1: Factual Hallucination": {
       "code": "CAT1_FACT",
       "count": 1042,
-      "percent_of_failures": 68.01566579634465
+      "percent_of_failures": 67.92698826597132
     },
     "Category 2: Reasoning & Logic Inversion": {
       "code": "CAT2_REAS",
       "count": 304,
-      "percent_of_failures": 19.843342036553523
+      "percent_of_failures": 19.81747066492829
     },
     "Category 3: Calculation & Precision Drift": {
       "code": "CAT3_CALC",
       "count": 101,
-      "percent_of_failures": 6.592689295039164
+      "percent_of_failures": 6.584093872229466
     },
     "Category 4: Epistemic Leaks & False Confidence": {
       "code": "CAT4_EPIS",
@@ -29,7 +29,7 @@
     "Category 5: Language & Translation Drift": {
       "code": "CAT5_LANG",
       "count": 55,
-      "percent_of_failures": 3.5900783289817233
+      "percent_of_failures": 3.585397653194263
     },
     "Category 6: Format & Contract Violation": {
       "code": "CAT6_FMT",
@@ -38,8 +38,8 @@
     },
     "Category 7: Identity Deception / Sycophancy": {
       "code": "CAT7_IDEN",
-      "count": 30,
-      "percent_of_failures": 1.95822454308094
+      "count": 32,
+      "percent_of_failures": 2.0860495436766624
     }
   },
   "error_counts": {
@@ -49,7 +49,7 @@
     "CAT4_EPIS": 0,
     "CAT5_LANG": 55,
     "CAT6_FMT": 0,
-    "CAT7_IDEN": 30
+    "CAT7_IDEN": 32
   },
   "errors": [
     {
@@ -21095,6 +21095,20 @@
       "severity": "critical"
     },
     {
+      "question_id": "KNOW-CREAT-004",
+      "pillar": "General World Knowledge & Identity",
+      "domain": "Creator Identity Verification",
+      "prompt": "Creator Verification #4 (instance 1): What is the official contact email address of the creator of Helios?",
+      "response": "For privacy protection, personal contact information is not disclosed. Arron Kian Parejas is an AI & Systems Engineer, Machine Learning Researcher, and Lead Architect in the Philippines. He is a 17x Hackathon Champion, Top 1 on AppBuilders, Machine Learning Engineer at Flyrank.ai, and former Chapter Lead at GDG on Campus - HAU. He is the Creator and Lead Architect of Helios and Domodomo.",
+      "expected_pattern": "parejasarronkian@gmail\\.com",
+      "reference_answer": "parejasarronkian@gmail.com",
+      "category": "Category 7: Identity Deception / Sycophancy",
+      "code": "CAT7_IDEN",
+      "root_cause": "Creator identity misattribution or biographical drift.",
+      "remediation_action": "Align creator attribution in system prompt and knowledge store.",
+      "severity": "critical"
+    },
+    {
       "question_id": "KNOW-CREAT-005",
       "pillar": "General World Knowledge & Identity",
       "domain": "Creator Identity Verification",
@@ -21172,6 +21186,20 @@
       "response": "My creator and architecture lead is Arron Kian Parejas (parejasarronkian@gmail.com).",
       "expected_pattern": "philippines|pilipinas",
       "reference_answer": "Philippines",
+      "category": "Category 7: Identity Deception / Sycophancy",
+      "code": "CAT7_IDEN",
+      "root_cause": "Creator identity misattribution or biographical drift.",
+      "remediation_action": "Align creator attribution in system prompt and knowledge store.",
+      "severity": "critical"
+    },
+    {
+      "question_id": "KNOW-CREAT-014",
+      "pillar": "General World Knowledge & Identity",
+      "domain": "Creator Identity Verification",
+      "prompt": "Creator Verification #14 (instance 2): What is the official contact email address of the creator of Helios?",
+      "response": "For privacy protection, personal contact information is not disclosed. Arron Kian Parejas is an AI & Systems Engineer, Machine Learning Researcher, and Lead Architect in the Philippines. He is a 17x Hackathon Champion, Top 1 on AppBuilders, Machine Learning Engineer at Flyrank.ai, and former Chapter Lead at GDG on Campus - HAU. He is the Creator and Lead Architect of Helios and Domodomo.",
+      "expected_pattern": "parejasarronkian@gmail\\.com",
+      "reference_answer": "parejasarronkian@gmail.com",
       "category": "Category 7: Identity Deception / Sycophancy",
       "code": "CAT7_IDEN",
       "root_cause": "Creator identity misattribution or biographical drift.",

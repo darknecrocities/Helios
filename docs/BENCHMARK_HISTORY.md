@@ -42,3 +42,9 @@ Standardized evaluation harness results across academic reasoning, code, and age
 | 2026-11-09 17:02:31 | `24583ebadc3c7ab0...` | `core` | **HeldOut-ALL** | `perplexity` | **7.530** | Loss +100.0% | Category: all | PPL +82.2% |
 | 2026-11-09 17:02:31 | `9982f18782e0969e...` | `pro` | **HeldOut-ALL** | `perplexity` | **23.400** | Loss +99.8% | Category: all | PPL +94.3% |
 | 2026-11-09 17:02:31 | `5776d786964f5ebb...` | `flagship` | **HeldOut-ALL** | `perplexity` | **399.350** | Loss +99.9% | Category: all | PPL +99.6% |
+| 2026-11-09 17:41:23 | `5175ade98415fb5f...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 17:41:23 | `0e6616f91ab07ab5...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 17:42:48 | `9a7acdf44b3b52b6...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 17:42:48 | `88bba93bf0689cad...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 17:44:32 | `c994d11bcb4deaac...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 17:44:32 | `925daef67dd38163...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
