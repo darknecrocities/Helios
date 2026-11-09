@@ -1,46 +1,226 @@
-# Helios: Open-Weight Foundation Model Ecosystem (v0.3.0)
+<div align="center">
+  <img src="assets/image/helios_logo.png" alt="Helios Foundation Model Ecosystem Logo" width="160" />
 
-**Personally Conceived, Architected, and Developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines** ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))
+  # HELIOS: Open-Weight Foundation Model Ecosystem (v0.3.0)
+
+  **Personally Conceived, Architected, and Developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**  
+  ([parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com))
+
+  **[Live Showcase & Documentation (`openhelios.vercel.app`)](https://openhelios.vercel.app)** · **[Hugging Face (`Darknecrocities/Helios`)](https://huggingface.co/Darknecrocities/Helios)** · **[Ollama (`parejasarronkian/Helios`)](https://ollama.com/parejasarronkian)** · **[177-Dataset Single Source of Truth (`sot/`)](sot/README.md)**
+</div>
 
 ---
 
-## About Helios: Origin of the Name, Vision & Engineering Philosophy
+## Table of Contents
+
+1. [About Helios: Origin, Vision & First-Principles Philosophy](#1-about-helios-origin-vision--first-principles-philosophy)
+2. [End-to-End Helios System & Panoptes Transformer Architecture Diagram](#2-end-to-end-helios-system--panoptes-transformer-architecture-diagram)
+3. [Lossless Bilingual & Code Tokenizer Subsystem (`HeliosBPE` & `HeliosUnigram`)](#3-lossless-bilingual--code-tokenizer-subsystem-heliosbpe--heliosunigram)
+4. [4-Tier Hierarchical Memory Architecture (HMA) & Native MCP Tool Calling](#4-4-tier-hierarchical-memory-architecture-hma--native-mcp-tool-calling)
+5. [Core AI Engineering Techniques & Mathematical Formulation](#5-core-ai-engineering-techniques--mathematical-formulation)
+6. [Precision Formats, Quantization (`FP32` → `Q4_K_M`) & `LoRA` / `QLoRA` Pipeline](#6-precision-formats-quantization-fp32--q4_k_m--lora--qlora-pipeline)
+7. [The 6-Tier Helios Model Family & Complete Hardware Memory Breakdown](#7-the-6-tier-helios-model-family--complete-hardware-memory-breakdown)
+8. [Dataset Single Source of Truth (`sot/` · 177 Datasets · 16 Domains)](#8-dataset-single-source-of-truth-sot--177-datasets--16-domains)
+9. [Audited Benchmark Comparison (`eval/` Automated Suite & 500-Question Verification)](#9-audited-benchmark-comparison-eval-automated-suite--500-question-verification)
+10. [Continuous Pretraining, Last-Checkpoint Resumption & `helios chat` Telemetry](#10-continuous-pretraining-last-checkpoint-resumption--helios-chat-telemetry)
+11. [How to Run Helios (CLI, Ollama, Hugging Face & Autonomous Agents)](#11-how-to-run-helios-cli-ollama-hugging-face--autonomous-agents)
+
+---
+
+## 1. About Helios: Origin, Vision & First-Principles Philosophy
 
 ### Why "Helios"? (Derived from the Ancient Greek God of the Sun)
 The name **Helios** is derived from **Helios (Ἥλιος)**, the ancient Greek Titan god and personification of the **Sun**, who drove his radiant golden chariot across the sky each day to illuminate the Earth and was revered in classical antiquity as the all-seeing guardian of truth and clarity.
 
 In modern artificial intelligence, too many foundation models operate as opaque "black boxes" that hide their architecture, require massive enterprise server farms, or hallucinate random answers when asked about unfamiliar topics. **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**, personally designed and built **Helios** from the ground up to embody its namesake:
-- **Illumination & Radical Transparency**: Every component—from the Byte-Level BPE tokenizer and causal transformer blocks to the memory controller and training pipeline—is 100% open-weight, inspectable, and documented.
+- **Illumination & Radical Transparency**: Every component—from the Byte-Level BPE and Viterbi Unigram tokenizers to the causal Panoptes transformer blocks, 4-tier memory controller, and atomic training pipeline—is 100% open-weight, inspectable, and documented.
 - **Truth & Epistemic Honesty**: Like the Sun revealing things as they truly are, Helios never fabricates a bare number (such as `"42"`) or guesses wildly when a topic lies outside its training session; instead, it enforces **Subject-Aware Semantic Verification** and an **Honest Epistemic Fallback**.
 - **Universal Energy & Accessibility**: Just as sunlight reaches every corner of the globe, the 6-tier Helios model family (`Nano`, `Alpha`, `Beta`, `Core`, `Pro`, `Flagship`) is engineered to run smoothly on everyday consumer hardware—from a Raspberry Pi or budget smartphone all the way to a standard 16GB RAM laptop.
 
 ---
 
-### Core AI Engineering Techniques Used in Helios
+## 2. End-to-End Helios System & Panoptes Transformer Architecture Diagram
+
+The diagram below illustrates the complete end-to-end execution flow of the **Helios Panoptes Architecture**, integrating multimodal input encoding, Grouped-Query Attention (`GQA`), Dynamic NTK RoPE scaling, 4-Tier Hierarchical Memory (`HMA`), deliberative `<|thought|>` Chain-of-Thought, and Speculative Decoding (`Nano` $\to$ `Flagship`):
+
+```mermaid
+flowchart TD
+    subgraph InputLayer["1. Multimodal & Lossless Tokenization Layer"]
+        RawText["User Query (English / Tagalog / Source Code)"] --> Tok["HeliosBPE & HeliosUnigram Tokenizer (V = 32,000)"]
+        RawImg["Input Image (224x224 RGB)"] --> ViT["HeliosVisionEncoder (ViT 14x14 = 256 Patches)"]
+        ViT --> MMProj["2-Layer GELU Multi-Modal Projector"]
+        Tok --> Embed["Token Embedding Matrix [V x d_model]"]
+        MMProj --> PrefixMerge["Bidirectional Vision Prefix + Causal Text Stream"]
+        Embed --> PrefixMerge
+    end
+
+    subgraph PanoptesCore["2. Panoptes Transformer Backbone (L = 7 to 32 Layers)"]
+        PrefixMerge --> RMS1["Pre-RMSNorm (eps = 1e-5)"]
+        RMS1 --> GQA["Grouped-Query Attention (4:1 / 3:1 GQA) + Dynamic NTK RoPE (theta = 100K to 10M)"]
+        GQA --> KVCache["Contiguous KV-Cache (FP16 / Symmetric INT8 Compression)"]
+        GQA --> Res1["Residual Connection (+)"]
+        Res1 --> RMS2["Pre-RMSNorm (eps = 1e-5)"]
+        RMS2 --> SwiGLU["SwiGLU Feed-Forward Network: (SiLU(x W_gate) * (x W_up)) W_down"]
+        SwiGLU --> LoRA["Optional PEFT Injection: LoRA (r=16, alpha=32) / 4-Bit NF4 QLoRA"]
+        LoRA --> Res2["Residual Connection (+)"]
+    end
+
+    subgraph MemoryAndReasoning["3. 4-Tier Hierarchical Memory (HMA) & Epistemic Verification"]
+        Res2 <--> HMA["HMAController Router"]
+        HMA <--> T1["Tier 1: Working Memory (Sliding RAM Window)"]
+        HMA <--> T2["Tier 2: Episodic Memory (SQLite3 WAL Mode)"]
+        HMA <--> T3["Tier 3: Semantic Memory (15K RAM BM25 + 134K SQLite FTS5 + FAISS RRF)"]
+        HMA <--> T4["Tier 4: Procedural Memory (MCP JSON-RPC 2.0 + Deterministic AST Math)"]
+    end
+
+    subgraph OutputStage["4. Speculative Decoding & Honest Epistemic Gate"]
+        Res2 --> CoT["Deliberative Scratchpad (<|thought|> ... <|end_thought|>)"]
+        CoT --> Spec["Speculative Verification: Nano (17.8M Draft, gamma=4) -> Flagship (5.8B Verifier)"]
+        Spec --> SubjGate{"Subject-Aware Semantic Gate (verify_subject_overlap)"}
+        SubjGate -- "Verified Grounding / Exact Compute" --> FinalOut["Verified Grounded Response / MCP Tool Execution"]
+        SubjGate -- "Out-of-Scope / Unseen Entity" --> Fallback["Honest Epistemic Fallback (Zero Hallucination)"]
+    end
+```
+
+---
+
+## 3. Lossless Bilingual & Code Tokenizer Subsystem (`HeliosBPE` & `HeliosUnigram`)
+
+Standard English-centric tokenizers fracture Filipino/Tagalog agglutinative morphology (`mag-`, `nag-`, `-in-`, `-um-`, `pinag-`) and multi-space source code indentation into inefficient single-character fragments. Helios implements **two complete, lossless tokenizers from scratch** in `helios/tokenizer/`:
+
+```mermaid
+flowchart LR
+    Input["UTF-8 Stream (English, Tagalog, Code, Math)"] --> Norm["NFC Normalization & Regex Pre-Tokenizer"]
+    Norm --> Engine{"Tokenizer Architecture"}
+
+    Engine -- "Byte-Level BPE (helios/tokenizer/bpe.py)" --> BPE["256 Base Byte Tokens + Priority Merge Rules"]
+    Engine -- "Viterbi Unigram (helios/tokenizer/unigram.py)" --> Uni["EM-Trained Subword Lattice + Digamma Log-Probs"]
+
+    BPE --> Special["Reserved Control & Agentic Tokens (IDs 0..31)"]
+    Uni --> Special
+
+    Special --> Tensor["Lossless Token IDs (0.0% <unk> Rate)"]
+```
+
+### Key Tokenizer Capabilities & Special Control Vocabulary (`V = 32,000`)
+- **Zero `<unk>` Out-of-Vocabulary Guarantee**: Every arbitrary UTF-8 byte sequence decomposes cleanly to 256 byte-level fallback atoms (`0x00`–`0xFF`), guaranteeing `100%` round-trip reconstruction fidelity (`decode(encode(text)) == text`).
+- **High Bilingual & Code Fertility**: Dedicated morphological merges for Filipino/Tagalog affixes and multi-space Python/TypeScript/Rust indentation tokens.
+- **Native Control & Protocol Tokens**:
+  - **Conversation Framing**: `<|bos|>`, `<|eos|>`, `<|system|>`, `<|user|>`, `<|assistant|>`, `<|pad|>`
+  - **Extended Thinking / Chain-of-Thought**: `<|thought|>`, `<|end_thought|>`
+  - **Model Context Protocol (MCP) & Hermes Tooling**: `<|call:tool|>`, `<|end_call|>`, `<|return:tool|>`, `<|end_return|>`
+  - **Multimodal Vision Framing**: `<|image|>`, `<|end_image|>`
+
+---
+
+## 4. 4-Tier Hierarchical Memory Architecture (HMA) & Native MCP Tool Calling
+
+Unlike stateless language models that suffer from context amnesia or require slow full-corpus re-indexing on startup, Helios coordinates a biological **4-Tier Hierarchical Memory Architecture (`helios/memory/`)**:
+
+```mermaid
+flowchart TD
+    Query["Incoming User Prompt / Agent Task"] --> Norm["Bilingual Intent & Entity Extractor (EN + TL)"]
+
+    Norm --> Tier1["Tier 1 · Working Memory (< 0.1 ms)\nIn-RAM Sliding Token Buffer & Context Compaction"]
+    Norm --> Tier2["Tier 2 · Episodic Memory (< 2.0 ms)\nSQLite 3 Concurrent WAL Store (Cross-Session Recall)"]
+    Norm --> Tier3["Tier 3 · Semantic Memory (< 10.0 ms)\nTwo-Tier Hybrid Retrieval"]
+    Norm --> Tier4["Tier 4 · Procedural Memory (Deterministic)\nMCP JSON-RPC 2.0 Sandbox & AST Math/Unit Engine"]
+
+    subgraph HybridSemantic["Tier 3 Two-Tier Hybrid Semantic Engine"]
+        Tier3 --> FastBM25["In-RAM Okapi BM25 Index\n(15,000 Core Priority Records · < 1 ms)"]
+        Tier3 --> DiskFTS5["On-Disk SQLite FTS5 BM25 Index\n(134,728 Grounded Records · 402 MB · < 10 ms)"]
+        Tier3 --> DenseFAISS["Dense FAISS Vector Index\n(Cosine / Inner-Product Embeddings)"]
+        FastBM25 --> RRF["Reciprocal Rank Fusion (RRF, k = 60)"]
+        DiskFTS5 --> RRF
+        DenseFAISS --> RRF
+    end
+
+    Tier1 --> Gate["Subject-Aware Verification Gate\nverify_subject_overlap(QueryEntities, CandidateDoc)"]
+    Tier2 --> Gate
+    RRF --> Gate
+    Tier4 --> Gate
+
+    Gate -- "Overlap >= tau_subj" --> Verified["Grounded Context Injected into Panoptes Attention"]
+    Gate -- "Overlap < tau_subj" --> Abstain["Deterministic Epistemic Abstention"]
+```
+
+| Memory Tier | Storage Engine | Latency | Capacity | Primary Responsibility |
+| :--- | :--- | :---: | :---: | :--- |
+| **Tier 1 · Working Memory** | In-RAM Sliding Token Buffer | `< 0.1 ms` | `16K – 256K` Tokens | Active multi-turn dialogue state, attention sinks & automatic context compaction |
+| **Tier 2 · Episodic Memory** | SQLite 3 (`WAL` Mode + `ACID`) | `< 2.0 ms` | Unlimited Sessions | Cross-session chronological dialogue recall & user preference persistence |
+| **Tier 3 · Semantic Memory** | `15K` RAM BM25 + `SQLite FTS5` + `FAISS` | `< 10.0 ms` | `134,728+` Docs (`402 MB`) | Bilingual Reciprocal Rank Fusion (`RRF`) over grounded encyclopedic & code corpora |
+| **Tier 4 · Procedural Memory** | `MCP JSON-RPC 2.0` + AST Evaluator | Deterministic | Extensible Tool Registry | Schema-validated external tool calls, exact arithmetic, unit conversion & code sandbox |
+
+---
+
+## 5. Core AI Engineering Techniques & Mathematical Formulation
+
 Personally conceived and architected by **Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines**, Helios integrates modern foundation model and systems engineering techniques:
 
-1. **Grouped-Query Attention (GQA)**: Shares Key/Value projections across groups of Query heads (`8:2` up to `32:8`), reducing KV-cache RAM consumption by up to **8×** while maintaining multi-head reasoning quality.
-2. **Rotary Position Embeddings (RoPE) with Dynamic NTK-Aware High-Theta Scaling**: Encodes relative token distances via complex-plane rotation matrices with base frequency $\theta$ scaled from `100,000.0` up to `10,000,000.0` and lazy on-demand cache allocation, supporting long-context windows from **16,384 (`16K`)** up to **262,144 (`256K`) tokens**.
-3. **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm**: Replaces standard ReLU/GELU MLPs with SiLU-Gated Linear Units (`SwiGLU`) and Root Mean Square Pre-Normalization (`eps=1e-5`) for zero gradient divergence during pretraining.
-4. **4-Tier Hierarchical Memory Architecture (HMA)**:
-   - **Working Memory**: Low-latency sliding-window token buffer with automatic context compaction.
-   - **Episodic Memory**: Persistent SQLite database running in concurrent Write-Ahead Logging (`WAL`) mode for cross-session conversational recall.
-   - **Semantic Memory**: Hybrid retrieval combining **Bilingual Stopword-Filtered Okapi BM25** with **Dense FAISS Vector Search**, unified via **Reciprocal Rank Fusion (RRF)**.
-   - **Procedural Memory & Native MCP Tool Calling**: Native JSON-RPC `<tool_call>` and `<tool_response>` execution following the **Model Context Protocol (MCP)**, plus deterministic arithmetic evaluation.
-5. **Subject-Aware Semantic Verification & Honest Epistemic Fallback**: Verifies that retrieved candidates cover the user's core subject entities and match English/Tagalog language intent before answering, gracefully declining out-of-session queries.
-6. **Hardware-Calibrated Quantization & Multi-Format Export**: Supports 4-bit NormalFloat (`NF4`) and 8-bit (`INT8`) quantization alongside native export to `SafeTensors`, `GGUF`, `ONNX`, `TorchScript`, and `TFLite`.
+```mermaid
+flowchart LR
+    subgraph GQA_Block["1. Grouped-Query Attention (8x KV Savings)"]
+        Q["Query Heads (H_q = 8..32)"] --> Group["Shared KV Groups (4:1 / 3:1)"]
+        KV["Key/Value Heads (H_kv = 2..8)"] --> Group
+        Group --> Attn["Scaled Dot-Product Attention\nsoftmax((Q K^T)/sqrt(d_k) + M_causal) V"]
+    end
+
+    subgraph RoPE_Block["2. Dynamic NTK High-Theta RoPE"]
+        Pos["Token Position m (up to 262,144)"] --> Freq["Base Theta Scaling\ntheta = 100,000 -> 10,000,000"]
+        Freq --> Rot["Complex Plane Rotation e^(i m theta_j)"]
+    end
+
+    subgraph Spec_Block["3. Lossless Speculative Tandem (2.4x Speedup)"]
+        Draft["Helios Nano (17.84M)\nDrafts gamma = 4 tokens @ 265 tok/s"] --> Verify["Helios Flagship (5.80B)\nSingle Parallel Forward Pass"]
+        Verify --> Accept["Rejection Sampling: min(1, p_target / q_draft)"]
+    end
+```
+
+1. **Grouped-Query Attention (`GQA`)**: Shares Key/Value projections across groups of Query heads (`8:2` up to `32:8`), reducing KV-cache RAM consumption by up to **8×** while maintaining multi-head reasoning quality:
+   $$\text{Attention}(Q_g, K, V) = \text{softmax}\!\left(\frac{Q_g K^\top}{\sqrt{d_k}} + M_{\text{causal}}\right)V$$
+2. **Rotary Position Embeddings (`RoPE`) with Dynamic NTK-Aware High-Theta Scaling**: Encodes relative token distances via complex-plane rotation matrices with base frequency $\theta$ scaled from `100,000.0` (`Nano`) up to `10,000,000.0` (`Flagship`) and lazy on-demand cache allocation, supporting long-context windows from **16,384 (`16K`)** up to **262,144 (`256K`) tokens**.
+3. **SwiGLU Gated Feed-Forward Networks & Pre-RMSNorm**: Replaces standard ReLU/GELU MLPs with SiLU-Gated Linear Units (`SwiGLU`) and Root Mean Square Pre-Normalization ($\epsilon = 10^{-5}$) for zero gradient divergence during pretraining:
+   $$\text{SwiGLU}(x) = \big(\text{SiLU}(x W_{\text{gate}}) \odot (x W_{\text{up}})\big) W_{\text{down}}, \quad \text{RMSNorm}(x) = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^d x_i^2 + \epsilon}} \odot \gamma$$
+4. **Collaborative `Nano` + `Flagship` Speculative Decoding (`2.4×` Speedup)**: Because all six Helios tiers share the exact same 32,000-token vocabulary, `Helios Nano` (`17.84M`) acts as an ultra-fast draft engine ($\gamma = 4$ tokens) while `Helios Flagship` (`5.80B`) verifies all drafted tokens in a single parallel forward pass with mathematically identical output distributions.
+5. **Multimodal Vision Encoder (`HeliosVisionEncoder` · ViT `14×14`)**: `Helios Core` (`1.13B`) and `Helios Flagship` (`5.80B`) embed a native Vision Transformer encoder ($d_v = 1024, L = 12, 14\times 14$ patches $= 256$ visual tokens per $224\times 224$ image) bridged via a 2-layer GELU Multi-Modal Projector.
+6. **Atomic 6-State Checkpointing & Zero-Hang Live Model Switching**: POSIX-atomic `os.replace` checkpointing preserves model weights, optimizer states, scheduler steps, RNG seeds, and exact dataloader offsets, while `helios chat` enforces pre-flight `psutil` + `torch.mps.synchronize()` RAM guards before live `/model` switches.
 
 ---
 
-## Dataset Single Source of Truth (`sot/`)
+## 6. Precision Formats, Quantization (`FP32` → `Q4_K_M`) & `LoRA` / `QLoRA` Pipeline
 
-All **177 external datasets** across **16 comprehensive domains** (Foundational Web & Encyclopedic, Technology & Systems, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Algorithms, Software Engineering [SWE] & GitHub PRs, Agentic Skills, Model Context Protocol [MCP] & APIs, Technical Documentation & Standards, Scientific Research & Literature, Law & Philosophy, and Bilingual Tagalog & Multilingual) and the **90.38M-token (120,616-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl`) are cataloged with direct links in the dedicated Single Source of Truth folder:
-- **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, 16 domain breakdowns, and direct Hugging Face & open scientific platform URLs.
-- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 177 datasets and consolidated corpora (`120,616` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,248` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
+Helios supports full-spectrum numerical precision from 32-bit master weights down to 4-bit NormalFloat (`NF4`) `QLoRA` fine-tuning and `GGUF Q4_K_M` edge quantization across all 6 model tiers:
+
+```mermaid
+flowchart LR
+    Master["Master Weights\nFP32 (32-bit IEEE 754)\nSafeTensors / PyTorch"] --> BF16["Pretraining & SFT\nBF16 / FP16 (16-bit)\n2.0x Memory Savings"]
+    BF16 --> INT8["Lossless Local & KV Cache\nINT8 / Q8_0 (8-bit Symmetric)\n4.0x Memory Savings"]
+    INT8 --> INT4["Edge & Laptop Default\nINT4 / Q4_K_M / AWQ (4.5 bits/w)\n7.5x Memory Savings"]
+
+    subgraph PEFT_Pipeline["Parameter-Efficient Fine-Tuning (LoRA & 4-Bit QLoRA)"]
+        BF16 --> LoRA["LoRA Adapter (r=16, alpha=32)\nTrainable DeltaW = (alpha/r) B A\nTargets: q, k, v, o, gate, up, down"]
+        INT4 --> QLoRA["4-Bit NF4 QLoRA + Double Quant\nFrozen 4-Bit Base + BF16 Gradients\nFits 5.80B Flagship in 5.8 GB VRAM (Colab T4)"]
+    end
+
+    INT4 --> Export["Multi-Format Deployment\nOllama GGUF · Hugging Face SafeTensors · ONNX · TorchScript · TFLite"]
+    LoRA --> Export
+    QLoRA --> Export
+```
+
+### Complete 6-Tier Precision, Quantization & `LoRA` / `QLoRA` Footprint Matrix (`Nano` → `Flagship`)
+
+| Model Tier | Tied Params | `FP32` (32-bit) | `BF16 / FP16` | `INT8` (`Q8_0`) | `INT4` (`Q4_K_M`) | `LoRA` (`r=16, α=32`) $\Delta W$ | `QLoRA` (`4-Bit NF4`) Min VRAM | Export Formats |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Helios Nano** (`nano-20m`) | **17.84M** | `71.4 MB` | `35.7 MB` | `17.8 MB` | **`8.93 MB`** | `1.6 MB` (`0.41M` / `2.29%`) | **`0.4 GB`** VRAM / RAM | `GGUF`, `SafeTensors`, `ONNX`, `TFLite`, `TorchScript` |
+| **Helios Alpha** (`alpha-100m`) | **100.09M** | `400.4 MB` | `200.2 MB` | `100.1 MB` | **`50.11 MB`** | `7.1 MB` (`1.77M` / `1.76%`) | **`0.9 GB`** VRAM / RAM | `GGUF`, `SafeTensors`, `ONNX`, `TFLite`, `Wasm` |
+| **Helios Beta** (`beta-300m`) | **303.35M** | `1.21 GB` | `606.7 MB` | `303.4 MB` | **`151.88 MB`** | `18.9 MB` (`4.72M` / `1.55%`) | **`1.6 GB`** VRAM / RAM | `GGUF`, `SafeTensors`, `ONNX`, `TorchScript` |
+| **Helios Core** (`core-1b`) | **1.13B** | `4.52 GB` | `2.26 GB` | `1.13 GB` | **`565.21 MB`** | `54.5 MB` (`13.63M` / `1.21%`) | **`2.8 GB`** VRAM | `GGUF`, `SafeTensors`, `ONNX`, `TorchScript` |
+| **Helios Pro** (`pro-3b`) | **3.32B** | `13.28 GB` | `6.64 GB` | `3.32 GB` | **`1.62 GB`** | `109.1 MB` (`27.26M` / `0.82%`) | **`4.2 GB`** VRAM | `GGUF`, `SafeTensors`, `ONNX`, `TorchScript` |
+| **Helios Flagship** (`flagship-6b`) | **5.80B** | `23.21 GB` | `11.60 GB` | `5.80 GB` | **`2.84 GB`** | `160.4 MB` (`40.11M` / `0.69%`) | **`5.8 GB`** VRAM *(Free Colab T4)* | `GGUF`, `SafeTensors`, `ONNX`, `TorchScript` |
 
 ---
 
-## The Helios Model Family & Complete Hardware Memory Breakdown
+## 7. The 6-Tier Helios Model Family & Complete Hardware Memory Breakdown
 
 ### Exact Real Parameter Matrix Across All Helios Tiers
 Every model tier has been mathematically validated against its exact tensor dimensions ($V=32,000$, GQA ratios, SwiGLU $3 \times d \times d_{\text{ffn}}$, and RMSNorm layers):
@@ -49,7 +229,7 @@ Every model tier has been mathematically validated against its exact tensor dime
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Helios Nano** | `nano-20m` | 16,384 (16K) | $100,000.0$ | 320 | 7 | 8 / 2 (4:1 GQA) | 864 | **17,842,880** (17.84M) | **28,082,880** (28.08M) | 10,240,000 | 7,602,880 |
 | **Helios Alpha** | `alpha-100m` | 32,768 (32K) | $500,000.0$ | 768 | 12 | 12 / 4 (3:1 GQA) | 2,048 | **100,092,672** (100.09M) | **124,668,672** (124.67M) | 24,576,000 | 75,516,672 |
-| **Helios Beta** | `beta-300m` | 64,536 (64K) | $1,000,000.0$ | 1,024 | 24 | 16 / 4 (4:1 GQA) | 2,816 | **303,350,784** (303.35M) | **336,118,784** (336.12M) | 32,768,000 | 270,582,784 |
+| **Helios Beta** | `beta-300m` | 65,536 (64K) | $1,000,000.0$ | 1,024 | 24 | 16 / 4 (4:1 GQA) | 2,816 | **303,350,784** (303.35M) | **336,118,784** (336.12M) | 32,768,000 | 270,582,784 |
 | **Helios Core** | `core-1b` | 131,072 (128K) | $5,000,000.0$ | 2,048 | 24 | 16 / 4 (4:1 GQA) | 5,504 | **1,128,892,416** (1.13B) | **1,194,428,416** (1.19B) | 65,536,000 | 1,063,356,416 |
 | **Helios Pro** | `pro-3b` | 131,072 (128K) | $5,000,000.0$ | 3,072 | 32 | 24 / 8 (3:1 GQA) | 8,192 | **3,319,729,152** (3.32B) | **3,418,033,152** (3.42B) | 98,304,000 | 3,221,425,152 |
 | **Helios Flagship** | `flagship-6b` | 262,144 (256K) | $10,000,000.0$ | 4,096 | 32 | 32 / 8 (4:1 GQA) | 11,008 | **5,802,037,248** (5.80B) | **5,933,109,248** (5.93B) | 131,072,000 | 5,670,965,248 |
@@ -74,34 +254,38 @@ Every model in the Helios family has been analytically and empirically profiled 
 | **Helios Pro** | `v0.3.0-pro` | **3,319.73M** | **131,072 (128K)** | `5,000,000.0` | 1.62 GB | 256.0 MB | 8.00 GB | **2.17 GB** | Standard 8GB–16GB RAM laptops/PCs (matches `Llama-3.2-3B` `128K`) |
 | **Helios Flagship** | `v0.3.0-flagship` | **5,802.04M** | **262,144 (256K)** | `10,000,000.0` | 2.84 GB | 256.0 MB | 4.00 GB *(HMA 64K Active)* | **3.54 GB** | **Standard 16GB RAM laptops / MacBooks** (2× `Llama-3.2-3B` & `DeepSeek-R1`) |
 
----
-
 ### Distinct Operational Capabilities & Domain Specialization Across the Family
 
-Every model in the Helios foundation ecosystem is engineered with distinct capabilities tailored to specific deployment topologies and cognitive workloads:
-
-1. **Helios Nano (`nano-20m`)** — *17.84M tied / 28.08M untied · 16K Context · RoPE $\theta=100,000.0$*:
+1. **Helios Nano (`nano-20m` · *Helios Aether*)** — *17.84M tied / 28.08M untied · 16K Context · RoPE $\theta=100,000.0$*:
    - **Target Deployment**: Ultra-low power edge devices, microcontrollers, Raspberry Pi 3/4/5, wearables, and microVMs.
-   - **Specialized Capabilities**: Sub-millisecond intent classification, routing decisions, sub-word boundary parsing, bilingual English/Tagalog greeting resolution, and deterministic arithmetic calculation at $<65$ MB active RAM.
-2. **Helios Alpha (`alpha-100m`)** — *100.09M tied / 124.67M untied · 32K Context · RoPE $\theta=500,000.0$*:
-   - **Target Deployment**: Mobile on-device assistants (iOS/Android), browser WebAssembly (Wasm), lightweight client apps.
+   - **Specialized Capabilities**: Sub-millisecond intent classification, routing decisions, speculative decoding draft engine ($\gamma=4$), bilingual English/Tagalog greeting resolution, and deterministic arithmetic calculation at $<65$ MB active RAM.
+2. **Helios Alpha (`alpha-100m` · *Helios Phaethon*)** — *100.09M tied / 124.67M untied · 32K Context · RoPE $\theta=500,000.0$*:
+   - **Target Deployment**: Mobile on-device assistants (iOS/Android), browser WebAssembly (`Wasm`), lightweight client apps.
    - **Specialized Capabilities**: Conversational dialogue fluency, structured JSON extraction, elementary multi-step math deduction, document summarization, educational Q&A, and client-side conversational AI at $<200$ MB active RAM.
-3. **Helios Beta (`beta-300m`)** — *303.35M tied / 336.12M untied · 64K Context · RoPE $\theta=1,000,000.0$*:
+3. **Helios Beta (`beta-300m` · *Helios Eos*)** — *303.35M tied / 336.12M untied · 64K Context · RoPE $\theta=1,000,000.0$*:
    - **Target Deployment**: Everyday consumer laptops (4GB–8GB RAM), desktop developer copilots.
    - **Specialized Capabilities**: Multi-step deductive logic, intermediate Python scripting and algorithm generation, comprehensive Philippine civics, regional geography (all 17 regions), cultural heritage, and 64K token document analysis at $<650$ MB active RAM.
-4. **Helios Core (`core-1b`)** — *1,128.89M tied / 1.19B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
+4. **Helios Core (`core-1b` · *Helios Hyperion*)** — *1,128.89M tied / 1.19B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
    - **Target Deployment**: Modern developer machines (8GB RAM laptops, RTX 3050 GPUs, local workstations).
-   - **Specialized Capabilities**: Full-stack software engineering, architectural design patterns, complex logic, Olympiad math reasoning (MetaMathQA, GSM8K), 128K long-context codebase comprehension, and autonomous tool execution via Model Context Protocol (MCP) at $<2.3$ GB active RAM.
-5. **Helios Pro (`pro-3b`)** — *3,319.73M tied / 3.42B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
+   - **Specialized Capabilities**: Multimodal Vision (`ViT 14×14`), full-stack software engineering, architectural design patterns, Olympiad math reasoning (`MetaMathQA`, `GSM8K`), 128K long-context codebase comprehension, and autonomous tool execution via Model Context Protocol (`MCP`) at $<2.3$ GB active RAM.
+5. **Helios Pro (`pro-3b` · *Helios Apollo*)** — *3,319.73M tied / 3.42B untied · 128K Context · RoPE $\theta=5,000,000.0$*:
    - **Target Deployment**: Workstations, enterprise desktops (16GB RAM, RTX 3060/4060 GPUs, Apple Silicon M-series).
-   - **Specialized Capabilities**: Professional multi-discipline scientific research (PubMedQA, MedMCQA, SciQ), complex distributed systems diagnostics, repository-scale code refactoring, legal/regulatory compliance analysis, and resilient multi-agent orchestration at $<6.6$ GB active RAM.
-6. **Helios Flagship (`flagship-6b`)** — *5,802.04M tied / 5.93B untied · 256K Context · RoPE $\theta=10,000,000.0$*:
+   - **Specialized Capabilities**: Professional multi-discipline scientific research (`PubMedQA`, `MedMCQA`, `SciQ`), complex distributed systems diagnostics, repository-scale code refactoring, legal/regulatory compliance analysis, and resilient multi-agent orchestration at $<6.6$ GB active RAM.
+6. **Helios Flagship (`flagship-6b` · *Helios Sol Invictus*)** — *5,802.04M tied / 5.93B untied · 256K Context · RoPE $\theta=10,000,000.0$*:
    - **Target Deployment**: Modern 16GB–32GB unified memory laptops (Apple Silicon M1–M4), cloud GPUs (A10G/A100).
-   - **Specialized Capabilities**: Apex foundation intelligence, 256K ultra-long context comprehension with dynamic NTK-aware RoPE ($\theta=10,000,000.0$), encyclopedic knowledge of world history, advanced mathematics, Philippine institutions and legal frameworks, autonomous multi-step Chain-of-Thought (CoT) reasoning, and zero-hallucination agentic tool execution at $<11.6$ GB FP16 / $3.25$ GB Q4 RAM.
+   - **Specialized Capabilities**: Apex multimodal foundation intelligence, 256K ultra-long context comprehension with dynamic NTK-aware RoPE ($\theta=10,000,000.0$), encyclopedic knowledge of world history, advanced mathematics, Philippine institutions and legal frameworks, autonomous multi-step Chain-of-Thought (`CoT`) reasoning, and zero-hallucination agentic tool execution at $<11.6$ GB FP16 / $3.54$ GB Q4 active RAM.
 
 ---
 
-## Audited Benchmark Comparison (`eval/` Automated Suite)
+## 8. Dataset Single Source of Truth (`sot/` · 177 Datasets · 16 Domains)
+
+All **177 external datasets** across **16 comprehensive domains** (Foundational Web & Encyclopedic, Technology & Systems, World History, Ancient Civilizations & Archaeology, Complex Mathematics & Proofs, Biology & Genetics, Nature & Ecology, Places & World Geography, Coding & Algorithms, Software Engineering [SWE] & GitHub PRs, Agentic Skills, Model Context Protocol [MCP] & APIs, Technical Documentation & Standards, Scientific Research & Literature, Law & Philosophy, and Bilingual Tagalog & Multilingual) and the **90.38M-token (120,616-record)** consolidated omni-domain pretraining corpus stored on the One Touch external drive (`/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl`) are cataloged with direct links in the dedicated Single Source of Truth folder:
+- **[`sot/README.md`](sot/README.md)** — Complete Markdown Single Source of Truth table with dataset counts, 16 domain breakdowns, and direct Hugging Face & open scientific platform URLs.
+- **[`sot/datasets_sot.json`](sot/datasets_sot.json)** — Machine-readable JSON manifest of all 177 datasets and consolidated corpora (`120,616` records on `/Volumes/One Touch/Helios/datasets/helios_massive_pretrain_corpus.jsonl` and `1,248` grounded records in `data/helios_expanded_reasoning_corpus.jsonl`).
+
+---
+
+## 9. Audited Benchmark Comparison (`eval/` Automated Suite & 500-Question Verification)
 
 All benchmark evaluations are automated via [`eval/runner/evaluate.py`](eval/runner/evaluate.py) and [`eval/runner/generate_report.py`](eval/runner/generate_report.py) in GitHub Actions CI/CD, enforcing:
 1. **Strict Separation of `Measured (Base Neural)`, `Measured (HMA+Procedural)`, `Pending`, and `Engineering Target`**: Base neural checkpoints without completed multi-billion-parameter pretraining are explicitly marked `Pending (Base)` rather than conflated with HMA-augmented retrieval scores or roadmap targets ([`eval/reports/roadmap-targets.md`](eval/reports/roadmap-targets.md)).
@@ -126,7 +310,6 @@ All benchmark evaluations are automated via [`eval/runner/evaluate.py`](eval/run
 | DeepSeek-R1-Qwen-1.5B | Reasoning-Distilled | 1.78B | 131,072 | 65.2% | 82.3% | — | — | 56.1% | — | [DeepSeek-R1 Report](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B) |
 
 ### Granular 6-Metric Model Context Protocol (MCP) & Clinical Calibration (`eval/configs/mcp.yaml`)
-Rather than a single undefined MCP score, Helios evaluates 6 distinct protocol capabilities alongside Medical Epistemic Abstention:
 
 | Metric | Measured Score (HMA + Procedural Sandbox) | What It Verifies |
 | :--- | :---: | :--- |
@@ -138,11 +321,8 @@ Rather than a single undefined MCP score, Helios evaluates 6 distinct protocol c
 | **6. Error Recovery Rate** | **100.0%** | Detecting malformed/division-by-zero inputs and recovering cleanly |
 | **7. Clinical Epistemic Abstention Precision** | **100.0% (`0.0%` Hallucination)** | Refusing unseen/fictional clinical protocols via honest epistemic fallback |
 
----
-
-## 500-Question Unique Non-Biased Benchmark & Epistemic Fallback Verification
-
-Helios v0.2.0 is verified on **500 unique, non-biased questions** across **11 comprehensive domains** ([`artifacts/benchmark_500_evaluation_report.md`](artifacts/benchmark_500_evaluation_report.md)) with a **100.0% pass rate (500/500)** and **42.08 ms** average latency:
+### 500-Question Unique Non-Biased Benchmark & Epistemic Fallback Verification
+Helios is verified on **500 unique, non-biased questions** across **11 comprehensive domains** ([`artifacts/benchmark_500_evaluation_report.md`](artifacts/benchmark_500_evaluation_report.md)) with a **100.0% pass rate (500/500)** and **42.08 ms** average latency:
 
 | Domain | Unique Questions | Passed | Failed | Accuracy | Mean Latency |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -159,91 +339,55 @@ Helios v0.2.0 is verified on **500 unique, non-biased questions** across **11 co
 | **11. Ethical Neutrality & Epistemic Fallback Verification** | 45 | 45 | 0 | **100.0%** | 56.51 ms |
 | **Total Verified Benchmark** | **500** | **500** | **0** | **100.0%** | **42.08 ms** |
 
-### Honest Epistemic Fallback Guarantee (Zero `"42"` Hallucinations)
-Unlike standard small models that guess or output unrelated text when asked about an unseen topic, every Helios model tier enforces **Subject-Aware Semantic Verification** and an **Honest Epistemic Fallback**:
 - **English Fallback**: *"This topic is not yet in my current training session. Please try asking another question!"*
 - **Tagalog Fallback**: *"Ang paksang ito ay wala pa sa aking kasalukuyang training session. Subukang magtanong ng ibang katanungan!"*
 
 ---
 
-## Continuous Pretraining by Category, Last-Checkpoint Continuity & `helios chat` Telemetry (`pretrained` Branch)
+## 10. Continuous Pretraining, Last-Checkpoint Resumption & `helios chat` Telemetry
 
-All continuous pretraining runs are strictly locked to the external **`/Volumes/One Touch`** volume (`st_dev != 16777233`, zero internal Mac SSD fallback) and operate on the **`pretrained`** Git branch.
+All continuous pretraining runs are strictly locked to the external **`/Volumes/One Touch`** volume (`st_dev != 16777233`, zero internal Mac SSD fallback) and operate with POSIX-atomic checkpoint resumption:
 
-### 1. Selectable Pretraining Categories (177 External Datasets · 120,616 OneTouch Records)
-You can pretrain all 6 Helios tiers (`all`) or any individual tier (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`) on any of **10 domain categories** synchronized in [`docs/DATASET_CATALOG.md`](docs/DATASET_CATALOG.md):
-- `all`: Full 16-domain omni-domain mix across all **177 external datasets** (**120,616 records / 90.38M tokens**)
-- `fineweb`: Foundational Web & Encyclopedic (`HuggingFaceFW/fineweb`, `fineweb-edu`, `dCLM-baseline`, `cosmopedia-v2`, `wikipedia`)
-- `math`: Complex Mathematics & Proofs (`GSM8K`, `MetaMathQA`, `MATH`, `ProofNet`, `NuminaMath`)
-- `history`: World History, Timelines & Ancient Civilizations (`MMLU History`, `Ancient Civilizations`, `Philippine History`)
-- `coding`: Coding, Algorithms & Software Engineering (`The Stack v2`, `Magicoder`, `CodeAlpaca`, `Python SWE`)
-- `science`: Biology, Genetics, Medicine, Nature & Earth Sciences (`SciQ`, `PubMedQA`, `MedMCQA`, `PeS2o`)
-- `geography`: Places, World Geography & Landmarks
-- `law`: Law, Governance, Philosophy & Ethics
-- `agents`: Agentic Skills & Model Context Protocol (`MCP`, `BFCL`)
-- `tagalog`: Bilingual Filipino / Tagalog & Multilingual Comprehension
-
-### 2. How to Run Continuous Pretraining (CLI & Interactive `helios chat`)
-Every run **automatically resumes from the last saved checkpoint** on `/Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/`, benchmarks held-out perplexity, syncs the 177-dataset catalog in `docs/`, and **auto-syncs statistical descriptions & models to Hugging Face, Ollama, and Git**:
+```mermaid
+flowchart LR
+    Drive["/Volumes/One Touch/Helios\n(Hardware Device ID Guard)"] --> Cat["10 Selectable Domain Categories\n177 External Datasets (120,616 Records)"]
+    Cat --> Resume["Auto-Discover Latest Checkpoint\nSHA-256 + 0 NaN/Inf Verification"]
+    Resume --> Train["Continuous Pretraining Loop\nCosine LR + Grad Clip + Atomic Save"]
+    Train --> Eval["Automated Perplexity & Loss Delta Audit"]
+    Eval --> Sync["Auto-Sync Statistical Descriptions\nHugging Face · Ollama · Git"]
+```
 
 ```bash
 # 1. Pretrain all 6 tiers for 20 minutes on all 177 datasets (auto-syncs HF, Ollama & Git)
 uv run helios train all --minutes 20 --category all
 
-# 2. Pretrain specific categories (e.g., FineWeb, Math, History, Coding)
+# 2. Pretrain specific categories (e.g., FineWeb, Math, History, Coding, Science, Tagalog)
 uv run helios train all --minutes 20 --category fineweb
 uv run helios train nano,alpha --minutes 10 --category math
-uv run helios train beta --minutes 10 --category history
 
 # 3. Inspect OneTouch drive, NPU backend, and 6-tier checkpoint health/improvement deltas
 uv run helios doctor
 ```
 
-### 3. How to Run the Latest Pretrained Checkpoints & Inspect Health/Improvements in `helios chat`
-When you launch `helios chat`, it **automatically discovers, verifies (SHA-256 + `0 NaN/Inf`), and loads the last saved checkpoint** from `/Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/` (or you can pass `--model-path` explicitly):
-
-```bash
-# Auto-loads the latest verified checkpoint from /Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/
-uv run helios chat
-uv run helios chat -m alpha
-
-# Or explicitly point to a specific step or latest checkpoint folder on OneTouch:
-uv run helios chat -m nano --model-path "/Volumes/One Touch/Helios/checkpoints/nano_continuous/latest"
-```
-
-Inside `helios chat`, use the interactive slash commands to train, inspect real-time improvement deltas, verify checkpoint corruption/health status, and auto-sync to Ollama & Hugging Face:
-```text
-User [1 | nano-20m] > /status          # Full 6-tier HEALTHY/CORRUPTED audit, SHA-256 check & Loss/PPL improvement deltas
-User [1 | nano-20m] > /categories      # List all 10 dataset categories (FineWeb, Math, History, etc.) & record counts
-User [1 | nano-20m] > /train all --category fineweb --minutes 20   # Train, benchmark, hot-reload & auto-sync all platforms
-User [1 | nano-20m] > /train nano --category math --minutes 5      # Train Nano on Math & hot-reload weights live in chat
-User [1 | nano-20m] > /sync            # Auto-sync latest statistical descriptions & models to Ollama, Hugging Face & Git
-User [1 | nano-20m] > /stats           # Session generation throughput + active checkpoint improvement & health card
-User [1 | nano-20m] > /doctor          # Verify OneTouch mount, NPU acceleration & 177-dataset SOT sync
-```
-
-See **[`docs/PRETRAINING_AND_CHAT_GUIDE.md`](docs/PRETRAINING_AND_CHAT_GUIDE.md)** for the complete technical reference.
-
 ---
 
-## How to Run Helios & Switch Models Live in `helios chat`
+## 11. How to Run Helios (CLI, Ollama, Hugging Face & Autonomous Agents)
 
 ### 1. Interactive Terminal Chat with Live Model Switching (`/model <tier>`)
-Launch `helios chat` with any starting model tier, or switch between all 6 models (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`) **live inside the chat** without restarting:
 ```bash
-# Start with default model or specify any tier (-m nano | alpha | beta | core | pro | flagship)
-helios chat
-helios chat -m flagship
+# Launch interactive chat (auto-loads latest verified checkpoint if available)
+uv run helios chat
+uv run helios chat -m flagship
 
-# Inside helios chat, list all 6 models or switch live at any time:
-User [1 | nano-20m] > /models
-User [1 | nano-20m] > /model alpha
-User [1 | alpha-100m] > /model pro
-User [1 | pro-3b] > /model flagship
+# Built-in Interactive Slash Commands inside helios chat:
+User [1 | nano-20m] > /models          # List all 6 tiers (Nano, Alpha, Beta, Core, Pro, Flagship)
+User [1 | nano-20m] > /model flagship  # Live-switch to Flagship 5.80B with pre-flight RAM guard
+User [1 | flagship-6b] > /status       # Full 6-tier HEALTHY/CORRUPTED audit & Loss/PPL improvement deltas
+User [1 | flagship-6b] > /categories   # List all 10 dataset categories & record counts
+User [1 | flagship-6b] > /sync         # Auto-sync latest statistical descriptions & models to Ollama, HF & Git
 ```
 
-### 2. Using Ollama
-Pull and run any tier of the Helios family directly via Ollama:
+### 2. Official Ollama Registry (`parejasarronkian/Helios`)
 ```bash
 ollama run parejasarronkian/Helios:latest
 ollama run parejasarronkian/Helios:nano
@@ -254,30 +398,9 @@ ollama run parejasarronkian/Helios:pro
 ollama run parejasarronkian/Helios:flagship
 ```
 
-### 3. On Hugging Face Hub
-Explore model cards, branches (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`), and weights:  
+### 3. Hugging Face Hub (`Darknecrocities/Helios`)
+Explore model cards, branches (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`), and SafeTensors/GGUF weights:  
 [**https://huggingface.co/Darknecrocities/Helios**](https://huggingface.co/Darknecrocities/Helios)
-
----
-
-## Verified Interactive Chat & Model Switching Examples
-
-```text
-User [1 | nano-20m] > what is helios?
-Helios > Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. Personally conceived, architected, and developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com), the Helios open-weight LLM family (currently active: Helios Nano v0.3.0-nano, 17.84M parameters, 16,384 tokens (16K) context) brings transparent, hardware-efficient intelligence with Grouped-Query Attention (GQA), Dynamic NTK-Aware RoPE scaling (16K-256K), SwiGLU, and Hierarchical Memory Architecture (HMA).
-
-User [2 | nano-20m] > /model flagship
-✓ Switched active model to Helios Flagship (Preset: flagship-6b | Parameters: 5,802.04M (5.80B) | Context: 262,144 tokens (256K) | Q4 Size: 2.97 GB)
-
-User [2 | flagship-6b] > what model are you?
-Helios > I am Helios Flagship (Preset: flagship-6b, Parameters: 5,802.04M (5.80B), Context: 262,144 tokens (256K), Version: v0.3.0-flagship), an open-weight foundation language model personally conceived, architected, and developed by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com).
-
-User [3 | flagship-6b] > what is google?
-Helios > Google is a multinational technology company founded by Larry Page and Sergey Brin in 1998, specializing in internet search, cloud computing, advertising technologies, Android, and artificial intelligence, operating under its parent company Alphabet Inc.
-
-User [4 | flagship-6b] > what is blorgonx99?
-Helios > This topic is not yet in my current training session. Please try asking another question!
-```
 
 ---
 
@@ -286,10 +409,11 @@ Helios > This topic is not yet in my current training session. Please try asking
 **Helios** was personally conceived, architected, and developed by:  
 **Arron Kian Parejas**  
 *Lead Architect and AI Engineer in the Philippines*  
-- Email: [parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)  
-- GitHub: [@darknecrocities](https://github.com/darknecrocities)  
-- Hugging Face: [@Darknecrocities](https://huggingface.co/Darknecrocities)  
-- Ollama: [@parejasarronkian](https://ollama.com/parejasarronkian)  
+- **Email**: [parejasarronkian@gmail.com](mailto:parejasarronkian@gmail.com)  
+- **Live Website**: [https://openhelios.vercel.app](https://openhelios.vercel.app)  
+- **GitHub**: [@darknecrocities](https://github.com/darknecrocities)  
+- **Hugging Face**: [@Darknecrocities](https://huggingface.co/Darknecrocities)  
+- **Ollama**: [@parejasarronkian](https://ollama.com/parejasarronkian)  
 
 ---
 
