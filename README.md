@@ -166,6 +166,66 @@ Unlike standard small models that guess or output unrelated text when asked abou
 
 ---
 
+## Continuous Pretraining by Category, Last-Checkpoint Continuity & `helios chat` Telemetry (`pretrained` Branch)
+
+All continuous pretraining runs are strictly locked to the external **`/Volumes/One Touch`** volume (`st_dev != 16777233`, zero internal Mac SSD fallback) and operate on the **`pretrained`** Git branch.
+
+### 1. Selectable Pretraining Categories (177 External Datasets · 120,616 OneTouch Records)
+You can pretrain all 6 Helios tiers (`all`) or any individual tier (`nano`, `alpha`, `beta`, `core`, `pro`, `flagship`) on any of **10 domain categories** synchronized in [`docs/DATASET_CATALOG.md`](docs/DATASET_CATALOG.md):
+- `all`: Full 16-domain omni-domain mix across all **177 external datasets** (**120,616 records / 90.38M tokens**)
+- `fineweb`: Foundational Web & Encyclopedic (`HuggingFaceFW/fineweb`, `fineweb-edu`, `dCLM-baseline`, `cosmopedia-v2`, `wikipedia`)
+- `math`: Complex Mathematics & Proofs (`GSM8K`, `MetaMathQA`, `MATH`, `ProofNet`, `NuminaMath`)
+- `history`: World History, Timelines & Ancient Civilizations (`MMLU History`, `Ancient Civilizations`, `Philippine History`)
+- `coding`: Coding, Algorithms & Software Engineering (`The Stack v2`, `Magicoder`, `CodeAlpaca`, `Python SWE`)
+- `science`: Biology, Genetics, Medicine, Nature & Earth Sciences (`SciQ`, `PubMedQA`, `MedMCQA`, `PeS2o`)
+- `geography`: Places, World Geography & Landmarks
+- `law`: Law, Governance, Philosophy & Ethics
+- `agents`: Agentic Skills & Model Context Protocol (`MCP`, `BFCL`)
+- `tagalog`: Bilingual Filipino / Tagalog & Multilingual Comprehension
+
+### 2. How to Run Continuous Pretraining (CLI & Interactive `helios chat`)
+Every run **automatically resumes from the last saved checkpoint** on `/Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/`, benchmarks held-out perplexity, syncs the 177-dataset catalog in `docs/`, and **auto-syncs statistical descriptions & models to Hugging Face, Ollama, and Git**:
+
+```bash
+# 1. Pretrain all 6 tiers for 20 minutes on all 177 datasets (auto-syncs HF, Ollama & Git)
+uv run helios train all --minutes 20 --category all
+
+# 2. Pretrain specific categories (e.g., FineWeb, Math, History, Coding)
+uv run helios train all --minutes 20 --category fineweb
+uv run helios train nano,alpha --minutes 10 --category math
+uv run helios train beta --minutes 10 --category history
+
+# 3. Inspect OneTouch drive, NPU backend, and 6-tier checkpoint health/improvement deltas
+uv run helios doctor
+```
+
+### 3. How to Run the Latest Pretrained Checkpoints & Inspect Health/Improvements in `helios chat`
+When you launch `helios chat`, it **automatically discovers, verifies (SHA-256 + `0 NaN/Inf`), and loads the last saved checkpoint** from `/Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/` (or you can pass `--model-path` explicitly):
+
+```bash
+# Auto-loads the latest verified checkpoint from /Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/
+uv run helios chat
+uv run helios chat -m alpha
+
+# Or explicitly point to a specific step or latest checkpoint folder on OneTouch:
+uv run helios chat -m nano --model-path "/Volumes/One Touch/Helios/checkpoints/nano_continuous/latest"
+```
+
+Inside `helios chat`, use the interactive slash commands to train, inspect real-time improvement deltas, verify checkpoint corruption/health status, and auto-sync to Ollama & Hugging Face:
+```text
+User [1 | nano-20m] > /status          # Full 6-tier HEALTHY/CORRUPTED audit, SHA-256 check & Loss/PPL improvement deltas
+User [1 | nano-20m] > /categories      # List all 10 dataset categories (FineWeb, Math, History, etc.) & record counts
+User [1 | nano-20m] > /train all --category fineweb --minutes 20   # Train, benchmark, hot-reload & auto-sync all platforms
+User [1 | nano-20m] > /train nano --category math --minutes 5      # Train Nano on Math & hot-reload weights live in chat
+User [1 | nano-20m] > /sync            # Auto-sync latest statistical descriptions & models to Ollama, Hugging Face & Git
+User [1 | nano-20m] > /stats           # Session generation throughput + active checkpoint improvement & health card
+User [1 | nano-20m] > /doctor          # Verify OneTouch mount, NPU acceleration & 177-dataset SOT sync
+```
+
+See **[`docs/PRETRAINING_AND_CHAT_GUIDE.md`](docs/PRETRAINING_AND_CHAT_GUIDE.md)** for the complete technical reference.
+
+---
+
 ## How to Run Helios & Switch Models Live in `helios chat`
 
 ### 1. Interactive Terminal Chat with Live Model Switching (`/model <tier>`)

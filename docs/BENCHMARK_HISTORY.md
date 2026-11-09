@@ -20,3 +20,11 @@ Standardized evaluation harness results across academic reasoning, code, and age
 | 2026-11-09 10:16:00 | `dee0e7855802ae15...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
 | 2026-11-09 10:28:26 | `8cfba4fc451a2e84...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
 | 2026-11-09 10:28:26 | `62648b5a8a2b8d0a...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 11:08:30 | `a4d9cd6fd41ba8bf...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 11:08:30 | `2db287a67bb9da30...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 11:37:15 | `b4a0af1fac864f9d...` | `nano` | **HeldOut-ALL** | `perplexity` | **19.390** | Loss +88.3% | Category: all |
+| 2026-11-09 11:37:15 | `932d5cb4e15d816c...` | `alpha` | **HeldOut-ALL** | `perplexity` | **76.450** | Loss +67.2% | Category: all |
+| 2026-11-09 11:37:15 | `5e9959304ea7435a...` | `beta` | **HeldOut-ALL** | `perplexity` | **213.030** | Loss +63.3% | Category: all |
+| 2026-11-09 11:37:15 | `db30bdf7d08478ff...` | `core` | **HeldOut-ALL** | `perplexity` | **745.770** | Loss +99.9% | Category: all |
+| 2026-11-09 11:37:15 | `07021f519eac5dc4...` | `pro` | **HeldOut-ALL** | `perplexity` | **131252.140** | Loss +99.7% | Category: all |
+| 2026-11-09 11:37:15 | `acac157dd1d681d6...` | `flagship` | **HeldOut-ALL** | `perplexity` | **485165195.410** | Loss +99.3% | Category: all |

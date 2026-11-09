@@ -320,13 +320,23 @@ def load_model_and_config(
 
     effective_path = model_path
     if effective_path is None:
-        # Check tier-specific checkpoints on One Touch external drive, then fallback
+        # Check tier-specific continuous latest & legacy checkpoints on One Touch external drive
+        cont_latest_ckpt = Path(
+            f"/Volumes/One Touch/Helios/checkpoints/{tier_slug}_continuous/latest"
+        )
         tier_ext_ckpt = Path(f"/Volumes/One Touch/Helios/checkpoints/helios_{tier_slug}")
         tier_local_ckpt = Path(f"checkpoints/helios_{tier_slug}").resolve()
         reasoning_ckpt = Path("/Volumes/One Touch/Helios/checkpoints/helios_reasoning_trained")
         default_ckpt = Path("checkpoints/helios_core_pretrained").resolve()
 
-        if tier_ext_ckpt.is_dir() and (tier_ext_ckpt / "state.pt").exists():
+        if cont_latest_ckpt.is_dir() and (
+            (cont_latest_ckpt / "state.pt").exists()
+            or (cont_latest_ckpt / "model.safetensors").exists()
+        ):
+            effective_path = cont_latest_ckpt
+        elif tier_ext_ckpt.is_dir() and (
+            (tier_ext_ckpt / "state.pt").exists() or (tier_ext_ckpt / "model.safetensors").exists()
+        ):
             effective_path = tier_ext_ckpt
         elif tier_local_ckpt.is_dir() and (tier_local_ckpt / "state.pt").exists():
             effective_path = tier_local_ckpt
@@ -365,8 +375,12 @@ def load_model_and_config(
     ckpt_exists = False
     if effective_path is not None:
         p_check = Path(effective_path).resolve()
-        ckpt_candidate = (p_check / "state.pt") if p_check.is_dir() else p_check
-        ckpt_exists = ckpt_candidate.is_file()
+        if p_check.is_dir():
+            ckpt_exists = (p_check / "state.pt").is_file() or (
+                p_check / "model.safetensors"
+            ).is_file()
+        else:
+            ckpt_exists = p_check.is_file()
 
     # Direct on-device instantiation in target precision
     with torch.device(target_device):
@@ -381,26 +395,31 @@ def load_model_and_config(
 
     if effective_path is not None:
         p = Path(effective_path).resolve()
-        ckpt_file = (p / "state.pt") if p.is_dir() else p
-        if ckpt_file.is_file():
-            payload = torch.load(ckpt_file, map_location=target_device, weights_only=False)
+        pt_cand = (p / "state.pt") if p.is_dir() else p
+        st_cand = (p / "model.safetensors") if p.is_dir() else p
+        state_dict = None
+        if pt_cand.is_file() and pt_cand.suffix != ".safetensors":
+            payload = torch.load(pt_cand, map_location=target_device, weights_only=False)
             state_dict = (
                 payload.get("model_state_dict", payload) if isinstance(payload, dict) else payload
             )
-            if isinstance(state_dict, dict):
-                model_sd = model.state_dict()
-                compatible_sd = {
-                    k: v.to(dtype=target_dtype)
-                    for k, v in state_dict.items()
-                    if k in model_sd and model_sd[k].shape == v.shape
-                }
-                if len(compatible_sd) == len(model_sd):
-                    model.load_state_dict(compatible_sd, strict=True)
-                elif model_path is not None and compatible_sd:
-                    model.apply(model._init_weights)
-                    model.load_state_dict(compatible_sd, strict=False)
-                else:
-                    model.apply(model._init_weights)
+        elif st_cand.is_file() and st_cand.suffix == ".safetensors":
+            from safetensors.torch import load_file
+
+            state_dict = load_file(str(st_cand))
+
+        if isinstance(state_dict, dict):
+            model_sd = model.state_dict()
+            compatible_sd = {
+                k: v.to(device=target_device, dtype=target_dtype)
+                for k, v in state_dict.items()
+                if k in model_sd and model_sd[k].shape == v.shape
+            }
+            if len(compatible_sd) == len(model_sd):
+                model.load_state_dict(compatible_sd, strict=True)
+            elif model_path is not None and compatible_sd:
+                model.apply(model._init_weights)
+                model.load_state_dict(compatible_sd, strict=False)
             else:
                 model.apply(model._init_weights)
         else:

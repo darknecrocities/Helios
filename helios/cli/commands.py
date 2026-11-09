@@ -34,11 +34,16 @@ VALID_SLASH_COMMANDS: frozenset[str] = frozenset(
         "/think",
         "/memory",
         "/stats",
+        "/status",
+        "/health",
+        "/categories",
         "/reset",
         "/clear",
         "/train",
         "/bench",
         "/sync",
+        "/publish",
+        "/update",
         "/doctor",
         "/help",
         "/exit",
@@ -53,10 +58,12 @@ CHAT_HELP_TEXT: str = (
     "  /switch <tier>   : Alias for /model to switch active model live\n"
     "  /think <on|off>  : Enable/disable Chain-of-Thought panel; /think displays current state\n"
     "  /memory          : Display HMA memory state and SQLite persistence details\n"
-    "  /stats           : Display session generation performance and throughput\n"
-    "  /train [tier]    : Trigger continuous pretraining on OneTouch drive (e.g. /train nano, /train all)\n"
+    "  /stats           : Display session generation performance and active checkpoint telemetry\n"
+    "  /status, /health : Full 6-tier checkpoint health/corruption audit & improvement deltas\n"
+    "  /categories      : List all 10 pretraining dataset categories (FineWeb, Math, History, etc.)\n"
+    "  /train [args]    : Pretrain on OneTouch & auto-sync (e.g. /train all --category math -m 20)\n"
     "  /bench [tier]    : Run automated held-out evaluation & perplexity benchmark\n"
-    "  /sync            : Push latest artifacts to HF Hub, Ollama, & Git/PR\n"
+    "  /sync, /publish  : Auto-sync latest models & statistical telemetry to HF, Ollama, & Git\n"
     "  /doctor          : Verify OneTouch filesystem, NPU backends, and storage health\n"
     "  /reset, /clear   : Clear working memory context and turn history\n"
     "  /help            : Display this chat command reference panel\n"
@@ -159,49 +166,77 @@ def handle_stats(session: ChatSession, arg: str = "") -> None:
     console.print(session.stats_status())
 
 
+def handle_status(session: ChatSession, arg: str = "") -> None:
+    """Display 6-tier checkpoint health, corruption diagnostics, and improvement deltas."""
+    from helios_pipeline.workflow import render_health_and_improvement_table
+
+    render_health_and_improvement_table()
+
+
+def handle_categories(session: ChatSession, arg: str = "") -> None:
+    """Display all 10 selectable pretraining categories and dataset counts."""
+    from helios_pipeline.workflow import render_categories_table
+
+    render_categories_table()
+
+
 def handle_train(session: ChatSession, arg: str) -> None:
-    """Trigger continuous pretraining on OneTouch drive from chat session."""
+    """Trigger continuous pretraining on OneTouch drive with category & default auto-sync."""
     import shlex
 
+    from helios.cli.utils import reload_model_for_tier
+    from helios_pipeline.data.categories import CATEGORY_ALIASES, CATEGORY_SPECS
     from helios_pipeline.workflow import parse_duration, run_train_workflow
 
     tokens = shlex.split(arg) if arg else []
     tier = resolve_tier_key(session.preset)
     minutes = 5.0
-    sync_target = None
+    sync_target: str | None = "all"
     device = "auto"
     upload_weights = False
+    category = "all"
 
     idx = 0
     while idx < len(tokens):
         tok = tokens[idx]
-        if tok in ("--minutes", "-m") and idx + 1 < len(tokens):
+        low = tok.lower()
+        if low in ("--minutes", "-m") and idx + 1 < len(tokens):
             minutes = float(tokens[idx + 1])
             idx += 2
-        elif tok in ("--duration", "-d") and idx + 1 < len(tokens):
+        elif low in ("--duration", "-d") and idx + 1 < len(tokens):
             minutes = parse_duration(tokens[idx + 1])
             idx += 2
-        elif tok in ("--sync", "-s"):
+        elif low in ("--category", "-c") and idx + 1 < len(tokens):
+            category = tokens[idx + 1]
+            idx += 2
+        elif low == "--no-sync":
+            sync_target = None
+            idx += 1
+        elif low in ("--sync", "-s"):
             if idx + 1 < len(tokens) and not tokens[idx + 1].startswith("-"):
                 sync_target = tokens[idx + 1]
                 idx += 2
             else:
                 sync_target = "all"
                 idx += 1
-        elif tok == "--device" and idx + 1 < len(tokens):
+        elif low == "--device" and idx + 1 < len(tokens):
             device = tokens[idx + 1]
             idx += 2
-        elif tok == "--upload-weights":
+        elif low == "--upload-weights":
             upload_weights = True
             idx += 1
         elif not tok.startswith("-"):
-            tier = tok
+            if low in CATEGORY_SPECS or low in CATEGORY_ALIASES:
+                category = low
+            else:
+                tier = tok
             idx += 1
         else:
             idx += 1
 
     console.print(
-        f"[bold cyan]Initiating continuous pretraining for tier(s): '{tier}' ({minutes:g} min)...[/bold cyan]"
+        f"[bold cyan]☀️  Initiating continuous pretraining: tier='{tier}' · "
+        f"category='{category}' · duration={minutes:g} min · auto-sync='{sync_target or 'off'}'[/bold cyan]"
     )
     code = run_train_workflow(
         tiers_spec=tier,
@@ -209,17 +244,20 @@ def handle_train(session: ChatSession, arg: str) -> None:
         device=device,
         sync=sync_target,
         upload_weights=upload_weights,
+        category=category,
     )
     if code == 0:
         console.print(
-            "[bold green]✓ Pretraining and automated benchmark completed successfully![/bold green]"
+            "[bold green]✓ Pretraining, automated benchmark, and multi-platform sync completed![/bold green]"
         )
         current_tier = resolve_tier_key(session.preset)
         if tier == "all" or current_tier in tier.split(","):
             try:
-                session.switch_model(current_tier)
+                session.model, session.config = reload_model_for_tier(
+                    session.preset, device=session.device
+                )
                 console.print(
-                    f"[bold cyan]✓ Hot-reloaded active model tier '{current_tier}'.[/bold cyan]"
+                    f"[bold cyan]✓ Hot-reloaded latest checkpoint for active model tier '{current_tier}'.[/bold cyan]"
                 )
             except Exception:
                 pass
@@ -229,78 +267,30 @@ def handle_train(session: ChatSession, arg: str) -> None:
 
 def handle_bench(session: ChatSession, arg: str) -> None:
     """Run automated held-out evaluation & perplexity benchmark from chat."""
-    from rich.table import Table
+    from helios_pipeline.workflow import render_health_and_improvement_table
 
-    from helios.cli.utils import load_or_create_tokenizer
-    from helios_pipeline.evaluation.automated_benchmark import benchmark_tier
-    from helios_pipeline.training.multi_tier import (
-        TierResult,
-        load_corpus_sample,
-        parse_tiers,
-        require_onetouch,
+    render_health_and_improvement_table(
+        title=f"Automated Benchmark & Improvement Telemetry — {(arg.strip() or 'ALL TIERS').upper()}"
     )
-
-    target_tier = arg.strip() or resolve_tier_key(session.preset)
-    try:
-        tiers = parse_tiers(target_tier)
-        storage = require_onetouch()
-    except Exception as exc:
-        console.print(f"[bold red]✗ Benchmark failed: {exc}[/bold red]")
-        return
-
-    tok = load_or_create_tokenizer()
-    sample = load_corpus_sample(storage, limit=200, seed=1234)
-    table = Table(title=f"Automated Benchmark — {target_tier.upper()}", border_style="cyan")
-    table.add_column("Tier", style="bold white")
-    table.add_column("Mode")
-    table.add_column("PPL", justify="right")
-    table.add_column("Loss", justify="right")
-    table.add_column("Throughput", justify="right")
-
-    for t in tiers:
-        parent_ckpt = storage.base_dir / "checkpoints" / f"{t}_continuous"
-        steps_dirs = sorted(parent_ckpt.glob("step_*")) if parent_ckpt.exists() else []
-        if not steps_dirs:
-            table.add_row(t, "uninitialized", "N/A", "N/A", "Run /train first")
-            continue
-
-        latest_ckpt = steps_dirs[-1]
-        mode = "full_parameter" if t in {"nano", "alpha", "beta"} else "block_slice"
-        res = TierResult(
-            tier=t,
-            mode=mode,
-            device="cpu",
-            steps=0,
-            seconds=0.0,
-            initial_loss=0.0,
-            final_loss=0.0,
-            tokens=0,
-            checkpoint=str(latest_ckpt),
-        )
-        try:
-            b = benchmark_tier(res, sample, tok)
-            table.add_row(
-                b.tier,
-                b.mode,
-                f"{b.heldout_ppl:.2f}",
-                f"{b.heldout_loss:.4f}",
-                f"{b.infer_tok_per_s:.1f} tok/s",
-            )
-        except Exception as exc:
-            table.add_row(t, mode, "ERR", "ERR", str(exc))
-
-    console.print(table)
 
 
 def handle_sync(session: ChatSession, arg: str) -> None:
-    """Synchronize latest reports and models to HF Hub, Ollama, and Git."""
+    """Synchronize latest reports, statistical descriptions, and models to HF, Ollama, and Git."""
     from helios_pipeline.sync.orchestrator import run_sync
 
     target = arg.strip() or "all"
-    console.print(f"[bold cyan]Synchronizing targets: {target}...[/bold cyan]")
+    console.print(
+        f"[bold cyan]🔄 Auto-syncing latest checkpoints & statistical descriptions to: {target}...[/bold cyan]"
+    )
     rep = run_sync(targets=target)
-    for k, status in rep.status.items():
-        console.print(f"  sync {k}: {status}")
+    console.print(
+        Panel(
+            f"[bold white]{rep.summary_headline}[/bold white]\n\n"
+            + "\n".join(f"  • [cyan]{k}[/cyan]: {status}" for k, status in rep.status.items()),
+            border_style="green",
+            title="[bold green]✓ Multi-Platform Auto-Sync Complete[/bold green]",
+        )
+    )
 
 
 def handle_doctor(session: ChatSession, arg: str = "") -> None:
@@ -331,12 +321,7 @@ def handle_unknown(cmd: str) -> None:
 
 
 def dispatch_chat_command(user_input: str, session: ChatSession) -> CommandResult:
-    """Route user input if it is a slash command.
-
-    Returns:
-        CommandResult with handled=True if the input was processed as a command,
-        or handled=False if it should be sent to the model/LLM for conversation.
-    """
+    """Route user input if it is a slash command."""
     parsed = parse_slash_command(user_input)
     if parsed is None:
         return CommandResult(handled=False, should_exit=False)
@@ -359,11 +344,15 @@ def dispatch_chat_command(user_input: str, session: ChatSession) -> CommandResul
         handle_memory(session, arg)
     elif cmd == "/stats":
         handle_stats(session, arg)
+    elif cmd in ("/status", "/health"):
+        handle_status(session, arg)
+    elif cmd == "/categories":
+        handle_categories(session, arg)
     elif cmd == "/train":
         handle_train(session, arg)
     elif cmd == "/bench":
         handle_bench(session, arg)
-    elif cmd == "/sync":
+    elif cmd in ("/sync", "/publish", "/update"):
         handle_sync(session, arg)
     elif cmd == "/doctor":
         handle_doctor(session, arg)
