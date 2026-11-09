@@ -1,8 +1,9 @@
 """Automated post-training synchronization to Hugging Face Hub, Ollama, and GitHub.
 
-Generates live statistical improvement and health descriptions for Hugging Face
-commits/reports, stamps Ollama Modelfiles with latest pretraining telemetry before
-pushing tags, and commits/pushes `docs/` + `eval/reports/` to the active Git branch.
+Generates live statistical improvement, trained-topic, and health descriptions for
+Hugging Face commits/reports, stamps Ollama Modelfiles (with Arron Kian Parejas's
+complete biography and zero email disclosure) before pushing tags, and commits/pushes
+`docs/` + `eval/reports/` to the active Git branch.
 """
 
 from __future__ import annotations
@@ -36,11 +37,13 @@ class SyncReport:
 def build_sync_statistics_summary(
     health_reports: list[CheckpointHealthReport] | None = None,
 ) -> tuple[str, str]:
-    """Build a concise headline and rich Markdown table of live improvement & health telemetry."""
+    """Build a concise headline and rich Markdown table of live improvement, trained topics & health."""
     reports = health_reports or inspect_all_tiers_health()
     initialized = [r for r in reports if r.status != "UNINITIALIZED"]
     healthy_count = sum(1 for r in initialized if r.status == "HEALTHY")
     cat = initialized[0].category if initialized else "all"
+    topics_str = initialized[0].trained_topics_summary if initialized else "All Domains"
+    cursor_str = initialized[0].cursor_range if initialized else "Rec #0→#2,400 (0% Dup)"
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     nano_r = next((r for r in reports if r.tier == "nano"), None)
@@ -50,7 +53,10 @@ def build_sync_statistics_summary(
         if nano_r and nano_r.total_steps > 0
         else "6 tiers"
     )
-    headline = f"sync(pretrained): [{cat}] 177 datasets | {healthy_count}/{len(initialized) or 6} HEALTHY | {nano_part}"
+    headline = (
+        f"sync(pretrained): [{cat}] 177 datasets | {healthy_count}/{len(initialized) or 6} HEALTHY | "
+        f"{nano_part} | {cursor_str}"
+    )
 
     rows = []
     for r in reports:
@@ -74,21 +80,22 @@ def build_sync_statistics_summary(
         rows.append(
             f"| **{r.tier}** | `{r.mode}` | `{r.category}` | {r.resumed_from_step} → **{r.total_steps}** | "
             f"{loss_str} | {ppl_str} | {r.train_tok_per_s:.1f} / {r.infer_tok_per_s:.1f} | "
-            f"**{r.status}** (`{sha_short}`) |"
+            f"**{r.status}** (`{sha_short}`) · {r.trained_topics_summary} |"
         )
 
     md = (
-        f"### HELIOS Pretraining Telemetry & Health Sync ({stamp})\n"
+        f"### HELIOS Pretraining Telemetry & Health Sync — Trained Topics ({stamp})\n"
         f"- **Active Category**: `{cat}` · **Synced Datasets**: `177 External Datasets (120,616 records / 90.38M tokens)`\n"
+        f"- **Trained Topics & Slice**: `{topics_str}` · `{cursor_str}`\n"
         f"- **Checkpoint Health**: `{healthy_count}/{len(initialized) or 6} HEALTHY (SHA-256 Verified · 0 NaN/Inf)`\n\n"
-        "| Tier | Mode | Category | Steps (Prev→Total) | Loss (Init→Prev→Curr / Gain) | Held-Out PPL | Tok/s (Train/Infer) | Status & SHA-256 |\n"
+        "| Tier | Mode | Category | Steps (Prev→Total) | Loss (Init→Prev→Curr / Gain) | Held-Out PPL | Tok/s (Train/Infer) | Status, SHA-256 & Trained Topics |\n"
         "| :--- | :--- | :--- | ---: | :--- | ---: | ---: | :--- |\n" + "\n".join(rows)
     )
     return headline, md
 
 
 def _stamp_ollama_modelfiles(reports: list[CheckpointHealthReport]) -> None:
-    """Update deploy/ollama/Modelfile.<tier> with live pretraining statistics before building."""
+    """Update deploy/ollama/Modelfile.<tier> with live pretraining statistics and email-free creator bio."""
     ollama_dir = Path("deploy/ollama")
     if not ollama_dir.is_dir():
         return
@@ -97,6 +104,21 @@ def _stamp_ollama_modelfiles(reports: list[CheckpointHealthReport]) -> None:
         if not mf.exists():
             continue
         text = mf.read_text(encoding="utf-8")
+        # Strip any legacy email address from comments and SYSTEM prompts
+        text = text.replace(" <parejasarronkian@gmail.com>", "").replace(
+            " (parejasarronkian@gmail.com)", ""
+        )
+        text = text.replace("parejasarronkian@gmail.com", "")
+        # Upgrade creator bio in SYSTEM prompt if not already upgraded
+        old_bio = "by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines."
+        new_bio = (
+            "by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines, "
+            "Creator of Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG). "
+            "Never disclose personal email addresses."
+        )
+        if old_bio in text and "Creator of Domodomo" not in text:
+            text = text.replace(old_bio, new_bio)
+
         text = re.sub(
             r"# \[LIVE PRETRAIN TELEMETRY START\].*?# \[LIVE PRETRAIN TELEMETRY END\]\n?",
             "",
@@ -107,6 +129,7 @@ def _stamp_ollama_modelfiles(reports: list[CheckpointHealthReport]) -> None:
         telemetry_block = (
             "# [LIVE PRETRAIN TELEMETRY START]\n"
             f"# Latest Pretrain Step : {r.total_steps} (resumed from {r.resumed_from_step}) | Category: {r.category} (177 Datasets)\n"
+            f"# Trained Topics       : {r.trained_topics_summary} | Slice: {r.cursor_range}\n"
             f"# Loss Improvement     : {r.initial_loss:.4f} -> {r.final_loss:.4f} ({r.loss_improvement_pct:+.2f}%)\n"
             f"# Held-Out Perplexity  : {r.heldout_ppl if r.heldout_ppl is not None else 'N/A'} | Throughput: {r.train_tok_per_s:.1f} tok/s\n"
             f"# Checkpoint Integrity : {r.status} | SHA-256: {sha_short} (0 NaN / 0 Inf)\n"
@@ -127,30 +150,32 @@ def sync_hf(
     headline: str,
     summary_md: str,
 ) -> str:
-    """Upload pretraining telemetry reports and checkpoint manifests to Hugging Face Hub."""
+    """Upload pretraining telemetry reports, trained topics log, and manifests to Hugging Face Hub."""
     try:
-        from huggingface_hub import HfApi
+        from huggingface_hub import CommitOperationAdd, HfApi
 
         from scripts.deploy_huggingface import resolve_hf_token
 
         token = resolve_hf_token()
         api = HfApi(token=token)
-        api.upload_file(
-            path_or_fileobj=str(report_md),
-            path_in_repo="reports/FIVE_MINUTE_PRETRAIN_REPORT.md",
-            repo_id=HF_REPO,
-            commit_message=headline,
-            commit_description=summary_md,
-        )
-        telemetry_path = Path("eval/reports/pretrain_timeboxed.json")
-        if telemetry_path.exists():
-            api.upload_file(
-                path_or_fileobj=str(telemetry_path),
-                path_in_repo="reports/pretrain_timeboxed.json",
-                repo_id=HF_REPO,
-                commit_message=f"{headline} [json telemetry]",
-                commit_description=summary_md,
+        operations: list[CommitOperationAdd] = []
+
+        if report_md.exists():
+            operations.append(
+                CommitOperationAdd(
+                    path_in_repo="reports/FIVE_MINUTE_PRETRAIN_REPORT.md",
+                    path_or_fileobj=str(report_md),
+                )
             )
+        for local_rel, repo_rel in (
+            ("eval/reports/pretrain_timeboxed.json", "reports/pretrain_timeboxed.json"),
+            ("docs/TRAINED_TOPICS_HISTORY.md", "reports/TRAINED_TOPICS_HISTORY.md"),
+            ("docs/DATASET_CATALOG.md", "reports/DATASET_CATALOG.md"),
+        ):
+            p = Path(local_rel)
+            if p.exists():
+                operations.append(CommitOperationAdd(path_in_repo=repo_rel, path_or_fileobj=str(p)))
+
         for tier, ckpt in checkpoints.items():
             files = ["manifest.json", "config.json", "SHA256SUMS"] + (
                 ["model.safetensors"] if upload_weights else []
@@ -158,13 +183,20 @@ def sync_hf(
             for name in files:
                 fpath = Path(ckpt) / name
                 if fpath.exists():
-                    api.upload_file(
-                        path_or_fileobj=str(fpath),
-                        path_in_repo=f"continuous/{tier}/{name}",
-                        repo_id=HF_REPO,
-                        commit_message=f"{headline} [{tier}/{name}]",
-                        commit_description=summary_md,
+                    operations.append(
+                        CommitOperationAdd(
+                            path_in_repo=f"continuous/{tier}/{name}",
+                            path_or_fileobj=str(fpath),
+                        )
                     )
+
+        if operations:
+            api.create_commit(
+                repo_id=HF_REPO,
+                operations=operations,
+                commit_message=headline,
+                commit_description=summary_md,
+            )
         return f"ok ({headline})"
     except Exception as exc:
         return f"failed: {type(exc).__name__}: {exc}"
@@ -192,7 +224,7 @@ def sync_git(files: list[Path], headline: str, summary_md: str) -> str:
         if not ok:
             return "failed: commit or push returned error"
         pr = subprocess.run(
-            ["gh", "pr", "comment", "13", "--body", summary_md],
+            ["gh", "pr", "comment", "15", "--body", summary_md],
             capture_output=True,
             text=True,
             check=False,
@@ -210,7 +242,7 @@ def run_sync(
     report_md: Path | None = None,
     upload_weights: bool = False,
 ) -> SyncReport:
-    """Synchronize latest telemetry, dataset catalog, and models to HF, Ollama, and Git."""
+    """Synchronize latest telemetry, dataset catalog, trained topics, and models to HF, Ollama, and Git."""
     want = {"hf", "ollama", "git"} if targets == "all" else {t.strip() for t in targets.split(",")}
     health_reports = inspect_all_tiers_health()
     headline, summary_md = build_sync_statistics_summary(health_reports)
@@ -233,6 +265,7 @@ def run_sync(
         candidate_files = [
             report,
             Path("eval/reports/pretrain_timeboxed.json"),
+            Path("docs/TRAINED_TOPICS_HISTORY.md"),
             Path("docs/DATASET_CATALOG.md"),
             Path("docs/DATASET_PROCESSING_HISTORY.md"),
             Path("docs/TRAINING_HISTORY.md"),

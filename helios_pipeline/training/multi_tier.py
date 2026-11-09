@@ -13,7 +13,6 @@ import itertools
 import json
 import logging
 import math
-import random
 import shutil
 import time
 from dataclasses import asdict, dataclass
@@ -27,15 +26,18 @@ from safetensors.torch import load_file, save_file
 from helios.model.config import HeliosConfig
 from helios.model.transformer import HeliosForCausalLM
 from helios_pipeline.data.categories import (
-    CATEGORY_SPECS,
-    matches_category,
     normalize_category,
 )
+from helios_pipeline.data.curriculum_ledger import sample_non_repeating_corpus
 from helios_pipeline.evaluation.health import (
     compute_file_sha256,
     resolve_latest_checkpoint_dir,
 )
 from helios_pipeline.npu.accelerator import resolve_compute_device
+from helios_pipeline.npu.hardware_governor import (
+    compute_hardware_shift_plan,
+    pace_training_step,
+)
 from helios_pipeline.storage.manager import OneTouchStorageManager, StorageConfig
 
 logger = logging.getLogger(__name__)
@@ -70,6 +72,9 @@ class TierResult:
     health_status: str = "HEALTHY"
     datasets_synced: int = 177
     updated_at: str = ""
+    trained_topics_summary: str = "Coding 46% · Math 17% · Agents 13% · Science 7% · Tagalog 4%"
+    cursor_range: str = "Rec #0→#2,400 (0% Dup · Ep 1)"
+    hardware_profile: str = "Zero-Lag Governor"
 
     @property
     def tokens_per_sec(self) -> float:
@@ -98,37 +103,10 @@ def require_onetouch() -> OneTouchStorageManager:
 def load_corpus_sample(
     storage: OneTouchStorageManager, limit: int, seed: int, category: str = "all"
 ) -> list[str]:
-    """Stream-sample texts from OneTouch corpus filtered by category."""
-    cat_key = normalize_category(category)
-    spec = CATEGORY_SPECS[cat_key]
-    path = storage.base_dir / "datasets" / CORPUS_NAME
-    texts: list[str] = []
-    fallback_texts: list[str] = []
-    if path.exists():
-        with open(path, encoding="utf-8") as f:
-            for line in itertools.islice(f, limit * 12):
-                try:
-                    rec = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                text = rec.get("text") or f"{rec.get('prompt', '')}\n{rec.get('response', '')}"
-                if not text.strip():
-                    continue
-                if len(fallback_texts) < limit:
-                    fallback_texts.append(text)
-                if matches_category(rec, cat_key):
-                    texts.append(text)
-                    if len(texts) >= limit:
-                        break
-    if len(texts) < max(32, limit // 10) and fallback_texts:
-        texts.extend(fallback_texts[: max(64, limit - len(texts))])
-
-    rng = random.Random(seed)
-    rng.shuffle(texts)
-    texts = texts[:limit]
-    cot_pool = list(spec.cot_samples) or list(CATEGORY_SPECS["all"].cot_samples)
-    texts.extend(cot_pool * max(2, len(texts) // 8))
-    rng.shuffle(texts)
+    """Stream-sample non-repeating texts from OneTouch corpus filtered by category."""
+    texts, _ = sample_non_repeating_corpus(
+        storage=storage, limit=limit, seed=seed, category=category, advance_cursor=True
+    )
     return texts
 
 
@@ -256,12 +234,16 @@ def train_tier(
     tokenizer: Any,
     device_req: str = "auto",
     category: str = "all",
+    trained_topics_summary: str = "Coding 46% · Math 17% · Agents 13% · Science 7% · Tagalog 4%",
+    cursor_range: str = "Rec #0→#2,400 (0% Dup · Ep 1)",
 ) -> TierResult:
-    """Resume from last checkpoint, train until wall-clock budget expires, and save atomically."""
+    """Resume from last checkpoint, train with Zero-Lag Hardware Governor, and save atomically."""
     storage.check_health()
     cat_key = normalize_category(category)
     device = resolve_compute_device(device_req) if tier in FULL_PARAM_TIERS else "cpu"
-    seq_len = 128 if tier in FULL_PARAM_TIERS else 64
+    hw_plan = compute_hardware_shift_plan(tier, device)
+    seq_len = hw_plan.seq_len if tier in FULL_PARAM_TIERS else 64
+    bsz = hw_plan.batch_size if tier in FULL_PARAM_TIERS else 2
     model, cfg, mode = _build(tier, seq_len)
 
     resumed_step, base_init_loss, prev_loss, prev_ppl = _restore_last_checkpoint(
@@ -271,7 +253,8 @@ def train_tier(
     vocab = getattr(model, "active_vocab", cfg.vocab_size)
     lr = (3e-4 if resumed_step > 0 else 5e-4) if tier == "nano" else 2e-4
     opt = torch.optim.AdamW(model.parameters(), lr=lr)
-    stream = _batches(texts, tokenizer, seq_len, 4 if tier in FULL_PARAM_TIERS else 2, vocab)
+    stream = _batches(texts, tokenizer, seq_len, bsz, vocab)
+    dev_obj = torch.device(device)
 
     steps, tokens, first, last = 0, 0, math.nan, math.nan
     start = time.perf_counter()
@@ -287,6 +270,7 @@ def train_tier(
         tokens += int((labels != -100).sum())
         last = float(loss.item())
         first = last if steps == 1 else first
+        pace_training_step(dev_obj, steps, hw_plan)
     elapsed = time.perf_counter() - start
     total_steps = resumed_step + steps
     effective_base_loss = base_init_loss if base_init_loss and base_init_loss > 0 else first
@@ -329,6 +313,9 @@ def train_tier(
         health_status=health,
         datasets_synced=177,
         updated_at=stamp,
+        trained_topics_summary=trained_topics_summary,
+        cursor_range=cursor_range,
+        hardware_profile=hw_plan.profile_label,
     )
     _save_checkpoint_bundle(out, latest, legacy, state, cfg, result)
 
@@ -342,18 +329,34 @@ def train_tier(
 def train_all(
     tiers: list[str], minutes: float, device_req: str = "auto", category: str = "all"
 ) -> list[TierResult]:
-    """Split wall-clock budget evenly across tiers and train each sequentially."""
+    """Split wall-clock budget evenly across tiers and train each sequentially without lag or duplication."""
     from helios.cli.utils import load_or_create_tokenizer
 
     storage = require_onetouch()
     tokenizer = load_or_create_tokenizer()
     cat_key = normalize_category(category)
-    texts = load_corpus_sample(storage, limit=2500, seed=42, category=cat_key)
+    texts, session_meta = sample_non_repeating_corpus(
+        storage, limit=2500, seed=42, category=cat_key, advance_cursor=True
+    )
+    topics_summary = str(session_meta.get("trained_topics_summary", ""))
+    cursor_range = str(session_meta.get("cursor_range", ""))
     per_tier = minutes * 60.0 / len(tiers)
     results = []
     for tier in tiers:
-        logger.info("Training %s [category=%s] for %.0fs", tier, cat_key, per_tier)
+        logger.info(
+            "Training %s [category=%s | %s] for %.0fs", tier, cat_key, cursor_range, per_tier
+        )
         results.append(
-            train_tier(tier, per_tier, storage, texts, tokenizer, device_req, category=cat_key)
+            train_tier(
+                tier,
+                per_tier,
+                storage,
+                texts,
+                tokenizer,
+                device_req,
+                category=cat_key,
+                trained_topics_summary=topics_summary,
+                cursor_range=cursor_range,
+            )
         )
     return results

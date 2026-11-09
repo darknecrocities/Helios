@@ -32,3 +32,5 @@ Cryptographically anchored log of training steps, loss trajectories, and learnin
 | 2026-11-09 11:37:15 | `core` | 1,793 | 1.1983 | 745.77 | 3.00e-04 | 148,562 | `onetouch_all_177ds` |
 | 2026-11-09 11:37:15 | `pro` | 845 | 8.4895 | 131252.14 | 3.00e-04 | 69,403 | `onetouch_all_177ds` |
 | 2026-11-09 11:37:15 | `flagship` | 370 | 27.3593 | 485165195.41 | 3.00e-04 | 28,434 | `onetouch_all_177ds` |
+| 2026-11-09 12:08:31 | `nano` | 4 | 6.9443 | 1037.26 | 3.00e-04 | 512 | `cluster_f03b6933_stage_a` |
+| 2026-11-09 12:08:32 | `nano` | 8 | 6.8785 | 971.19 | 3.00e-04 | 512 | `cluster_2c476430_stage_a` |

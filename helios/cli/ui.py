@@ -39,7 +39,10 @@ def _format_live_checkpoint_lines(preset: str) -> str:
         tier_key = preset.split("-")[0].lower()
         rep = inspect_tier_checkpoint(tier_key)
         if rep.status == "HEALTHY":
-            h_badge = f"[bold green]HEALTHY[/bold green] (SHA-256 `{rep.sha256_digest[:10]}...` · {rep.tensor_count}T 0 NaN/Inf)"
+            h_badge = (
+                f"[bold green]HEALTHY[/bold green] (SHA-256 `{rep.sha256_digest[:10]}...` · {rep.tensor_count}T 0 NaN/Inf) "
+                f"| [bold cyan]Topics:[/bold cyan] [white]{rep.trained_topics_summary}[/white]"
+            )
         elif rep.status == "CORRUPTED":
             h_badge = f"[bold red]CORRUPTED[/bold red] ({rep.diagnostic_reason})"
         else:
@@ -58,7 +61,7 @@ def _format_live_checkpoint_lines(preset: str) -> str:
         return (
             f"  [bold cyan]● Ckpt Health   :[/bold cyan] {h_badge}\n"
             f"  [bold cyan]● Improvement   :[/bold cyan] [white]{imp_line}[/white]\n"
-            f"  [bold cyan]● Dataset SOT   :[/bold cyan] [white]{rep.datasets_synced} External Datasets Synced (120,616 Records / 90.38M Tokens)[/white]\n"
+            f"  [bold cyan]● Trained Slice :[/bold cyan] [white]{rep.cursor_range} · {rep.datasets_synced} External Datasets Synced (120,616 Records)[/white]\n"
         )
     except Exception:
         return ""
@@ -70,7 +73,7 @@ def render_chat_banner(tier_info: dict[str, Any], device: Any) -> None:
     content = (
         f"Helios Foundation Interactive Terminal Chat (v0.3.0)\n"
         f"[bold yellow]☀️  HELIOS COGNITIVE RUNTIME[/bold yellow]\n"
-        f"[dim]Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>[/dim]\n\n"
+        f"[dim]Creator & Lead Architect: Arron Kian Parejas — Creator of Helios & Domodomo · Top 1 on AppBuilders · Former GDG Chapter Lead (Philippines)[/dim]\n\n"
         f"  [bold cyan]● Active Model  :[/bold cyan] [bold white]{tier_info['display_name']} ({tier_info['version']})[/bold white]\n"
         f"  [bold cyan]● Parameters    :[/bold cyan] [white]{tier_info['params']} tied parameters[/white]\n"
         f"  [bold cyan]● Context Window:[/bold cyan] [white]{tier_info['context']} (RoPE θ={tier_info['rope_theta']})[/white]\n"

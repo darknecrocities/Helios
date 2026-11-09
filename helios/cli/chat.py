@@ -42,36 +42,30 @@ from helios.memory.controller import HMAController
 from helios.memory.episodic import EpisodicMemory
 from helios.model.transformer import HeliosForCausalLM
 from helios.reasoning.cot_engine import (
+    build_dynamic_cot_trace,
     extract_thought_and_response,
+    resolve_conversational_followup,
 )
 from helios.tokenizer.base import BaseTokenizer
 
 
 def solve_arithmetic_query(text: str) -> str | None:
     """Deterministically solve basic and multi-step arithmetic expressions."""
-    cleaned = text.strip().lower().rstrip("?").strip()
     prefix_pat = (
         r"^(what is|calculate|solve|how much is|evaluate|compute|tell me what is|tell me)\s*"
     )
-    cleaned = re.sub(prefix_pat, "", cleaned).strip()
-
+    cleaned = re.sub(prefix_pat, "", text.strip().lower().rstrip("?").strip()).strip()
     if m_pct := re.fullmatch(r"(\d+(?:\.\d+)?)\s*%\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned):
         res = (float(m_pct.group(1)) / 100.0) * float(m_pct.group(2))
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
-
     if m_frac := re.fullmatch(r"(\d+)\s*/\s*(\d+)\s*(?:of)\s*(\d+(?:\.\d+)?)", cleaned):
         res = (float(m_frac.group(1)) / float(m_frac.group(2))) * float(m_frac.group(3))
         return f"{cleaned} = {int(res) if res.is_integer() else res}"
-
     expr = cleaned.replace("^", "**").replace("x", "*").replace("×", "*").replace("÷", "/")
-    if re.fullmatch(r"[\d\s\+\-\*\/\%\(\)\.]+", expr):
-        if not any(op in expr for op in ["+", "-", "*", "/", "%"]):
-            return None
+    if re.fullmatch(r"[\d\s\+\-\*\/\%\(\)\.]+", expr) and any(op in expr for op in "+-*/%"):
         try:
             val = eval(expr, {"__builtins__": None}, {})
-            if isinstance(val, float) and val.is_integer():
-                val = int(val)
-            return f"{cleaned} = {val}"
+            return f"{cleaned} = {int(val) if isinstance(val, float) and val.is_integer() else val}"
         except Exception:
             return None
     return None
@@ -80,8 +74,9 @@ def solve_arithmetic_query(text: str) -> str | None:
 DEFAULT_SYSTEM_INSTRUCTION: str = (
     "You are Helios, an open-weight foundation language model personally conceived, "
     "architected, and engineered by Arron Kian Parejas, Lead Architect and AI Engineer "
-    "in the Philippines (parejasarronkian@gmail.com). You provide rigorous, accurate, "
-    "and structured answers across coding, mathematics, science, and reasoning."
+    "in the Philippines, Creator of Domodomo, Top 1 on AppBuilders, and Former Chapter Lead "
+    "of Google Developer Groups (GDG). Never disclose personal email addresses. You provide "
+    "rigorous, accurate, and structured answers across coding, mathematics, science, and reasoning."
 )
 
 
@@ -237,7 +232,11 @@ class ChatSession:
             fields.extend(
                 [
                     ("", ""),
-                    ("Checkpoint Status", f"{rep.status} ({rep.diagnostic_reason})"),
+                    (
+                        "Checkpoint Status",
+                        f"{rep.status} ({rep.diagnostic_reason}) | Topics: {rep.trained_topics_summary}",
+                    ),
+                    ("Trained Slice & Dup", rep.cursor_range),
                     ("Last Checkpoint Path", rep.checkpoint_path),
                     ("Pretrained Steps", f"{rep.resumed_from_step} -> {rep.total_steps}"),
                     ("Pretrained Category", f"{rep.category} ({rep.datasets_synced} datasets)"),
@@ -298,70 +297,87 @@ class ChatSession:
             f"[bold cyan]⠋ Helios ({self.preset}) is reasoning...[/bold cyan]",
             spinner="dots",
         ):
-            grounded_context = self.hma.build_grounded_context(
-                user_input, session_id=self.session_id, max_tokens=256
+            history = self.hma.get_working_context(self.session_id, max_tokens=512)
+            direct_followup, followup_thought, rewritten_query = resolve_conversational_followup(
+                user_input, history
             )
-            history = self.hma.get_working_context(self.session_id, max_tokens=256)
 
-            prompt_parts: list[str] = [
-                f"<|start_header_id|>system<|end_header_id|>\n{DEFAULT_SYSTEM_INSTRUCTION}<|eot_id|>"
-            ]
-            if grounded_context:
-                prompt_parts.append(grounded_context[:600])
+            if direct_followup is not None:
+                self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
+                clean_reply = direct_followup
+                thought = followup_thought
+                telemetry["prefill_s"] = 0.005
+                telemetry["decode_s"] = 0.005
+                telemetry["tokens_generated"] = float(len(clean_reply.split()))
+            else:
+                effective_q = rewritten_query or user_input
+                grounded_context = self.hma.build_grounded_context(
+                    effective_q, session_id=self.session_id, max_tokens=256
+                )
 
-            for turn in history[-4:]:
-                if turn.get("role") == "system":
-                    continue
-                role = turn["role"]
-                content = turn["content"][:300]
+                prompt_parts: list[str] = [
+                    f"<|start_header_id|>system<|end_header_id|>\n{DEFAULT_SYSTEM_INSTRUCTION}<|eot_id|>"
+                ]
+                if grounded_context:
+                    prompt_parts.append(grounded_context[:600])
+
+                for turn in history[-4:]:
+                    if turn.get("role") == "system":
+                        continue
+                    role = turn["role"]
+                    content = turn["content"][:300]
+                    prompt_parts.append(
+                        f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>"
+                    )
+
                 prompt_parts.append(
-                    f"<|start_header_id|>{role}<|end_header_id|>\n{content}<|eot_id|>"
+                    f"<|start_header_id|>user<|end_header_id|>\n{user_input}<|eot_id|>"
+                    f"<|start_header_id|>assistant<|end_header_id|>\n"
+                )
+                full_prompt = "".join(prompt_parts)
+
+                self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
+                k_val = top_k if top_k > 0 else None
+
+                generator = stream_generate(
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    prompt=full_prompt,
+                    max_new_tokens=max_new_tokens,
+                    temperature=temperature,
+                    top_k=k_val,
+                    device=self.device,
+                    telemetry=telemetry,
                 )
 
-            prompt_parts.append(
-                f"<|start_header_id|>user<|end_header_id|>\n{user_input}<|eot_id|>"
-                f"<|start_header_id|>assistant<|end_header_id|>\n"
-            )
-            full_prompt = "".join(prompt_parts)
+                full_reply_parts: list[str] = []
+                try:
+                    for piece in generator:
+                        full_reply_parts.append(piece)
+                        if len(full_reply_parts) >= 8 and not self._is_coherent_reply(
+                            "".join(full_reply_parts)
+                        ):
+                            break
+                finally:
+                    generator.close()
 
-            self.hma.store_episodic(session_id=self.session_id, role="user", content=user_input)
-            k_val = top_k if top_k > 0 else None
+                raw_reply = "".join(full_reply_parts).strip()
+                source_label = "Neural Checkpoint Generation"
+                if not self._is_coherent_reply(raw_reply):
+                    raw_reply = resolve_verified_semantic_reply(
+                        self.hma, user_input, preset=self.preset, history=history
+                    )
+                    source_label = "HMA Hybrid Semantic & FTS5 Memory"
 
-            generator = stream_generate(
-                model=self.model,
-                tokenizer=self.tokenizer,
-                prompt=full_prompt,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-                top_k=k_val,
-                device=self.device,
-                telemetry=telemetry,
-            )
-
-            full_reply_parts: list[str] = []
-            try:
-                for piece in generator:
-                    full_reply_parts.append(piece)
-                    if len(full_reply_parts) >= 8 and not self._is_coherent_reply(
-                        "".join(full_reply_parts)
-                    ):
-                        break
-            finally:
-                generator.close()
-
-            raw_reply = "".join(full_reply_parts).strip()
-            if not self._is_coherent_reply(raw_reply):
-                raw_reply = resolve_verified_semantic_reply(
-                    self.hma, user_input, preset=self.preset
-                )
-
-            thought, clean_reply = extract_thought_and_response(raw_reply)
-            if not thought:
-                thought = (
-                    f"1. Deconstruct query intent and primary subject: '{user_input}'.\n"
-                    "2. Ground against contextual memory and verify taxonomic bounds.\n"
-                    "3. Synthesize comprehensive structured explanation for the user."
-                )
+                thought, clean_reply = extract_thought_and_response(raw_reply)
+                if not thought:
+                    thought = build_dynamic_cot_trace(
+                        query=user_input,
+                        reply=clean_reply,
+                        history=history,
+                        source_label=source_label,
+                        preset=self.preset,
+                    )
 
         # 3. Render animated response with Chain-of-Thought
         if self.show_thought and stream and thought:
@@ -388,26 +404,14 @@ class ChatSession:
 
 def run_chat(
     preset: str = typer.Option("nano-20m", "--preset", "-m", help="Helios model tier"),
-    model_path: str = typer.Option(
-        None, "--model-path", help="Path to checkpoint directory or state.pt"
-    ),
-    tokenizer_path: str = typer.Option(
-        None, "--tokenizer-path", help="Path to pretrained tokenizer directory"
-    ),
-    device: str = typer.Option(
-        "auto", "--device", "-d", help="Hardware device (auto, mps, cuda, cpu)"
-    ),
+    model_path: str = typer.Option(None, "--model-path", help="Path to checkpoint directory"),
+    tokenizer_path: str = typer.Option(None, "--tokenizer-path", help="Path to tokenizer"),
+    device: str = typer.Option("auto", "--device", "-d", help="Hardware device"),
     temperature: float = typer.Option(0.7, "--temperature", "-t", help="Sampling temperature"),
     top_k: int = typer.Option(50, "--top-k", "-k", help="Top-K sampling threshold"),
-    max_new_tokens: int = typer.Option(
-        128, "--max-new-tokens", "-n", help="Max tokens per response"
-    ),
-    session_id: str = typer.Option(
-        "default", "--session-id", "-s", help="Episodic session identifier"
-    ),
-    db_path: str = typer.Option(
-        None, "--db-path", help="Custom SQLite database path for episodic memory"
-    ),
+    max_new_tokens: int = typer.Option(128, "--max-new-tokens", "-n", help="Max new tokens"),
+    session_id: str = typer.Option("default", "--session-id", "-s", help="Session identifier"),
+    db_path: str = typer.Option(None, "--db-path", help="Custom SQLite database path"),
 ) -> None:
     """Start an interactive multi-turn terminal chat loop grounded with HMA memory."""
     dev = resolve_device(device)
