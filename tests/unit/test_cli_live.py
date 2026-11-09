@@ -139,7 +139,7 @@ def test_chat_session_commands_and_grounding(tmp_path: Path) -> None:
 
     # 3. Check stats status
     stats = session.stats_status()
-    assert "Helios Chat Performance Telemetry" in stats
+    assert "Helios Chat Performance" in stats
     assert "Total User Turns" in stats
     assert "Average Throughput" in stats
 
@@ -172,7 +172,7 @@ def test_cli_chat_interactive_loop(tmp_path: Path) -> None:
     assert "Helios Foundation Interactive Terminal Chat" in res.stdout
     assert "Special Chat Commands:" in res.stdout
     assert "Hierarchical Memory Architecture Status" in res.stdout
-    assert "Helios Chat Performance Telemetry" in res.stdout
+    assert "Helios Chat Performance" in res.stdout
     assert "Session working memory context cleared" in res.stdout
     assert "Exiting Helios Chat. Goodbye!" in res.stdout
 
