@@ -1,400 +1,245 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Cpu, Layers, Sparkles, Terminal, Eye, Wrench, Zap } from 'lucide-react';
+import { Copy, Check, ChevronLeft, ChevronRight, Cpu, ExternalLink } from 'lucide-react';
 import { HELIOS_MODELS } from '../data/modelsData';
 import { BespokeSeal } from '../components/BespokeSeals';
 import { OllamaLogo, HuggingFaceLogo } from '../components/PlatformLogos';
-import { MorphingCard } from '../components/MorphingCard';
-import { ScrollZoomSection } from '../components/ScrollZoomSection';
 import type { HeliosModelTier } from '../types/models';
 
-type DetailTab = 'overview' | 'specs' | 'deploy';
-
 export const FamilySection: React.FC = () => {
-  const [selectedId, setSelectedId] = useState<string>('flagship-6b');
-  const [activeTab, setActiveTab] = useState<DetailTab>('overview');
+  const [activeIndex, setActiveIndex] = useState<number>(5); // Default to Flagship
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
 
-  const activeModel: HeliosModelTier =
-    HELIOS_MODELS.find((m) => m.id === selectedId) ?? HELIOS_MODELS[5];
+  const activeModel: HeliosModelTier = HELIOS_MODELS[activeIndex] ?? HELIOS_MODELS[5];
 
   const handleCopy = (cmd: string) => {
     navigator.clipboard.writeText(cmd);
     setCopiedCmd(cmd);
-    setTimeout(() => setCopiedCmd(null), 1800);
+    setTimeout(() => setCopiedCmd(null), 2000);
+  };
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : HELIOS_MODELS.length - 1));
+  };
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev < HELIOS_MODELS.length - 1 ? prev + 1 : 0));
   };
 
   return (
-    <ScrollZoomSection id="family" className="relative py-16 md:py-22 px-4 sm:px-6 overflow-hidden">
-      <div className="max-w-5xl mx-auto">
-        {/* Compact Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+    <section id="family" className="relative py-20 md:py-28 bg-[#0D0C0B] text-[#FAF7F2] overflow-hidden border-t border-white/5">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-white/10 gap-4">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-[#E85D2A] mb-1.5">
-              Interactive Morphing Bento · 6 Tiers (Nano → Flagship)
-            </p>
-            <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-[#171412]">
-              THE <span className="text-[#E85D2A]">HELIOS</span> MODEL FAMILY
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-2">
+              <span>INTERACTIVE ZOOMING CAROUSEL · 6 SOVEREIGN TIERS</span>
+            </div>
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+              THE <span className="text-[#FF5500]">HELIOS</span> MODEL FAMILY
             </h2>
           </div>
-          <p className="text-xs text-[#4A433C] max-w-sm leading-relaxed">
-            Select any tier in the bento grid to inspect its architecture, capabilities, and
-            official <code className="font-mono text-[11px] text-[#171412]">parejasarronkian/Helios</code> deployment commands.
-          </p>
+          <div className="text-left md:text-right">
+            <span className="font-mono-tabular text-xs text-white/50 block">SELECT OR SLIDE TO INSPECT TIERS</span>
+            <span className="font-mono-tabular text-[11px] text-[#FF5500]">17.84M → 5.80B PARAMETERS</span>
+          </div>
         </div>
 
-        {/* Compact Interactive Morphing Bento Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          {/* Left / Top: 6-Tier Compact Bento Selector Tiles (5 cols on lg) */}
-          <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2.5 content-start">
-            {HELIOS_MODELS.map((model) => {
-              const isSelected = model.id === activeModel.id;
-              return (
-                <MorphingCard
-                  key={model.id}
-                  dark={isSelected}
-                  onClick={() => setSelectedId(model.id)}
-                  className={`p-3 rounded-2xl border transition-all duration-300 text-left flex flex-col justify-between cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#171412] text-[#F5F0E6] border-[#E85D2A] shadow-[0_12px_28px_rgba(23,20,18,0.16)]'
-                      : 'bg-[#FAF7F2]/90 text-[#171412] border-[#171412]/10 hover:border-[#E85D2A]/50 hover:bg-[#FAF7F2]'
-                  }`}
-                >
-                  <div>
-                    {/* Top Row: Tier Badge + Seal */}
-                    <div className="flex items-center justify-between gap-1.5 mb-2">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-[0.14em] uppercase ${
-                          isSelected
-                            ? 'bg-[#E85D2A] text-white'
-                            : 'bg-[#E85D2A]/12 text-[#E85D2A] border border-[#E85D2A]/25'
-                        }`}
-                      >
-                        {model.tierBadge}
-                      </span>
-                      <BespokeSeal
-                        tierId={model.id}
-                        size={20}
-                        className={isSelected ? 'text-[#FF8A50]' : 'text-[#E85D2A]'}
-                      />
-                    </div>
+        {/* Top Tier Segmented Switcher */}
+        <div className="mt-6 flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-2">
+          {HELIOS_MODELS.map((model, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <button
+                key={model.id}
+                onClick={() => setActiveIndex(idx)}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono-tabular uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? 'bg-[#FF5500] text-white font-bold shadow-[0_0_20px_rgba(255,85,0,0.4)] scale-105'
+                    : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span>{model.tierBadge}</span>
+                <span className="text-[10px] opacity-75">({model.tiedParams})</span>
+              </button>
+            );
+          })}
+        </div>
 
-                    {/* Greek Name & Parameter Count */}
-                    <h3
-                      className={`font-serif text-sm font-bold tracking-tight ${
-                        isSelected ? 'text-[#FAF7F2]' : 'text-[#171412]'
-                      }`}
-                    >
-                      {model.codeName}
-                    </h3>
-                    <p
-                      className={`text-[10px] font-mono mt-0.5 ${
-                        isSelected ? 'text-[#E6DEC8]/75' : 'text-[#7A7067]'
-                      }`}
-                    >
-                      {model.tiedParams} · {Math.round(model.contextTokens / 1024)}K Ctx
-                    </p>
-                  </div>
+        {/* Zooming Carousel Stage */}
+        <div className="mt-8 relative">
+          {/* Active Card Showcase with Spring Zoom */}
+          <div className="relative flex items-center justify-center">
+            {/* Desktop Navigation Chevrons */}
+            <button
+              onClick={handlePrev}
+              className="hidden lg:flex absolute -left-5 z-30 p-3 rounded-full bg-[#141312] border border-white/15 text-white hover:bg-[#FF5500] hover:border-[#FF5500] transition-all cursor-pointer shadow-xl active:scale-95"
+              aria-label="Previous model"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-                  {/* Bottom Quick Pill Bar */}
-                  <div className="mt-2.5 pt-2 border-t border-current/10 flex items-center justify-between text-[9px] font-mono">
-                    <span className={isSelected ? 'text-[#FF8A50]' : 'text-[#4A433C]'}>
-                      {model.activeRam2K}
-                    </span>
-                    <span className={isSelected ? 'text-[#FAF7F2]/90' : 'text-[#7A7067]'}>
-                      {model.speedTokensPerSec} tok/s
-                    </span>
-                  </div>
-                </MorphingCard>
-              );
-            })}
-          </div>
+            <button
+              onClick={handleNext}
+              className="hidden lg:flex absolute -right-5 z-30 p-3 rounded-full bg-[#141312] border border-white/15 text-white hover:bg-[#FF5500] hover:border-[#FF5500] transition-all cursor-pointer shadow-xl active:scale-95"
+              aria-label="Next model"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
 
-          {/* Right / Bottom: Compact Morphing Spotlight Bento Stage (7 cols on lg) */}
-          <div className="lg:col-span-7 flex">
+            {/* Main Featured Tier Card */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeModel.id}
-                layoutId="helios-bento-spotlight"
-                initial={{ opacity: 0, y: 8, scale: 0.99 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.99 }}
-                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full rounded-2xl bg-[#FAF7F2] border border-[#171412]/12 p-5 sm:p-6 shadow-[0_14px_40px_rgba(23,20,18,0.06)] flex flex-col justify-between"
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="w-full max-w-2xl rounded-3xl bg-[#141312] border border-[#FF5500]/50 p-6 sm:p-8 shadow-[0_0_50px_rgba(255,85,0,0.15)] flex flex-col justify-between"
               >
-                {/* Top Spotlight Header */}
                 <div>
-                  <div className="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-[#171412]/10">
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between pb-5 border-b border-white/10">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-[#171412] flex items-center justify-center border border-[#E85D2A]/40 shrink-0 shadow-xs">
-                        <BespokeSeal
-                          tierId={activeModel.id}
-                          size={30}
-                          className="text-[#E85D2A]"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                          <span className="px-2 py-0.5 rounded-full bg-[#E85D2A] text-white text-[9px] font-mono font-bold tracking-[0.14em] uppercase">
-                            {activeModel.tierBadge} TIER
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-[#171412]/8 text-[#171412] text-[9px] font-mono uppercase tracking-wider">
-                            {activeModel.speculativeRole}
-                          </span>
-                        </div>
-                        <h3 className="font-serif text-lg sm:text-xl font-bold text-[#171412] tracking-tight">
-                          {activeModel.codeName}
-                        </h3>
-                        <p className="text-[11px] font-serif italic text-[#E85D2A]">
-                          {activeModel.greekScript} — {activeModel.epithet}
-                        </p>
-                      </div>
+                      <span className="font-mono-tabular text-xs font-bold text-[#FF5500] uppercase tracking-wider">
+                        TIER 0{activeIndex + 1}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#FF5500]/20 text-[#FF5500] font-mono-tabular text-[11px] font-bold">
+                        {activeModel.tierBadge}
+                      </span>
+                      <span className="hidden sm:inline font-mono-tabular text-[10px] text-white/40">
+                        {activeModel.versionTag}
+                      </span>
                     </div>
-
-                    {/* Interactive Bento Sub-Tabs */}
-                    <div className="flex items-center bg-[#EDE6D8] p-0.5 rounded-full border border-[#171412]/10">
-                      {(
-                        [
-                          { id: 'overview', label: 'Overview', icon: Sparkles },
-                          { id: 'specs', label: 'Specs', icon: Layers },
-                          { id: 'deploy', label: 'Run', icon: Terminal },
-                        ] as const
-                      ).map((tab) => {
-                        const Icon = tab.icon;
-                        const active = activeTab === tab.id;
-                        return (
-                          <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                              active
-                                ? 'bg-[#171412] text-[#F5F0E6] shadow-xs'
-                                : 'text-[#4A433C] hover:text-[#171412]'
-                            }`}
-                          >
-                            <Icon className="w-3 h-3 text-[#E85D2A]" aria-hidden="true" />
-                            {tab.label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <BespokeSeal tierId={activeModel.id} size={30} className="text-[#FF5500]" />
                   </div>
 
-                  {/* 4 Key Metric Bento Strip */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-4">
-                    <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                      <span className="block text-[9px] font-mono uppercase tracking-widest text-[#7A7067]">
-                        Parameters
-                      </span>
-                      <span className="font-serif text-base font-bold text-[#171412]">
-                        {activeModel.tiedParams}
-                      </span>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                      <span className="block text-[9px] font-mono uppercase tracking-widest text-[#7A7067]">
-                        Context
-                      </span>
-                      <span className="font-serif text-base font-bold text-[#171412]">
-                        {Math.round(activeModel.contextTokens / 1024)}K
-                      </span>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                      <span className="block text-[9px] font-mono uppercase tracking-widest text-[#7A7067]">
-                        Active RAM
-                      </span>
-                      <span className="font-serif text-base font-bold text-[#E85D2A]">
-                        {activeModel.activeRam2K}
-                      </span>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                      <span className="block text-[9px] font-mono uppercase tracking-widest text-[#7A7067]">
-                        Throughput
-                      </span>
-                      <span className="font-serif text-base font-bold text-[#171412]">
-                        {activeModel.speedTokensPerSec}{' '}
-                        <span className="text-[10px] font-mono">tok/s</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Dynamic Tab Content */}
-                  {activeTab === 'overview' && (
-                    <div className="space-y-3.5">
-                      <p className="text-xs text-[#4A433C] leading-relaxed">
-                        {activeModel.mythologicalParallel}
+                  {/* Title & Divine Epithet */}
+                  <div className="mt-5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                    <div>
+                      <h3 className="font-display text-2xl sm:text-4xl font-bold text-white tracking-tight">
+                        {activeModel.codeName}
+                      </h3>
+                      <p className="font-serif-editorial italic text-sm text-[#FF5500] mt-0.5">
+                        {activeModel.greekScript} · {activeModel.epithet}
                       </p>
-
-                      {/* Capability Badges */}
-                      <div className="flex flex-wrap gap-1.5">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-[#171412]/6 text-[#171412]">
-                          <Zap className="w-3 h-3 text-[#E85D2A]" aria-hidden="true" />
-                          {activeModel.speculativeRole}
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-[#171412]/6 text-[#171412]">
-                          <Wrench className="w-3 h-3 text-[#E85D2A]" aria-hidden="true" />
-                          MCP: {activeModel.mcpToolCalling ? 'JSON-RPC' : 'Lightweight'}
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-[#171412]/6 text-[#171412]">
-                          <Eye className="w-3 h-3 text-[#E85D2A]" aria-hidden="true" />
-                          Vision: {activeModel.multimodalVision ? 'ViT 256 Tokens' : 'Text-Only'}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {activeModel.specializedCapabilities.map((item: string) => (
-                          <div
-                            key={item}
-                            className="flex items-start gap-2 p-2.5 rounded-xl bg-[#F5F0E6]/75 border border-[#171412]/6 text-[11px] text-[#171412] leading-snug"
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#E85D2A] mt-1 shrink-0" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
-                  )}
-
-                  {activeTab === 'specs' && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          Exact Tied Params
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#171412]">
-                          {activeModel.tiedParamsExact.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          Depth × Hidden
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#171412]">
-                          {activeModel.layers}L × {activeModel.dModel}d
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          GQA Heads
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#171412]">
-                          {activeModel.headsQ}Q : {activeModel.headsKV}KV ({activeModel.gqaRatio})
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          SwiGLU FFN
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#171412]">
-                          d_ff = {activeModel.dFFN}
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          RoPE Theta (θ)
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#E85D2A]">
-                          {activeModel.ropeTheta}
-                        </span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8">
-                        <span className="text-[9px] font-mono uppercase text-[#7A7067] block">
-                          Raw Q4 Weights
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[#171412]">
-                          {activeModel.rawQ4Weights}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'deploy' && (
-                    <div className="space-y-3">
-                      <div className="p-3 rounded-xl bg-[#171412] text-[#F5F0E6] flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 overflow-x-auto">
-                          <OllamaLogo size={15} className="text-white shrink-0" />
-                          <code className="text-[11px] font-mono text-[#FAF7F2] whitespace-nowrap">
-                            {activeModel.ollamaCommand}
-                          </code>
-                        </div>
-                        <button
-                          onClick={() => handleCopy(activeModel.ollamaCommand)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#E85D2A] text-white text-[10px] font-mono uppercase tracking-wider shrink-0 cursor-pointer"
-                        >
-                          {copiedCmd === activeModel.ollamaCommand ? (
-                            <>
-                              <Check className="w-3 h-3" aria-hidden="true" />
-                              Copied
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" aria-hidden="true" />
-                              Copy
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-[#F5F0E6] border border-[#171412]/12 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 overflow-x-auto">
-                          <HuggingFaceLogo size={15} className="shrink-0" />
-                          <code className="text-[11px] font-mono text-[#171412] whitespace-nowrap">
-                            huggingface-cli download {activeModel.hfRepo}
-                          </code>
-                        </div>
-                        <a
-                          href="https://huggingface.co/Darknecrocities/Helios"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2.5 py-1 rounded-full bg-[#171412] text-[#F5F0E6] text-[10px] font-mono uppercase tracking-wider shrink-0"
-                        >
-                          Open HF
-                        </a>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#4A433C]">
-                        <span className="font-mono uppercase text-[9px] text-[#7A7067]">
-                          Formats:
-                        </span>
-                        {activeModel.supportedFormats.map((fmt: string) => (
-                          <span
-                            key={fmt}
-                            className="px-2 py-0.5 rounded-md bg-[#EDE6D8] text-[#171412] font-mono text-[10px]"
-                          >
-                            {fmt}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom Spotlight Footer Bar */}
-                <div className="mt-4 pt-3.5 border-t border-[#171412]/10 flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#4A433C]">
-                    <Cpu className="w-3.5 h-3.5 text-[#E85D2A] shrink-0" aria-hidden="true" />
-                    <span>
-                      Hardware: <strong className="text-[#171412]">{activeModel.targetHardware}</strong>
+                    <span className="font-mono-tabular text-xl sm:text-2xl font-bold text-[#FF5500]">
+                      {activeModel.tiedParams}
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => handleCopy(activeModel.ollamaCommand)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#171412] hover:bg-[#E85D2A] text-[#F5F0E6] text-[11px] font-mono transition-colors cursor-pointer"
-                  >
-                    <OllamaLogo size={12} className="text-white" />
-                    <span>{activeModel.ollamaCommand}</span>
-                    {copiedCmd === activeModel.ollamaCommand ? (
-                      <Check className="w-3 h-3 text-[#FF8A50]" aria-hidden="true" />
-                    ) : (
-                      <Copy className="w-3 h-3 text-[#F5F0E6]/60" aria-hidden="true" />
-                    )}
-                  </button>
+                  <p className="mt-3 text-xs sm:text-sm text-white/75 leading-relaxed">
+                    {activeModel.divineDomain}
+                  </p>
+
+                  {/* Target Hardware Chip */}
+                  <div className="mt-5 p-3.5 rounded-2xl bg-white/5 border border-white/5 flex items-start gap-3">
+                    <Cpu className="w-4 h-4 text-[#FF5500] shrink-0 mt-0.5" aria-hidden="true" />
+                    <div className="text-xs leading-snug">
+                      <span className="text-white/45 block text-[9px] uppercase tracking-wider font-mono-tabular">TARGET RUNTIME HARDWARE</span>
+                      <span className="text-white font-medium">{activeModel.targetHardware}</span>
+                    </div>
+                  </div>
+
+                  {/* 4-Metric Grid */}
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono-tabular">
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                      <span className="text-white/40 block text-[9px]">CONTEXT</span>
+                      <span className="text-white font-bold">{activeModel.contextWindow}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                      <span className="text-white/40 block text-[9px]">ATTENTION</span>
+                      <span className="text-white font-bold">{activeModel.gqaRatio}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                      <span className="text-white/40 block text-[9px]">RAM (2K)</span>
+                      <span className="text-[#FF5500] font-bold">{activeModel.activeRam2K}</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                      <span className="text-white/40 block text-[9px]">THROUGHPUT</span>
+                      <span className="text-white font-bold">{activeModel.speedTokensPerSec} tok/s</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Footer: Run Command Pill */}
+                <div className="mt-6 pt-5 border-t border-white/10">
+                  <div className="flex items-center justify-between gap-2 bg-black/60 rounded-xl p-2.5 border border-white/5">
+                    <code className="font-mono-tabular text-xs text-white/90 truncate px-2">
+                      {activeModel.ollamaCommand}
+                    </code>
+                    <button
+                      onClick={() => handleCopy(activeModel.ollamaCommand)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF5500] hover:bg-[#E64A00] text-white text-xs font-mono-tabular transition-colors cursor-pointer shrink-0 active:scale-95"
+                      aria-label="Copy run command"
+                    >
+                      {copiedCmd === activeModel.ollamaCommand ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedCmd === activeModel.ollamaCommand ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between text-xs font-mono-tabular text-white/50">
+                    <a
+                      href="https://ollama.com/parejasarronkian"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#FF5500] inline-flex items-center gap-1.5 transition-colors"
+                    >
+                      <OllamaLogo size={14} />
+                      <span>Ollama Registry</span>
+                    </a>
+                    <a
+                      href={`https://huggingface.co/${activeModel.hfRepo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#FF5500] inline-flex items-center gap-1.5 transition-colors"
+                    >
+                      <HuggingFaceLogo size={14} />
+                      <span>Hugging Face</span>
+                      <ExternalLink className="w-3 h-3 opacity-60" />
+                    </a>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Carousel Footer Navigation Bar */}
+          <div className="mt-8 flex items-center justify-between pt-4 border-t border-white/10 text-xs font-mono-tabular text-white/50">
+            <div className="flex items-center gap-2">
+              {HELIOS_MODELS.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`h-2 rounded-full transition-all cursor-pointer ${
+                    activeIndex === idx ? 'w-8 bg-[#FF5500]' : 'w-2 bg-white/20 hover:bg-white/40'
+                  }`}
+                  aria-label={`Jump to tier ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrev}
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer active:scale-95 lg:hidden"
+                aria-label="Previous model"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-white/80">0{activeIndex + 1} / 06</span>
+              <button
+                onClick={handleNext}
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors cursor-pointer active:scale-95 lg:hidden"
+                aria-label="Next model"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </ScrollZoomSection>
+    </section>
   );
 };
