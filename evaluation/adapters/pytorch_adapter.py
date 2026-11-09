@@ -82,7 +82,11 @@ class NativePyTorchAdapter(HeliosModelAdapter):
                 self.config = self.config or HeliosConfig.from_preset(self.preset)
                 self.model = HeliosForCausalLM(self.config)
                 raw_loaded = torch.load(ckpt_path, map_location=self.device, weights_only=False)
-                state_dict = raw_loaded.get("model_state", raw_loaded) if isinstance(raw_loaded, dict) else raw_loaded
+                state_dict = (
+                    raw_loaded.get("model_state", raw_loaded)
+                    if isinstance(raw_loaded, dict)
+                    else raw_loaded
+                )
                 self.model.load_state_dict(state_dict)
         else:
             self.config = self.config or HeliosConfig.from_preset(self.preset)
