@@ -62,13 +62,13 @@ def render_categories_table() -> None:
 
 def render_health_and_improvement_table(
     reports: list[CheckpointHealthReport] | None = None,
-    title: str = "HELIOS Checkpoint Health, Corruption Audit & Improvement Telemetry",
+    title: str = "HELIOS Checkpoint Health, Trained Topics & Improvement Telemetry",
 ) -> list[CheckpointHealthReport]:
-    """Render a comprehensive 6-tier health, SHA-256 integrity, and improvement delta table."""
+    """Render a comprehensive 6-tier health, trained topics, SHA-256 integrity, and improvement delta table."""
     items = reports or inspect_all_tiers_health()
     table = Table(title=title, border_style="cyan", header_style="bold yellow")
     table.add_column("Tier", style="bold white")
-    table.add_column("Health Status", style="bold")
+    table.add_column("Health & Trained Topics", style="bold")
     table.add_column("Cat", style="cyan")
     table.add_column("Steps (Prev→Now)", justify="right")
     table.add_column("Loss (Init → Prev → Curr | Gain)", justify="right")
@@ -78,9 +78,12 @@ def render_health_and_improvement_table(
 
     for r in items:
         if r.status == "HEALTHY":
-            badge = "[bold green]● HEALTHY[/bold green]"
+            badge = (
+                f"[bold green]● HEALTHY[/bold green] | [cyan]{r.trained_topics_summary}[/cyan] "
+                f"[dim]({r.cursor_range})[/dim]"
+            )
         elif r.status == "CORRUPTED":
-            badge = "[bold red]✗ CORRUPTED[/bold red]"
+            badge = f"[bold red]✗ CORRUPTED[/bold red] ({r.diagnostic_reason})"
         else:
             badge = "[dim yellow]○ UNINIT[/dim yellow]"
 
@@ -137,7 +140,6 @@ def run_train_workflow(
     from helios.cli.utils import load_or_create_tokenizer
     from helios_pipeline.evaluation.automated_benchmark import benchmark_tier, write_reports
     from helios_pipeline.training.multi_tier import (
-        load_corpus_sample,
         parse_tiers,
         require_onetouch,
         train_all,
@@ -164,9 +166,13 @@ def run_train_workflow(
         console.print(f"[red]{e}[/red]")
         return 1
 
+    from helios_pipeline.data.curriculum_ledger import sample_non_repeating_corpus
+
     storage = require_onetouch()
     tok = load_or_create_tokenizer()
-    heldout = load_corpus_sample(storage, limit=200, seed=1234, category=cat_key)
+    heldout, _ = sample_non_repeating_corpus(
+        storage, limit=200, seed=1234, category=cat_key, advance_cursor=False
+    )
     benches = [benchmark_tier(r, heldout, tok) for r in results]
     report = write_reports(benches, results, minutes, Path("docs"), category=cat_key)
 

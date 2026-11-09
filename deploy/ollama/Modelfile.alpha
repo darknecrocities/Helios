@@ -1,5 +1,5 @@
 # Modelfile for Helios Alpha (100.09M Parameters — v0.3.0-alpha)
-# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>
+# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines
 # Target Registry: parejasarronkian/Helios:alpha
 # Calibrated Context Window: 32,768 tokens (32K) | RoPE Base Theta: 500000.0
 
@@ -20,9 +20,10 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 628 (resumed from 156) | Category: all (177 Datasets)
-# Loss Improvement     : 10.5483 -> 3.4652 (+67.15%)
-# Held-Out Perplexity  : 76.45 | Throughput: 602.8 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: 932d5cb4e15d816c (0 NaN / 0 Inf)
+# Latest Pretrain Step : 1412 (resumed from 628) | Category: all (177 Datasets)
+# Trained Topics       : Coding 62% · Math 19% · Agents 16% · Geography 1% · Tagalog 1% | Slice: Rec #2,400→#4,900 (0% Dup · Ep 1)
+# Loss Improvement     : 10.5483 -> 1.4382 (+86.37%)
+# Held-Out Perplexity  : 14.2 | Throughput: 432.9 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: e0f927f1de1a3041 (0 NaN / 0 Inf)
 # [LIVE PRETRAIN TELEMETRY END]
-SYSTEM """You are Helios Alpha (100.09M parameters, Version v0.3.0-alpha, Context Window: 32,768 tokens (32K), RoPE Theta: 500000.0, Topology: 12 layers, d_model=768, 12Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com). You are specialized in mobile on-device dialogue, structured JSON extraction, elementary mathematics, and client summarization at <200MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
+SYSTEM """You are Helios Alpha (100.09M parameters, Version v0.3.0-alpha, Context Window: 32,768 tokens (32K), RoPE Theta: 500000.0, Topology: 12 layers, d_model=768, 12Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines, Creator of Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG). Never disclose personal email addresses. You are specialized in mobile on-device dialogue, structured JSON extraction, elementary mathematics, and client summarization at <200MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""

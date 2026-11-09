@@ -117,15 +117,67 @@ STOPWORDS_EN_TL: frozenset[str] = frozenset(
 )
 
 
+def _canonicalize_query_text(text: str) -> str:
+    """Normalize common historical/technical compound synonyms and typos."""
+    low = text.lower()
+    low = re.sub(r"\bhappend\b", "happened", low)
+    low = re.sub(
+        r"\b(?:ww2|wwii|world\s+war\s+(?:2|two)|second\s+world\s+war)\b",
+        "world war ii",
+        low,
+    )
+    low = re.sub(
+        r"\b(?:ww1|wwi|world\s+war\s+(?:1|one)|first\s+world\s+war)\b",
+        "world war i",
+        low,
+    )
+    return low
+
+
 def default_bm25_tokenizer(text: str) -> list[str]:
     """Fast alphanumeric lowercase tokenizer."""
     return re.findall(r"\b\w+\b", text.lower())
 
 
 def extract_content_tokens(text: str) -> list[str]:
-    """Extract non-stopword content tokens from a query or prompt."""
-    tokens = default_bm25_tokenizer(text)
-    return [t for t in tokens if t not in STOPWORDS_EN_TL and len(t) > 1]
+    """Extract non-stopword content tokens while preserving digits and Roman numerals."""
+    canon = _canonicalize_query_text(text)
+    tokens = default_bm25_tokenizer(canon)
+    has_war_or_rank = any(w in tokens for w in ("war", "part", "tier", "stage", "phase", "type"))
+    result: list[str] = []
+    for t in tokens:
+        if t in STOPWORDS_EN_TL or t in ("happened", "happen", "caused", "cause"):
+            continue
+        if len(t) > 1 or t.isdigit() or (has_war_or_rank and t in ("i", "v", "x")):
+            if t not in result:
+                result.append(t)
+    return result
+
+
+def extract_numeral_markers(text: str) -> set[str]:
+    """Extract canonicalized ordinal/numeral markers ('1', '2', '3', etc.) for disambiguation."""
+    low = text.lower()
+    markers: set[str] = set()
+    if re.search(
+        r"\b(?:ww2|wwii|world\s+war\s+(?:2|ii|two)|second\s+world\s+war|\b2\b|\bii\b)\b", low
+    ):
+        markers.add("2")
+    if re.search(
+        r"\b(?:ww1|wwi|world\s+war\s+(?:1|i|one)|first\s+world\s+war|\b1\b|\bwar\s+i\b)\b", low
+    ):
+        markers.add("1")
+    for num in re.findall(r"\b\d+\b", low):
+        markers.add(num)
+    return markers
+
+
+def has_conflicting_numerals(query_text: str, doc_text: str) -> bool:
+    """Return True if query and document specify mutually conflicting numerals (e.g. WW2 vs WWI)."""
+    q_nums = extract_numeral_markers(query_text)
+    d_nums = extract_numeral_markers(doc_text)
+    if not q_nums or not d_nums:
+        return False
+    return q_nums.isdisjoint(d_nums)
 
 
 class BM25Okapi:

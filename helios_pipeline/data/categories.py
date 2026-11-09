@@ -56,6 +56,8 @@ CATEGORY_SPECS: dict[str, CategorySpec] = {
             "In classical antiquity, Helios was the Greek Titan personification of the Sun.",
             "<thought>1. Parse function signature. 2. Check base case.</thought> "
             "def factorial(n: int) -> int: return 1 if n <= 1 else n * factorial(n - 1)",
+            "<thought>1. Verify creator provenance. 2. Recall key achievements.</thought> "
+            "Arron Kian Parejas is the Creator and Lead Architect of Helios and Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG).",
         ),
     ),
     "fineweb": CategorySpec(
@@ -336,6 +338,17 @@ def matches_category(record: dict[str, Any], category: str) -> bool:
         record.get("text") or f"{record.get('prompt', '')} {record.get('response', '')}"
     ).lower()
     return any(kw in text for kw in spec.keywords)
+
+
+def load_sot_datasets(sot_path: Path | str = "sot/datasets_sot.json") -> list[dict[str, Any]]:
+    """Return the full list of 177 external datasets from sot/datasets_sot.json."""
+    p = Path(sot_path)
+    if not p.exists():
+        return []
+    try:
+        return list(json.loads(p.read_text(encoding="utf-8")).get("datasets", []))
+    except Exception:
+        return []
 
 
 def get_category_catalog(sot_path: Path | str = "sot/datasets_sot.json") -> list[dict[str, Any]]:

@@ -1,6 +1,6 @@
 # HELIOS Dataset Catalog — Single Source of Truth Sync (177 External Datasets)
 
-Last Synchronized: **2026-11-09 11:37:15 UTC** · Active Pretrain Category: **`all`** · Total External Datasets: **177** · Consolidated OneTouch Records: **120,616** (**90,376,089 tokens**)
+Last Synchronized: **2026-11-09 12:52:56 UTC** · Active Pretrain Category: **`all`** · Total External Datasets: **177** · Consolidated OneTouch Records: **120,616** (**90,376,089 tokens**)
 
 ## 1. Pretraining Categories & Record Breakdown (`/Volumes/One Touch/Helios/datasets/`)
 
@@ -207,4 +207,4 @@ Last Synchronized: **2026-11-09 11:37:15 UTC** · Active Pretrain Category: **`a
 
 | Cluster ID | Stage | Source | Revision | Accepted Docs | Tokens | Content Hash | Completed At |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `onetouch_all_177ds` | `continuous_pretrain` | `sot/datasets_sot.json (177 datasets)` | `v0.3.0` | 120,616 | 90,376,089 | `verified_onetouch` | 2026-11-09 11:37:15 UTC |
+| `onetouch_all_177ds` | `continuous_pretrain` | `sot/datasets_sot.json (177 datasets)` | `v0.3.0` | 120,616 | 90,376,089 | `verified_onetouch` | 2026-11-09 12:52:56 UTC |

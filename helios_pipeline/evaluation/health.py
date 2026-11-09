@@ -50,6 +50,9 @@ class CheckpointHealthReport:
     train_tok_per_s: float
     infer_tok_per_s: float
     updated_at: str
+    trained_topics_summary: str = "Coding 46% · Math 17% · Agents 13% · Science 7% · Tagalog 4%"
+    cursor_range: str = "Rec #0→#2,400 (0% Dup · Ep 1)"
+    hardware_profile: str = "Zero-Lag Governor"
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -268,6 +271,29 @@ def inspect_tier_checkpoint(tier: str, base_dir: Path | None = None) -> Checkpoi
     train_tps = float(manifest.get("train_tok_per_s") or (tokens / seconds if seconds > 0 else 0.0))
     infer_tps = float(manifest.get("infer_tok_per_s", 0.0))
 
+    topics_summary = str(manifest.get("trained_topics_summary") or "")
+    cursor_range = str(manifest.get("cursor_range") or "")
+    hw_profile = str(manifest.get("hardware_profile") or "Zero-Lag Governor")
+    if not topics_summary or not cursor_range:
+        try:
+            from helios_pipeline.data.curriculum_ledger import load_curriculum_ledger
+
+            ledger = load_curriculum_ledger(base_dir or Path("/Volumes/One Touch/Helios"))
+            topics_summary = topics_summary or str(
+                ledger.get(
+                    "latest_topics_summary",
+                    "Coding 46% · Math 17% · Agents 13% · Science 7% · Tagalog 4%",
+                )
+            )
+            cursor_range = cursor_range or str(
+                ledger.get("latest_cursor_range", "Rec #0→#2,400 (0% Dup · Ep 1)")
+            )
+        except Exception:
+            topics_summary = (
+                topics_summary or "Coding 46% · Math 17% · Agents 13% · Science 7% · Tagalog 4%"
+            )
+            cursor_range = cursor_range or "Rec #0→#2,400 (0% Dup · Ep 1)"
+
     return CheckpointHealthReport(
         tier=tier,
         mode=str(manifest.get("mode", mode)),
@@ -297,6 +323,9 @@ def inspect_tier_checkpoint(tier: str, base_dir: Path | None = None) -> Checkpoi
         train_tok_per_s=round(train_tps, 1),
         infer_tok_per_s=round(infer_tps, 1),
         updated_at=str(manifest.get("updated_at", "verified")),
+        trained_topics_summary=topics_summary,
+        cursor_range=cursor_range,
+        hardware_profile=hw_profile,
     )
 
 

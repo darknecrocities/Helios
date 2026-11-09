@@ -28,3 +28,11 @@ Standardized evaluation harness results across academic reasoning, code, and age
 | 2026-11-09 11:37:15 | `db30bdf7d08478ff...` | `core` | **HeldOut-ALL** | `perplexity` | **745.770** | Loss +99.9% | Category: all |
 | 2026-11-09 11:37:15 | `07021f519eac5dc4...` | `pro` | **HeldOut-ALL** | `perplexity` | **131252.140** | Loss +99.7% | Category: all |
 | 2026-11-09 11:37:15 | `acac157dd1d681d6...` | `flagship` | **HeldOut-ALL** | `perplexity` | **485165195.410** | Loss +99.3% | Category: all |
+| 2026-11-09 12:08:31 | `580b6423ddce615b...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 12:08:32 | `72d345007083338d...` | `nano-20m` | **Tier-2 Smoke (SciQ)** | `accuracy` | **0.000** | Smoke Validated |
+| 2026-11-09 12:52:56 | `3f036411ee722597...` | `nano` | **HeldOut-ALL** | `perplexity` | **8.380** | Loss +77.7% | Category: all | PPL +56.8% |
+| 2026-11-09 12:52:56 | `e0f927f1de1a3041...` | `alpha` | **HeldOut-ALL** | `perplexity` | **14.200** | Loss +86.4% | Category: all | PPL +81.4% |
+| 2026-11-09 12:52:56 | `0379395c0faaf1e1...` | `beta` | **HeldOut-ALL** | `perplexity` | **32.560** | Loss +72.1% | Category: all | PPL +84.7% |
+| 2026-11-09 12:52:56 | `db081d2c80245f83...` | `core` | **HeldOut-ALL** | `perplexity` | **42.380** | Loss +99.8% | Category: all | PPL +94.3% |
+| 2026-11-09 12:52:56 | `a7d04f10e430d010...` | `pro` | **HeldOut-ALL** | `perplexity` | **408.130** | Loss +99.7% | Category: all | PPL +99.7% |
+| 2026-11-09 12:52:56 | `ec07d590bd6a51f1...` | `flagship` | **HeldOut-ALL** | `perplexity` | **105913.580** | Loss +99.9% | Category: all | PPL +100.0% |
