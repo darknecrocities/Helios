@@ -38,23 +38,6 @@
       "tl"
     ]
   },
-  "quantization_config": {
-    "quant_method": "compressed-tensors",
-    "format": "pack-quantized",
-    "config_groups": {
-      "group_0": {
-        "format": "pack-quantized",
-        "targets": [
-          "re:.*proj.*",
-          "embed_tokens",
-          "lm_head"
-        ],
-        "weights": {
-          "num_bits": 0.0078125
-        }
-      }
-    }
-  },
   "vision_config": {
     "image_size": 224,
     "patch_size": 14,
