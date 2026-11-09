@@ -1,0 +1,17 @@
+model:
+  id: "helios-pro"
+  name: "Helios Pro"
+  epithet: "Apollo"
+  preset: "pro-3b"
+  parameters: 3320000000
+  layers: 32
+  d_model: 2560
+  n_heads: 20
+  n_kv_heads: 4
+  d_ffn: 6912
+  context_length: 131072
+  rope_theta: 5000000.0
+  tie_embeddings: true
+  target_hardware: "Professional Workstations, Apple Silicon Max/Ultra, Single RTX 4090"
+  ram_target: "2.17GB RAM @ 2K | 18.3GB @ 128K"
+  default_device: "cuda"

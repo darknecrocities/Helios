@@ -213,8 +213,35 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToShowcase }) => {
 
                 {/* Chapter Specific Injections */}
                 {activeChapter.id === 'benchmarks' && (
-                  <div className="pb-4">
+                  <div className="pb-4 space-y-4">
                     <AnimatedMultiLineChart showBaselinesToggle={true} />
+                    <div className="p-4 rounded-2xl bg-[#FBF9F5] border border-[#141312]/10 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-orange-500/10 text-[#FF5500]">
+                          <GoogleColabLogo size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-display font-bold text-xs text-[#141312]">
+                            HELIOS Eval · GPU Colab Benchmark Harness
+                          </h4>
+                          <p className="text-[11px] text-[#141312]/60 font-mono-tabular">
+                            Run automated MMLU, GSM8K, SciQ, HumanEval & BFCL on Colab GPUs.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href="https://colab.research.google.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#141312] text-white text-xs font-mono-tabular hover:bg-[#FF5500] transition-colors"
+                        >
+                          <GoogleColabLogo size={14} />
+                          <span>Run on Colab</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 )}
 

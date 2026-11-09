@@ -146,18 +146,6 @@ export const AboutSection: React.FC = () => {
                   alt="Helios Classical Marble Sculpture"
                   className="w-64 sm:w-76 md:w-84 h-auto object-contain drop-shadow-[0_24px_45px_rgba(20,19,18,0.22)] transition-transform duration-500 group-hover:scale-105"
                 />
-
-                {/* Tactile Hardware Card Floating Below */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-11/12 rounded-xl bg-[#141312]/92 text-[#FAF7F2] p-3 border border-white/10 backdrop-blur-md shadow-xl">
-                  <div className="flex items-center justify-between text-[10px] font-mono-tabular">
-                    <span className="text-[#FF5500] font-bold">ALETHEIA ENGINE</span>
-                    <span className="text-white/50">177 PRETRAIN DATASETS</span>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between text-xs">
-                    <span className="text-white font-medium">Calibrated Confidence Head</span>
-                    <span className="font-mono-tabular text-[11px] text-[#FF5500]">0.994 ROC-AUC</span>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>

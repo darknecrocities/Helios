@@ -233,6 +233,47 @@ ollama run my-helios:latest`,
           ],
         },
       },
+      {
+        heading: '3. HELIOS Evaluation Platform & Unified CLI (HELIOS Eval)',
+        body: 'HELIOS includes a native PyTorch evaluation and benchmarking platform inside the repository. It treats custom Helios PyTorch checkpoints as the single source of truth, enforcing 0% data contamination, deterministic greedy decoding (T=0.0), and producing immutable SHA-256 JSON manifests:',
+        codeSnippet: {
+          language: 'bash',
+          label: 'Terminal · HELIOS Eval CLI',
+          code: `# 1. Inspect checkpoint weights, layers, GQA heads & SHA-256
+python -m evaluation.cli inspect configs/models/nano.yaml
+
+# 2. Run fast single-sample smoke verification across all 7 suites
+python -m evaluation.cli smoke configs/models/nano.yaml --device mps
+
+# 3. Execute standardized benchmark suite (academic, math, coding, memory, mcp)
+python -m evaluation.cli run configs/models/core.yaml --tasks all --device cuda --seed 42
+
+# 4. Compare run against competitive open-weight baselines
+python -m evaluation.cli compare evaluation_records/manifest_exp-001.json --baselines-file baselines/model_registry.yaml
+
+# 5. Generate self-contained HTML and Markdown reports
+python -m evaluation.cli report evaluation_records/manifest_exp-001.json --output-html report.html --output-md report.md`,
+        },
+      },
+      {
+        heading: '4. Google Colab GPU & Reproducible Evaluation Workflow',
+        body: 'For accelerated GPU evaluation across consumer and enterprise hardware (T4, V100, A100), HELIOS provides automated shell runners and a dedicated interactive Google Colab notebook (notebooks/helios_evaluation_colab.ipynb):',
+        codeSnippet: {
+          language: 'bash',
+          label: 'Bash · Automated Evaluation Runners',
+          code: `# Run local evaluation on macOS Apple Silicon MPS or CPU
+./scripts/run_local.sh configs/models/nano.yaml all
+
+# Run remote GPU evaluation in Google Colab / Linux CUDA
+./scripts/run_colab.sh configs/models/flagship.yaml all
+
+# Quick smoke test verification before checkpoint release
+./scripts/run_smoke_tests.sh configs/models/nano.yaml
+
+# Cross-checkpoint regression gate comparison
+./scripts/compare_models.sh evaluation_records/manifest_cand.json evaluation_records/manifest_base.json`,
+        },
+      },
     ],
   },
   {

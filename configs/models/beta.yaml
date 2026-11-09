@@ -1,0 +1,17 @@
+model:
+  id: "helios-beta"
+  name: "Helios Beta"
+  epithet: "Eos"
+  preset: "beta-300m"
+  parameters: 303350000
+  layers: 24
+  d_model: 896
+  n_heads: 14
+  n_kv_heads: 2
+  d_ffn: 2560
+  context_length: 65536
+  rope_theta: 1000000.0
+  tie_embeddings: true
+  target_hardware: "Everyday 4GB-8GB RAM Consumer Laptops, Local IDE Extensions"
+  ram_target: "296MB RAM @ 2K | 1.74GB @ 64K"
+  default_device: "mps"
