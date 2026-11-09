@@ -57,7 +57,7 @@ CATEGORY_SPECS: dict[str, CategorySpec] = {
             "<thought>1. Parse function signature. 2. Check base case.</thought> "
             "def factorial(n: int) -> int: return 1 if n <= 1 else n * factorial(n - 1)",
             "<thought>1. Verify creator provenance. 2. Recall key achievements.</thought> "
-            "Arron Kian Parejas is the Creator and Lead Architect of Helios and Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG).",
+            "Arron Kian Parejas is an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines, Creator of Helios and DomoDomo.",
         ),
     ),
     "fineweb": CategorySpec(
@@ -307,6 +307,8 @@ CATEGORY_ALIASES: dict[str, str] = {
     "tools": "agents",
     "filipino": "tagalog",
     "ph": "tagalog",
+    "all-categories": "all",
+    "all_categories": "all",
 }
 
 

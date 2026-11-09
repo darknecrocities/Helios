@@ -73,7 +73,7 @@ def version() -> None:
     """Print Helios ecosystem version and author attribution."""
     typer.echo(f"Helios version {helios.__version__} (Helios Foundation Ecosystem)")
     typer.echo(
-        "Lead Architect & AI Engineer in the Philippines: Arron Kian Parejas <parejasarronkian@gmail.com>"
+        "Creator & Lead Architect: Arron Kian Parejas, AI & Systems Engineer in the Philippines"
     )
     typer.echo("Repository: https://github.com/darknecrocities/Helios")
 
@@ -102,9 +102,9 @@ def inspect(
         raise typer.Exit(code=1)
 
     config = factory()
-    typer.echo(f"Developer        : {config.developer} <{config.developer_email}>")
+    typer.echo(f"Developer        : {config.developer}")
     typer.echo(
-        "Lead Architect   : Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines"
+        "Lead Architect   : Arron Kian Parejas, AI & Systems Engineer in the Philippines"
     )
     typer.echo(f"Model Family     : {config.model_family}")
     typer.echo("Features         : GQA (3:1), Dynamic KV Cache, HMA Decoupling, 6-State Resumption")
@@ -315,6 +315,97 @@ def sync_cmd(
     rep = run_sync(targets=targets, upload_weights=upload_weights)
     for target, status in rep.status.items():
         con.print(f"  sync {target}: {status}")
+
+
+@app.command(name="align")
+def align_cmd(
+    method: str = typer.Option(
+        "both",
+        "--method",
+        "-m",
+        help="Post-training alignment algorithm: 'dpo', 'grpo', or 'both'.",
+    ),
+    preset: str = typer.Option(
+        "nano-20m",
+        "--preset",
+        "-p",
+        help="Target Helios model preset (e.g., nano-20m, alpha-100m, beta-300m, core-1b).",
+    ),
+    steps: int = typer.Option(
+        20,
+        "--steps",
+        "-s",
+        help="Number of alignment optimization steps per algorithm.",
+    ),
+) -> None:
+    """Execute DPO and/or GRPO RLVR post-training alignment on a Helios model tier."""
+    from rich.console import Console
+
+    from helios.training.dpo import DPOConfig, DPOTrainer
+    from helios.training.grpo import GRPOConfig, GRPOTrainer
+
+    con = Console()
+    m_norm = method.strip().lower()
+    if m_norm in ("dpo", "both"):
+        con.print(f"[bold cyan]⚡ Running DPO Alignment on {preset} ({steps} steps)...[/bold cyan]")
+        rep_dpo = DPOTrainer(DPOConfig(preset=preset, steps=steps)).run()
+        con.print(
+            f"[green]✓ DPO Complete:[/green] loss {rep_dpo.initial_loss:.4f} → {rep_dpo.final_loss:.4f} | "
+            f"reward margin {rep_dpo.initial_reward_margin:+.4f} → {rep_dpo.final_reward_margin:+.4f} | "
+            f"acc={rep_dpo.reward_accuracy * 100:.1f}%"
+        )
+    if m_norm in ("grpo", "both"):
+        con.print(f"[bold cyan]⚡ Running GRPO RLVR Alignment on {preset} ({steps} steps)...[/bold cyan]")
+        rep_grpo = GRPOTrainer(GRPOConfig(preset=preset, steps=steps)).run()
+        con.print(
+            f"[green]✓ GRPO Complete:[/green] loss {rep_grpo.initial_loss:.4f} → {rep_grpo.final_loss:.4f} | "
+            f"mean_reward={rep_grpo.mean_reward:+.4f} | KL={rep_grpo.mean_kl_div:.4f} | "
+            f"<thought> format rate={rep_grpo.thought_format_rate * 100:.1f}%"
+        )
+
+
+@app.command(name="dist-bench")
+def dist_bench_cmd(
+    preset: str = typer.Option("nano-20m", "--preset", "-p", help="Target Helios preset."),
+    strategy: str = typer.Option(
+        "zero2", "--strategy", "-s", help="Sharding strategy: single, ddp, zero1, zero2, fsdp."
+    ),
+    world_size: int = typer.Option(4, "--world-size", "-w", help="Effective shard world size."),
+    steps: int = typer.Option(4, "--steps", help="Benchmark steps."),
+) -> None:
+    """Benchmark Distributed DDP, ZeRO-1/2, and FSDP sharding and memory reduction."""
+    from helios.training.distributed import run_distributed_benchmark
+
+    res = run_distributed_benchmark(
+        preset=preset,
+        strategy=strategy,  # type: ignore[arg-type]
+        virtual_world_size=world_size,
+        steps=steps,
+    )
+    typer.echo(
+        f"✓ Distributed Benchmark [{res['strategy'].upper()} · W={res['virtual_world_size']}]: "
+        f"loss {res['initial_loss']} -> {res['final_loss']} | "
+        f"state {res['unsharded_state_mb']}MB -> {res['per_rank_state_mb']}MB/rank "
+        f"({res['memory_saved_pct']}% saved) | {res['tokens_per_sec']} tok/s"
+    )
+
+
+@app.command(name="profile-mfu")
+def profile_mfu_cmd(
+    preset: str = typer.Option("nano-20m", "--preset", "-p", help="Target Helios preset."),
+    batch_size: int = typer.Option(2, "--batch-size", "-b", help="Microbatch size."),
+    seq_len: int = typer.Option(256, "--seq-len", "-t", help="Sequence length."),
+) -> None:
+    """Profile Roofline Model FLOPs Utilization (MFU %) and Fused Kernel throughput."""
+    from helios.training.mfu import profile_model_mfu
+
+    rep = profile_model_mfu(preset=preset, batch_size=batch_size, seq_len=seq_len)
+    typer.echo(
+        f"✓ Roofline MFU Profile [{rep.preset} on {rep.device_name} ({rep.kernel_tier})]: "
+        f"MFU={rep.mfu_pct}% ({rep.achieved_tflops} / {rep.hardware_peak_tflops} TFLOPs) | "
+        f"Intensity={rep.arithmetic_intensity_flops_per_byte} FLOPs/B ({rep.bottleneck_regime}) | "
+        f"{rep.tokens_per_sec} tok/s"
+    )
 
 
 # Subcommand Groups

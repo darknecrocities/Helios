@@ -16,3 +16,9 @@ Verified physical checkpoints saved to external storage with SHA-256 integrity d
 | 2026-11-09 12:52:56 | `core_step_00003803` | `core` | 3,803 | 3.0406 | 201.0 | `db081d2c80245f83...` | HEALTHY |
 | 2026-11-09 12:52:56 | `pro_step_00001691` | `pro` | 1,691 | 8.1789 | 432.0 | `a7d04f10e430d010...` | HEALTHY |
 | 2026-11-09 12:52:56 | `flagship_step_00000875` | `flagship` | 875 | 3.8309 | 740.0 | `ec07d590bd6a51f1...` | HEALTHY |
+| 2026-11-09 17:02:31 | `nano_step_00012685` | `nano` | 12,685 | 1.9111 | 107.1 | `c578366d1cee35a2...` | HEALTHY |
+| 2026-11-09 17:02:31 | `alpha_step_00003366` | `alpha` | 3,366 | 0.0484 | 475.6 | `529922b3bbd00fb7...` | HEALTHY |
+| 2026-11-09 17:02:31 | `beta_step_00001459` | `beta` | 1,459 | 0.1355 | 1282.2 | `3cc7fcce7d6ee417...` | HEALTHY |
+| 2026-11-09 17:02:31 | `core_step_00008036` | `core` | 8,036 | 0.3438 | 201.0 | `24583ebadc3c7ab0...` | HEALTHY |
+| 2026-11-09 17:02:31 | `pro_step_00003595` | `pro` | 3,595 | 7.7093 | 432.0 | `9982f18782e0969e...` | HEALTHY |
+| 2026-11-09 17:02:31 | `flagship_step_00002097` | `flagship` | 2,097 | 5.0951 | 740.0 | `5776d786964f5ebb...` | HEALTHY |

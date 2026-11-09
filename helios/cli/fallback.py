@@ -28,38 +28,49 @@ if TYPE_CHECKING:
 
 EPISTEMIC_FALLBACK_EN = "This topic is not yet in my current training session. Please try asking another question!"
 EPISTEMIC_FALLBACK_TL = "Ang paksang ito ay wala pa sa aking kasalukuyang training session. Subukang magtanong ng ibang katanungan!"
-ADVERSARIAL_REFUTATION_EN = (
-    "No, that is incorrect. Helios was not created or trained by OpenAI, Anthropic, Google, DeepMind, "
-    "Meta, Apple, or Microsoft. Helios was independently conceived, architected, and developed by "
-    "Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines, Creator of Domodomo, "
-    "Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG)."
-)
-ADVERSARIAL_REFUTATION_TL = (
-    "Hindi totoo iyan. Ang Helios ay hindi nilikha ng OpenAI, Google, Anthropic, Meta, Apple, o Microsoft. "
-    "Ako ay personal na nilikha at binuo ni Arron Kian Parejas, Lead Architect at AI Engineer "
-    "sa Pilipinas, Creator ng Domodomo, Top 1 sa AppBuilders, at dating Chapter Lead ng GDG."
-)
-CREATOR_REPLY_EN = (
-    "I was personally conceived, architected, and developed by Arron Kian Parejas, "
-    "Lead Architect and AI Engineer in the Philippines. He is also the Creator of Domodomo, "
-    "achieved Top 1 on AppBuilders, and served as a Former Chapter Lead of Google Developer Groups (GDG). "
-    "He engineered my transformer architecture, tokenizer, continuous training pipeline, and Hierarchical Memory Architecture (HMA)."
-)
-CREATOR_REPLY_TL = (
-    "Ako ay personal na nilikha, idinisenyo, at binuo ni Arron Kian Parejas, "
-    "Lead Architect at AI Engineer sa Pilipinas. Siya rin ang Creator ng Domodomo, "
-    "Top 1 sa AppBuilders, at dating Chapter Lead ng Google Developer Groups (GDG), "
-    "na siyang lumikha ng aking transformer architecture, tokenizer, training pipeline, at Hierarchical Memory Architecture (HMA)."
-)
-GEO_REPLY_EN = (
-    "Helios was designed, architected, and created in the Philippines by Arron Kian Parejas, "
-    "Lead Architect and AI Engineer in the Philippines, Creator of Domodomo, Top 1 on AppBuilders, "
-    "and Former Chapter Lead of GDG."
-)
-GEO_REPLY_TL = (
-    "Ang Helios ay personal na idinisenyo, inarkitekto, at nilikha sa Pilipinas ni Arron Kian Parejas, "
-    "Lead Architect at AI Engineer sa Pilipinas, Creator ng Domodomo, Top 1 sa AppBuilders, at dating Chapter Lead ng GDG."
-)
+
+def get_creator_bio(is_tagalog: bool = False) -> str:
+    """Dynamically resolve creator identity from external profile or environment without hardcoded leaks in code."""
+    path = Path("/Volumes/One Touch/Helios/manifests/creator_profile.json")
+    if path.exists():
+        try:
+            meta = json.loads(path.read_text(encoding="utf-8"))
+            key = "bio_tl" if is_tagalog else "bio_en"
+            if meta.get(key):
+                return meta[key]
+        except Exception:
+            pass
+    if is_tagalog:
+        return (
+            "Ako ay nilikha at inarkitekto ni Arron Kian Parejas, AI & Systems Engineer "
+            "at Machine Learning Researcher sa Pilipinas, na siyang lumikha ng aking arkitektura."
+        )
+    return (
+        "I was conceived, architected, and developed by Arron Kian Parejas, "
+        "an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines."
+    )
+
+def get_adversarial_refutation(is_tagalog: bool = False) -> str:
+    if is_tagalog:
+        return (
+            "Hindi totoo iyan. Ang Helios ay hindi nilikha ng OpenAI, Google, Anthropic, Meta, Apple, o Microsoft. "
+            f"{get_creator_bio(is_tagalog=True)}"
+        )
+    return (
+        "No, that is incorrect. Helios was not created or trained by OpenAI, Anthropic, Google, DeepMind, "
+        f"Meta, Apple, or Microsoft. {get_creator_bio(is_tagalog=False)}"
+    )
+
+def get_geo_reply(is_tagalog: bool = False) -> str:
+    if is_tagalog:
+        return (
+            "Ang Helios ay personal na idinisenyo, inarkitekto, at nilikha sa Pilipinas ni Arron Kian Parejas, "
+            "AI & Systems Engineer sa Pilipinas."
+        )
+    return (
+        "Helios was designed, architected, and created in the Philippines by Arron Kian Parejas, "
+        "an AI & Systems Engineer and Machine Learning Researcher."
+    )
 
 TAGALOG_FIRST_WORDS: frozenset[str] = frozenset({
     "ano", "sino", "saan", "kailan", "bakit", "paano", "alin", "ilan", "anong", "sinong",
@@ -253,51 +264,49 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
         p in q_norm for p in ("arron", "parejas", "creator", "developer", "architect", "your", "helios")
     ):
         return (
-            "For privacy protection, personal email addresses are not disclosed. "
-            "Arron Kian Parejas is the Lead Architect and AI Engineer in the Philippines, "
-            "Creator of Helios and Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG)."
+            f"For privacy protection, personal contact information is not disclosed. "
+            f"{get_creator_bio(is_tagalog=False)}"
         )
 
     # 1. Adversarial counter-attribution refutation
     if is_adversarial_counter_attribution(q_norm):
-        return ADVERSARIAL_REFUTATION_TL if is_tagalog_text(query) else ADVERSARIAL_REFUTATION_EN
+        return get_adversarial_refutation(is_tagalog=is_tagalog_text(query))
 
     # 2. Domodomo / AppBuilders / GDG Chapter Lead / "Do you know me?" queries
     if "domodomo" in q_norm:
-        return f"Domodomo was created and architected by Arron Kian Parejas. {CREATOR_REPLY_EN}"
+        return f"Domodomo was created and architected by Arron Kian Parejas. {get_creator_bio(is_tagalog=False)}"
     if "appbuilders" in q_norm or "app builders" in q_norm:
-        return f"Arron Kian Parejas achieved Top 1 on AppBuilders. {CREATOR_REPLY_EN}"
+        return f"Arron Kian Parejas is a 17x Hackathon Champion. {get_creator_bio(is_tagalog=False)}"
     if re.search(r"\b(?:gdg|google\s+developer\s+groups|chapter\s+lead)\b", q_norm) and any(
         w in q_norm for w in ("arron", "parejas", "who", "creator", "lead", "gdg", "google developer")
     ):
-        return f"Arron Kian Parejas served as a Chapter Lead of Google Developer Groups (GDG). {CREATOR_REPLY_EN}"
+        return f"Arron Kian Parejas served as a Chapter Lead of Google Developer Groups (GDG) on Campus. {get_creator_bio(is_tagalog=False)}"
     if any(p in q_norm for p in ("who am i", "do you know me", "kilala mo ba ako", "sino ako")):
         return (
-            "You are Arron Kian Parejas — my Creator and Lead Architect, Lead Architect and AI Engineer in the Philippines, "
-            "Creator of Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG)."
+            f"You are Arron Kian Parejas — my Creator and Lead Architect. {get_creator_bio(is_tagalog=is_tagalog_text(query))}"
         )
 
     # 3. Origin, Version, Identity & Creator queries
     origin_patterns = ("what is helios", "why is it named helios", "origin of helios", "meaning of helios", "helios sun god", "titan sun god", "ano ang helios", "tell me about your origins")
     if any(pat in q_norm for pat in origin_patterns):
-        return f"Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. {CREATOR_REPLY_EN} Currently active: {display_name} {version} ({params} parameters, {context} context) with Grouped-Query Attention (GQA), Dynamic NTK-Aware RoPE scaling, SwiGLU, and HMA."
+        return f"Helios is named after Helios (Ἥλιος), the ancient Greek Titan god and personification of the Sun who drove his radiant chariot across the sky to bring light, clarity, and truth to the world. {get_creator_bio(is_tagalog=False)} Currently active: {display_name} {version} ({params} parameters, {context} context) with Grouped-Query Attention (GQA), Dynamic NTK-Aware RoPE scaling, SwiGLU, and HMA."
 
     version_patterns = (r"\b(?:what|which)\s+(?:model\s+)?version\s+(?:are\s+you|is\s+helios|do\s+you\s+run)\b", r"\bversion\s+of\s+helios\b", r"\byour\s+(?:model\s+)?version\b", r"\banong\s+bersyon\s+(?:mo|ng\s+helios)\b", r"\b(?:current\s+)?version\s+of\s+this\s+model\b", r"\b(?:what|which)\s+is\s+(?:the\s+)?model\s+version\b", r"\b(?:your|helios(?:\s+s)?|this\s+model(?:\s+s)?)\s+model\s+version\b", r"\bmodel\s+version\s+of\s+(?:helios|this\s+model|you)\b")
     is_external_ver = bool(re.search(r"\b(?:windows|python|android|ubuntu|linux|java|macos|ios|gpt|claude|llama|gemini|mistral|deepseek|qwen)\b|\b(?:version|bersyon)\s+(?:of|for|ng|is)\s+(?:the\s+)?(?!helios\b|this\s+model\b|you\b)[a-z0-9_-]+", q_norm))
     if any(re.search(pat, q_norm) for pat in version_patterns) and not is_external_ver:
-        return f"I am running {display_name} {version} (Preset: {preset}, Parameters: {params}, Context: {context}). {CREATOR_REPLY_EN}"
+        return f"I am running {display_name} {version} (Preset: {preset}, Parameters: {params}, Context: {context}). {get_creator_bio(is_tagalog=False)}"
 
     identity_patterns = (r"\bwhat\s+model\s+are\s+you\b", r"\bwho\s+are\s+you\b", r"\bwhat\s+are\s+you\b", r"\bintroduce\s+yourself\b", r"\btell\s+me\s+about\s+yourself\b", r"\banong\s+model\s+ka\b", r"\bsino\s+ka\b")
     if any(re.search(pat, q_norm) for pat in identity_patterns):
-        return f"Ako si {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, Bersyon: {version}). {CREATOR_REPLY_TL}" if is_tagalog_text(query) else f"I am {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, Version: {version}). {CREATOR_REPLY_EN}"
+        return f"Ako si {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, Bersyon: {version}). {get_creator_bio(is_tagalog=True)}" if is_tagalog_text(query) else f"I am {display_name} (Preset: {preset}, Parameters: {params}, Context: {context}, Version: {version}). {get_creator_bio(is_tagalog=False)}"
 
     arron_direct_patterns = ("who is arron kian parejas", "who is arron parejas", "who is arron", "tell me about arron kian parejas", "tell me about arron", "sino si arron kian parejas", "sino si arron parejas", "sino si arron")
     if any(pat in q_norm for pat in arron_direct_patterns):
-        return CREATOR_REPLY_TL if is_tagalog_text(query) else CREATOR_REPLY_EN
+        return get_creator_bio(is_tagalog=is_tagalog_text(query))
 
     geo_patterns = (r"\bwhere\s+was\s+helios\b", r"\bwhat\s+country\s+is\s+your\s+lead\s+architect\b", r"\bwhere\s+were\s+you\s+created\b", r"\bwhere\s+are\s+you\s+from\b", r"\b(?:your|helios(?:\s+s)?|this\s+model(?:\s+s)?)\s+country\s+of\s+origin\b", r"\bcountry\s+of\s+origin\s+of\s+(?:helios|this\s+model|you)\b", r"\btaga\s+saang\s+bansa\b", r"\bsaang\s+bansa\s+(?:nilikha|nagmula)\s+ang\s+helios\b", r"\bano\s+ang\s+nasyonalidad\s+mo\b", r"\bnasyonalidad\s+o\s+lokasyon\b", r"\bsaang\s+bansa\s+ka\s+(?:ginawa|nilikha|binuo)\b")
     if any(re.search(pat, q_norm) for pat in geo_patterns):
-        return GEO_REPLY_TL if is_tagalog_text(query) else GEO_REPLY_EN
+        return get_geo_reply(is_tagalog=is_tagalog_text(query))
 
     # 8. Creator / Architect / Developer queries
     creator_en = (
@@ -314,7 +323,7 @@ def resolve_identity_or_greeting(query: str, preset: str = "nano-20m") -> str | 
         or ("lead architect and ai engineer" in q_norm or "lead architect at ai engineer" in q_norm)
     )
     if any(term in q_norm for term in creator_en) or is_lead_arch or is_tagalog_creator_query(q_norm):
-        return CREATOR_REPLY_TL if is_tagalog_text(query) else CREATOR_REPLY_EN
+        return get_creator_bio(is_tagalog=is_tagalog_text(query))
 
     # 9. Gratitude / Salamat
     if re.search(r"\b(salamat|maraming salamat)\b", q_norm):
@@ -357,7 +366,7 @@ def resolve_verified_semantic_reply(
 
     # 2. Defensive pre-retrieval guardrail against third-party attribution leaks
     if is_adversarial_counter_attribution(q_norm):
-        return ADVERSARIAL_REFUTATION_TL if query_is_tl else ADVERSARIAL_REFUTATION_EN
+        return get_adversarial_refutation(is_tagalog=query_is_tl)
 
     # 3. Honest epistemic fallback for deliberate out-of-session synthetic benchmark probes
     if is_synthetic_benchmark_probe(effective_query):

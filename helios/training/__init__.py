@@ -27,6 +27,37 @@ from helios.training.dataloader import (
     DataloaderCursor,
     TokenDataset,
 )
+from helios.training.distributed import (
+    DistributedConfig,
+    DistributedContext,
+    DistributedShardSampler,
+    ZeROShardedOptimizer,
+    run_distributed_benchmark,
+    wrap_helios_distributed,
+)
+from helios.training.dpo import (
+    DPOConfig,
+    DPORunReport,
+    DPOTrainer,
+    PreferencePair,
+    compute_dpo_loss,
+    compute_sequence_logprobs,
+)
+from helios.training.grpo import (
+    GRPOConfig,
+    GRPORunReport,
+    GRPOTrainer,
+    VerifiableRewardEngine,
+    compute_group_advantages,
+    compute_grpo_loss,
+)
+from helios.training.mfu import (
+    HardwarePeakSpecs,
+    MFUProfiler,
+    MFUProfileReport,
+    compute_step_flops,
+    profile_model_mfu,
+)
 from helios.training.signals import (
     EmergencyWatchdog,
     InterruptionHandler,
@@ -84,4 +115,27 @@ __all__ = [
     "adapt_block_streamed_weights",
     "load_multi_tier_checkpoint",
     "resume_training_from_checkpoint",
+    "DistributedConfig",
+    "DistributedContext",
+    "DistributedShardSampler",
+    "ZeROShardedOptimizer",
+    "run_distributed_benchmark",
+    "wrap_helios_distributed",
+    "DPOConfig",
+    "DPORunReport",
+    "DPOTrainer",
+    "PreferencePair",
+    "compute_dpo_loss",
+    "compute_sequence_logprobs",
+    "GRPOConfig",
+    "GRPORunReport",
+    "GRPOTrainer",
+    "VerifiableRewardEngine",
+    "compute_group_advantages",
+    "compute_grpo_loss",
+    "HardwarePeakSpecs",
+    "MFUProfileReport",
+    "MFUProfiler",
+    "compute_step_flops",
+    "profile_model_mfu",
 ]

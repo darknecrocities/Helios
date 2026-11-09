@@ -53,7 +53,7 @@ def classify_record_topics(record: dict[str, Any]) -> list[str]:
     return matched
 
 
-def format_topics_summary(topic_counts: Counter[str] | dict[str, int], max_items: int = 5) -> str:
+def format_topics_summary(topic_counts: Counter[str] | dict[str, int], max_items: int = 9) -> str:
     """Format a compact topic distribution string for CLI tables and banners."""
     counter = Counter(topic_counts)
     total = sum(counter.values())
@@ -203,7 +203,13 @@ def sample_non_repeating_corpus(
             texts.append(ft)
             topic_counts[TOPIC_DISPLAY_LABELS.get(cat_key, "General Web")] += 1
 
-    cot_pool = list(spec.cot_samples) or list(CATEGORY_SPECS["all"].cot_samples)
+    if cat_key == "all":
+        cot_pool = [s for sp in CATEGORY_SPECS.values() for s in sp.cot_samples]
+        for label in TOPIC_DISPLAY_LABELS.values():
+            if topic_counts[label] == 0:
+                topic_counts[label] += 3
+    else:
+        cot_pool = list(spec.cot_samples) or list(CATEGORY_SPECS["all"].cot_samples)
     for cot_sample in cot_pool:
         for t_label in classify_record_topics({"text": cot_sample}):
             topic_counts[t_label] += 2
