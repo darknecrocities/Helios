@@ -64,14 +64,12 @@ def run_benchmarks() -> dict:
 
 
 def format_ts_file(data: dict) -> str:
-    tiers_data = data.get("helios_evaluated_tiers", {})
-
     models = [
         {
             "id": "helios-nano",
             "name": "Helios Nano",
             "params": "17.84M",
-            "color": "#8B5CF6", # Violet
+            "color": "#8B5CF6",  # Violet
             "lineStyle": "solid",
             "context": "16K",
             "scores": {
@@ -88,7 +86,7 @@ def format_ts_file(data: dict) -> str:
             "id": "helios-alpha",
             "name": "Helios Alpha",
             "params": "100.09M",
-            "color": "#0EA5E9", # Cerulean Sky
+            "color": "#0EA5E9",  # Cerulean Sky
             "lineStyle": "solid",
             "context": "32K",
             "scores": {
@@ -105,7 +103,7 @@ def format_ts_file(data: dict) -> str:
             "id": "helios-beta",
             "name": "Helios Beta",
             "params": "303.35M",
-            "color": "#10B981", # Emerald
+            "color": "#10B981",  # Emerald
             "lineStyle": "solid",
             "context": "64K",
             "scores": {
@@ -122,7 +120,7 @@ def format_ts_file(data: dict) -> str:
             "id": "helios-core",
             "name": "Helios Core",
             "params": "1.05B",
-            "color": "#FFB300", # Amber Gold
+            "color": "#FFB300",  # Amber Gold
             "lineStyle": "solid",
             "context": "128K",
             "scores": {
@@ -139,7 +137,7 @@ def format_ts_file(data: dict) -> str:
             "id": "helios-pro",
             "name": "Helios Pro",
             "params": "3.04B",
-            "color": "#FF8C00", # Dark Orange
+            "color": "#FF8C00",  # Dark Orange
             "lineStyle": "solid",
             "context": "128K",
             "scores": {
@@ -156,7 +154,7 @@ def format_ts_file(data: dict) -> str:
             "id": "helios-flagship",
             "name": "Helios Flagship",
             "params": "5.80B",
-            "color": "#FF5500", # Helios Solar Flame
+            "color": "#FF5500",  # Helios Solar Flame
             "lineStyle": "solid",
             "context": "256K",
             "scores": {
@@ -264,7 +262,7 @@ export const AUDIT_METADATA = {{
   suiteCount: 6,
   contaminationCount: 0,
   sha256Audit: "ba9724f517a2b6c6c9c619e0ecdf034bc119253879633e5f13e704ce9455153e",
-  dateUtc: "{data.get('contamination_audit', {}).get('status', 'CLEAN')}"
+  dateUtc: "{data.get("contamination_audit", {}).get("status", "CLEAN")}"
 }};
 """
     return ts_content
