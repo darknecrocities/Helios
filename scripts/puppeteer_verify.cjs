@@ -45,18 +45,35 @@ async function run() {
       console.log(`Saved screenshot: ${name}`);
     };
 
-    // 1. Desktop Hero
+    // 1. Desktop Hero (Initial at Top)
     await takeScreenshot('desktop_01_hero.png');
+
+    // 1b. Test Hero Kinetic Solar Zoom (Scrolled 500px down)
+    console.log('Testing Hero Kinetic Solar Zoom...');
+    await page.evaluate(() => window.scrollBy({ top: 500, behavior: 'instant' }));
+    await new Promise(r => setTimeout(r, 600));
+    await takeScreenshot('desktop_01_hero_zooming.png');
 
     // 2. Scroll to About
     await page.evaluate(() => document.getElementById('about')?.scrollIntoView({ behavior: 'instant' }));
     await new Promise(r => setTimeout(r, 600));
     await takeScreenshot('desktop_02_about.png');
 
-    // 3. Scroll to Family
+    // 3. Scroll to Family (Start: Nano Centered)
+    console.log('Testing Family Keeby Horizontal Scroll & Zooming Cards...');
     await page.evaluate(() => document.getElementById('family')?.scrollIntoView({ behavior: 'instant' }));
     await new Promise(r => setTimeout(r, 600));
-    await takeScreenshot('desktop_03_family.png');
+    await takeScreenshot('desktop_03_family_nano.png');
+
+    // 3b. Scroll Midway through Family (Core Centered)
+    await page.evaluate(() => window.scrollBy({ top: 800, behavior: 'instant' }));
+    await new Promise(r => setTimeout(r, 600));
+    await takeScreenshot('desktop_03_family_core.png');
+
+    // 3c. Scroll to End of Family (Flagship Centered & Ready to Unpin)
+    await page.evaluate(() => window.scrollBy({ top: 700, behavior: 'instant' }));
+    await new Promise(r => setTimeout(r, 600));
+    await takeScreenshot('desktop_03_family_flagship.png');
 
     // 4. Scroll to Capabilities
     await page.evaluate(() => document.getElementById('capabilities')?.scrollIntoView({ behavior: 'instant' }));
