@@ -23,6 +23,7 @@ import {
   JupyterLogo,
 } from '../components/PlatformLogos';
 import { AnimatedMultiLineChart } from '../components/AnimatedMultiLineChart';
+import { ModelFrameworkDiagram } from '../components/ModelFrameworkDiagram';
 
 interface DocsViewProps {
   onBackToShowcase: () => void;
@@ -118,6 +119,13 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToShowcase }) => {
               <span>Hugging Face</span>
             </a>
             <button
+              onClick={() => setActiveChapterId('techniques')}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-[#141312]/15 text-xs font-mono-tabular hover:border-[#FF5500] transition-colors shadow-xs cursor-pointer"
+            >
+              <Cpu className="w-3.5 h-3.5 text-[#FF5500]" />
+              <span>Framework Diagram</span>
+            </button>
+            <button
               onClick={() => setActiveChapterId('finetuning')}
               className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-[#141312]/15 text-xs font-mono-tabular hover:border-[#FF5500] transition-colors shadow-xs cursor-pointer"
             >
@@ -212,6 +220,12 @@ export const DocsView: React.FC<DocsViewProps> = ({ onBackToShowcase }) => {
                 </div>
 
                 {/* Chapter Specific Injections */}
+                {(activeChapter.id === 'techniques' || activeChapter.id === 'finetuning') && (
+                  <div className="pb-4">
+                    <ModelFrameworkDiagram />
+                  </div>
+                )}
+
                 {activeChapter.id === 'benchmarks' && (
                   <div className="pb-4 space-y-4">
                     <AnimatedMultiLineChart showBaselinesToggle={true} />
