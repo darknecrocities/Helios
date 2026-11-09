@@ -30,27 +30,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDocs }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Kinetic scroll progress across 200vh track
+  // Kinetic scroll progress across 200vh track (pinned for 100vh)
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end start'],
+    offset: ['start start', 'end end'],
   });
   const smoothScroll = useSpring(scrollYProgress, { damping: 28, stiffness: 180, mass: 0.6 });
 
   // Solar Zoom through the sun
-  const sunScale = useTransform(smoothScroll, [0, 0.85], [1, 3.2]);
-  const sunOpacity = useTransform(smoothScroll, [0, 0.75, 0.95], [1, 1, 0.95]);
-  const orbitsScale = useTransform(smoothScroll, [0, 0.8], [1, 2.4]);
-  const orbitsOpacity = useTransform(smoothScroll, [0, 0.45, 0.75], [1, 0.7, 0]);
-  const bgScale = useTransform(smoothScroll, [0, 1], [1, 1.35]);
+  const sunScale = useTransform(smoothScroll, [0, 0.9], [1, 3.5]);
+  const sunOpacity = useTransform(smoothScroll, [0, 0.8, 1], [1, 1, 1]);
+  const orbitsScale = useTransform(smoothScroll, [0, 0.85], [1, 2.5]);
+  const orbitsOpacity = useTransform(smoothScroll, [0, 0.35, 0.65], [1, 0.7, 0]);
+  const bgScale = useTransform(smoothScroll, [0, 1], [1, 1.4]);
 
   // Foreground copy & quick-run terminal fade gently on initial scroll
-  const contentY = useTransform(smoothScroll, [0, 0.42], ['0%', '30%']);
-  const contentOpacity = useTransform(smoothScroll, [0, 0.35], [1, 0]);
+  const contentY = useTransform(smoothScroll, [0, 0.38], ['0%', '25%']);
+  const contentOpacity = useTransform(smoothScroll, [0, 0.30], [1, 0]);
 
   // Solar Daylight Bloom: seamlessly transitions the dark celestial sanctuary
   // directly into the warm #FBF9F5 daylight marble aesthetic of the About section (zero black gap)
-  const daylightBloom = useTransform(smoothScroll, [0.55, 0.88, 1], [0, 0.85, 1]);
+  const daylightBloom = useTransform(smoothScroll, [0.45, 0.85, 1], [0, 0.85, 1]);
 
   return (
     <section

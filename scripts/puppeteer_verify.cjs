@@ -168,6 +168,7 @@ async function run() {
   } finally {
     console.log('Stopping Vite preview server...');
     server.kill();
+    process.exit(0);
   }
 }
 

@@ -2,7 +2,7 @@
   "tier_id": "helios-alpha",
   "display_name": "Helios Alpha",
   "preset": "alpha-100m",
-  "timestamp_utc": "2026-11-09T06:44:35.416538+00:00",
+  "timestamp_utc": "2026-11-09T07:09:21.239679+00:00",
   "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
   "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-alpha, 32K Ctx)",
@@ -27,7 +27,7 @@
     "runtime_buffers_overhead_mb": 64.0,
     "total_active_ram_2k_mb": 138.11,
     "total_active_ram_max_ctx_mb": 498.11,
-    "measured_process_peak_rss_mb": 207.94
+    "measured_process_peak_rss_mb": 1478.91
   },
   "measured_base_neural": {
     "mmlu": 26.4,

@@ -20,7 +20,7 @@
       "tier_id": "helios-nano",
       "display_name": "Helios Nano",
       "preset": "nano-20m",
-      "timestamp_utc": "2026-11-09T06:44:35.413501+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.236330+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-nano, 16K Ctx)",
@@ -45,7 +45,7 @@
         "runtime_buffers_overhead_mb": 48.0,
         "total_active_ram_2k_mb": 61.31,
         "total_active_ram_max_ctx_mb": 91.93,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -89,7 +89,7 @@
       "tier_id": "helios-alpha",
       "display_name": "Helios Alpha",
       "preset": "alpha-100m",
-      "timestamp_utc": "2026-11-09T06:44:35.416538+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.239679+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-alpha, 32K Ctx)",
@@ -114,7 +114,7 @@
         "runtime_buffers_overhead_mb": 64.0,
         "total_active_ram_2k_mb": 138.11,
         "total_active_ram_max_ctx_mb": 498.11,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -158,7 +158,7 @@
       "tier_id": "helios-beta",
       "display_name": "Helios Beta",
       "preset": "beta-300m",
-      "timestamp_utc": "2026-11-09T06:44:35.419439+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.243316+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-beta, 64K Ctx)",
@@ -183,7 +183,7 @@
         "runtime_buffers_overhead_mb": 96.0,
         "total_active_ram_2k_mb": 295.88,
         "total_active_ram_max_ctx_mb": 1783.88,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -227,7 +227,7 @@
       "tier_id": "helios-core",
       "display_name": "Helios Core",
       "preset": "core-1b",
-      "timestamp_utc": "2026-11-09T06:44:35.422255+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.246488+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-core, 128K Ctx)",
@@ -252,7 +252,7 @@
         "runtime_buffers_overhead_mb": 160.0,
         "total_active_ram_2k_mb": 821.21,
         "total_active_ram_max_ctx_mb": 6869.21,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -296,7 +296,7 @@
       "tier_id": "helios-pro",
       "display_name": "Helios Pro",
       "preset": "pro-3b",
-      "timestamp_utc": "2026-11-09T06:44:35.425045+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.249382+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-pro, 128K Ctx)",
@@ -321,7 +321,7 @@
         "runtime_buffers_overhead_mb": 256.0,
         "total_active_ram_2k_mb": 2174.12,
         "total_active_ram_max_ctx_mb": 18302.12,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,
@@ -365,7 +365,7 @@
       "tier_id": "helios-flagship",
       "display_name": "Helios Flagship",
       "preset": "flagship-6b",
-      "timestamp_utc": "2026-11-09T06:44:35.427827+00:00",
+      "timestamp_utc": "2026-11-09T07:09:21.252256+00:00",
       "base_checkpoint_status": "Measured",
       "hma_system_status": "Measured",
       "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-flagship, 256K Ctx)",
@@ -390,7 +390,7 @@
         "runtime_buffers_overhead_mb": 384.0,
         "total_active_ram_2k_mb": 3544.96,
         "total_active_ram_max_ctx_mb": 36056.96,
-        "measured_process_peak_rss_mb": 207.94
+        "measured_process_peak_rss_mb": 1478.91
       },
       "measured_base_neural": {
         "mmlu": 26.4,

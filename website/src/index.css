@@ -8,6 +8,10 @@
     --font-mono: 'JetBrains Mono', monospace;
   }
 
+  html, body {
+    overflow-x: clip;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: #FBF9F5;

@@ -2,7 +2,7 @@
   "tier_id": "helios-flagship",
   "display_name": "Helios Flagship",
   "preset": "flagship-6b",
-  "timestamp_utc": "2026-11-09T06:44:35.427827+00:00",
+  "timestamp_utc": "2026-11-09T07:09:21.252256+00:00",
   "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
   "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-flagship, 256K Ctx)",
@@ -27,7 +27,7 @@
     "runtime_buffers_overhead_mb": 384.0,
     "total_active_ram_2k_mb": 3544.96,
     "total_active_ram_max_ctx_mb": 36056.96,
-    "measured_process_peak_rss_mb": 207.94
+    "measured_process_peak_rss_mb": 1478.91
   },
   "measured_base_neural": {
     "mmlu": 26.4,

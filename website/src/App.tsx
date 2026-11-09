@@ -64,7 +64,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#141312] relative overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#141312] relative overflow-x-clip">
       <motion.div
         style={{ scaleX }}
         className="fixed top-0 left-0 right-0 h-[2px] bg-[#FF5500] origin-left z-[60]"

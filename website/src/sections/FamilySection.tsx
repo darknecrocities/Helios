@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Copy, Check, Cpu, ExternalLink } from 'lucide-react';
 import { HELIOS_MODELS } from '../data/modelsData';
@@ -21,21 +21,21 @@ const FamilyKineticCard: React.FC<FamilyKineticCardProps> = ({
   copiedCmd,
   onCopy,
 }) => {
-  const centerProgress = index * 0.18;
+  const centerProgress = index / 5;
   const scale = useTransform(
     smoothScroll,
-    [centerProgress - 0.16, centerProgress, centerProgress + 0.16],
-    [0.93, 1.06, 0.93]
+    [centerProgress - 0.12, centerProgress, centerProgress + 0.12],
+    [0.94, 1.06, 0.94]
   );
   const opacity = useTransform(
     smoothScroll,
-    [centerProgress - 0.22, centerProgress, centerProgress + 0.22],
-    [0.6, 1, 0.6]
+    [centerProgress - 0.18, centerProgress, centerProgress + 0.18],
+    [0.7, 1, 0.7]
   );
   const shadowOpacity = useTransform(
     smoothScroll,
-    [centerProgress - 0.12, centerProgress, centerProgress + 0.12],
-    [0, 0.35, 0]
+    [centerProgress - 0.10, centerProgress, centerProgress + 0.10],
+    [0, 0.4, 0]
   );
 
   return (
@@ -158,7 +158,23 @@ const FamilyKineticCard: React.FC<FamilyKineticCardProps> = ({
 
 export const FamilySection: React.FC = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
+  const [maxScrollDistance, setMaxScrollDistance] = useState<number>(2000);
+
+  useEffect(() => {
+    const updateDistance = () => {
+      if (trackRef.current) {
+        const scrollW = trackRef.current.scrollWidth;
+        const viewW = window.innerWidth;
+        const targetDist = Math.max(0, scrollW - viewW + 96);
+        setMaxScrollDistance(targetDist);
+      }
+    };
+    updateDistance();
+    window.addEventListener('resize', updateDistance);
+    return () => window.removeEventListener('resize', updateDistance);
+  }, []);
 
   const handleCopy = (cmd: string) => {
     navigator.clipboard.writeText(cmd);
@@ -166,23 +182,23 @@ export const FamilySection: React.FC = () => {
     setTimeout(() => setCopiedCmd(null), 2000);
   };
 
-  // Kinetic scroll progress across 260vh track
+  // Kinetic scroll progress across 260vh track (pinned for 160vh)
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end start'],
+    offset: ['start start', 'end end'],
   });
   const smoothScroll = useSpring(scrollYProgress, { damping: 28, stiffness: 180, mass: 0.6 });
 
-  // Calibrated horizontal translation: Card 1 (0.0) -> Card 6 (0.90) with zero trailing dead space
-  const scrollX = useTransform(smoothScroll, [0, 0.92], ['0%', '-68%']);
-  const progressPercent = useTransform(smoothScroll, [0, 0.92], ['0%', '100%']);
+  // Dynamically responsive horizontal translation across 6 tiers
+  const scrollX = useTransform(smoothScroll, [0, 1], [0, -maxScrollDistance]);
+  const progressPercent = useTransform(smoothScroll, [0, 1], ['0%', '100%']);
 
   const handleScrollToTier = (idx: number) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const scrollTop = window.scrollY + rect.top;
     const trackHeight = containerRef.current.offsetHeight - window.innerHeight;
-    const targetScroll = scrollTop + (idx * 0.18) * trackHeight;
+    const targetScroll = scrollTop + (idx / 5) * trackHeight;
     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   };
 
@@ -222,8 +238,9 @@ export const FamilySection: React.FC = () => {
         {/* Kinetic Horizontal Scrolly Carousel Track */}
         <div className="relative w-full my-auto overflow-hidden py-4">
           <motion.div
+            ref={trackRef}
             style={{ x: scrollX }}
-            className="flex items-center gap-6 sm:gap-8 will-change-transform pl-4 sm:pl-12"
+            className="flex items-center gap-6 sm:gap-8 will-change-transform pl-4 sm:pl-12 w-max"
           >
             {HELIOS_MODELS.map((model, idx) => (
               <FamilyKineticCard
