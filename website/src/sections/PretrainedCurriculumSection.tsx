@@ -74,37 +74,39 @@ export const PretrainedCurriculumSection: React.FC = () => {
 
         {/* Asymmetric Hero Tabular Numerals (Cardless Pure Text) */}
         <div className="py-20 border-b border-[#141312]/10 space-y-16">
-          {/* Row 1: Steps (5 cols) & Unique Ingested Records (7 cols) */}
+          {/* Row 1: Datasets (5 cols) & Total Tokens (7 cols) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-5 space-y-2">
               <div className="text-7xl sm:text-8xl lg:text-9xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.totalSteps ?? 16574}
+                  value={data.curriculum.totalDatasets ?? 177}
                   duration={1.8}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Total Training Steps Executed
+                Verified Open Datasets
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-sm">
-                16,574 forward-backward steps completed across all 6 model tiers (Nano to Flagship)
-                during continuous pretraining on OneTouch storage.
+                Curated across 16 foundational domains from Hugging Face collections, BigCode,
+                AllenAI, MMLU, and Open Filipino corpora.
               </p>
             </div>
 
             <div className="lg:col-span-7 space-y-2 lg:pt-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.cumulativeUniqueTrained ?? 13640}
+                  value={(data.curriculum.totalTokens ?? 90376089) / 1_000_000}
+                  decimals={2}
+                  suffix="M"
                   duration={2.0}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Unique Ingested Records
+                Total Pretraining Corpus Tokens
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                {(data.curriculum.cumulativeUniqueTrained ?? 13640).toLocaleString()} unique records
-                trained in the active epoch (cursor offset #7,400 across {data.curriculum.totalDatasets} datasets)
+                {(data.curriculum.totalRecords ?? 120616).toLocaleString()} consolidated records ({data.curriculum.tokensFormatted ?? "90.38M"} tokens)
+                on OneTouch storage; {(data.curriculum.cumulativeUniqueTrained ?? 13640).toLocaleString()} unique samples ingested
                 with 0.0% cross-session repetition.
               </p>
             </div>
@@ -112,23 +114,21 @@ export const PretrainedCurriculumSection: React.FC = () => {
 
           <div className="h-[1px] w-full bg-[#141312]/5" />
 
-          {/* Row 2: Tokens (5 cols) & Held-Out Perplexity (7 cols) */}
+          {/* Row 2: Steps (5 cols) & Held-Out Perplexity (7 cols) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-5 space-y-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={(data.curriculum.tokensTrained ?? 2394942) / 1_000_000}
-                  decimals={2}
-                  suffix="M"
+                  value={data.curriculum.totalSteps ?? 16574}
                   duration={2.2}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Parameter Tokens Ingested
+                Total Training Steps Executed
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-sm">
-                2.39M tokens trained at real-time hardware pacing with up to 99.9% loss reduction
-                and 100% DPO reward margin accuracy.
+                16,574 forward-backward steps completed across all 6 model tiers (2.39M parameter tokens
+                ingested in 60m continuous run) with up to 99.9% loss drop.
               </p>
             </div>
 
