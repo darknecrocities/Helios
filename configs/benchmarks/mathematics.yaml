@@ -1,0 +1,17 @@
+suite: "mathematics"
+description: "Mathematical Reasoning, Arithmetic Integrity, and Competition Problem Solving"
+tasks:
+  - id: "gsm8k"
+    name: "Grade School Math 8K (GSM8K)"
+    dataset: "openai/gsm8k"
+    subset: "main"
+    split: "test"
+    few_shot: 8
+    metric: "exact_match"
+    answer_extraction: "regex_last_number"
+  - id: "math"
+    name: "MATH Benchmark"
+    dataset: "hendrycks/competition_math"
+    split: "test"
+    few_shot: 4
+    metric: "exact_match"

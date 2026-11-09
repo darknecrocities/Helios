@@ -1,0 +1,10 @@
+environment: "cpu"
+description: "Universal CPU Execution (x86_64 and ARM64 Reference)"
+device: "cpu"
+precision: "float32"
+batch_size: 1
+allow_resume: true
+save_interval_samples: 10
+max_retries: 1
+fail_on_oom: true
+profiler: "psutil"

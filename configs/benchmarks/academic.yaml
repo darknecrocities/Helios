@@ -1,0 +1,24 @@
+suite: "academic"
+description: "Standardized Academic Knowledge and Multi-Disciplinary Reasoning"
+tasks:
+  - id: "mmlu"
+    name: "Massive Multitask Language Understanding (MMLU)"
+    dataset: "cais/mmlu"
+    split: "test"
+    few_shot: 5
+    metric: "accuracy"
+    subjects: ["stem", "humanities", "social_sciences", "other"]
+    max_samples: 14042
+  - id: "mmlu_pro"
+    name: "MMLU-Pro Advanced Reasoning"
+    dataset: "TIGER-Lab/MMLU-Pro"
+    split: "test"
+    few_shot: 5
+    metric: "accuracy"
+  - id: "arc_challenge"
+    name: "AI2 Reasoning Challenge (ARC-Challenge)"
+    dataset: "allenai/ai2_arc"
+    subset: "ARC-Challenge"
+    split: "test"
+    few_shot: 25
+    metric: "accuracy"

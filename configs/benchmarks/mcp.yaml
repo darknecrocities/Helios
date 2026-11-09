@@ -1,0 +1,12 @@
+suite: "mcp"
+description: "Model Context Protocol (MCP) & Berkeley Function Calling Leaderboard (BFCL) Suite"
+tasks:
+  - id: "bfcl_tool_selection"
+    name: "Tool Selection Accuracy"
+    metric: "selection_accuracy"
+  - id: "bfcl_schema_validity"
+    name: "JSON Argument Schema Adherence"
+    metric: "schema_validity"
+  - id: "mcp_multi_turn_execution"
+    name: "Multi-Step Tool Orchestration & Recovery"
+    metric: "execution_success_rate"

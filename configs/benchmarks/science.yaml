@@ -1,0 +1,16 @@
+suite: "science"
+description: "General Science, Physics, Chemistry, and Biology Knowledge"
+tasks:
+  - id: "sciq"
+    name: "Science Question Answering (SciQ)"
+    dataset: "allenai/sciq"
+    split: "test"
+    few_shot: 0
+    metric: "accuracy"
+  - id: "gpqa"
+    name: "Graduate-Level Google-Proof Q&A (GPQA)"
+    dataset: "Idavidrein/gpqa"
+    subset: "gpqa_diamond"
+    split: "train"
+    few_shot: 0
+    metric: "accuracy"
