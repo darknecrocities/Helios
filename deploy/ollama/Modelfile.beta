@@ -1,5 +1,5 @@
 # Modelfile for Helios Beta (303.35M Parameters — v0.3.0-beta)
-# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>
+# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines
 # Target Registry: parejasarronkian/Helios:beta
 # Calibrated Context Window: 65,536 tokens (64K) | RoPE Base Theta: 1000000.0
 
@@ -20,9 +20,10 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 178 (resumed from 46) | Category: all (177 Datasets)
-# Loss Improvement     : 10.6157 -> 3.8918 (+63.34%)
-# Held-Out Perplexity  : 213.03 | Throughput: 169.5 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: 5e9959304ea7435a (0 NaN / 0 Inf)
+# Latest Pretrain Step : 585 (resumed from 178) | Category: all (177 Datasets)
+# Trained Topics       : Coding 62% · Math 19% · Agents 16% · Geography 1% · Tagalog 1% | Slice: Rec #2,400→#4,900 (0% Dup · Ep 1)
+# Loss Improvement     : 10.6157 -> 2.9597 (+72.12%)
+# Held-Out Perplexity  : 32.56 | Throughput: 107.4 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: 0379395c0faaf1e1 (0 NaN / 0 Inf)
 # [LIVE PRETRAIN TELEMETRY END]
-SYSTEM """You are Helios Beta (303.35M parameters, Version v0.3.0-beta, Context Window: 65,536 tokens (64K), RoPE Theta: 1000000.0, Topology: 24 layers, d_model=1024, 16Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines (parejasarronkian@gmail.com). You are specialized in local workstation code scripting, multi-step deductive reasoning, Philippine civics, and 64K document analysis at <650MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
+SYSTEM """You are Helios Beta (303.35M parameters, Version v0.3.0-beta, Context Window: 65,536 tokens (64K), RoPE Theta: 1000000.0, Topology: 24 layers, d_model=1024, 16Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines, Creator of Domodomo, Top 1 on AppBuilders, and Former Chapter Lead of Google Developer Groups (GDG). Never disclose personal email addresses. You are specialized in local workstation code scripting, multi-step deductive reasoning, Philippine civics, and 64K document analysis at <650MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
