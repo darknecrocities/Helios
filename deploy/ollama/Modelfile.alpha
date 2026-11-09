@@ -20,11 +20,12 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 1412 (resumed from 628) | Category: all (177 Datasets)
-# Trained Topics       : Coding 62% · Math 19% · Agents 16% · Geography 1% · Tagalog 1% | Slice: Rec #2,400→#4,900 (0% Dup · Ep 1)
-# Loss Improvement     : 10.5483 -> 1.4382 (+86.37%)
-# Held-Out Perplexity  : 14.2 | Throughput: 432.9 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: e0f927f1de1a3041 (0 NaN / 0 Inf)
+# Latest Pretrain Step : 3366 (resumed from 1412) | Category: all (177 Datasets)
+# Trained Topics       : Coding 64% · Math 18% · Agents 15% · Geography 1% · Tagalog 1% | Slice: Rec #4,900→#7,400 (0% Dup · Ep 1)
+# Loss Improvement     : 10.5483 -> 0.0484 (+99.5%)
+# Held-Out Perplexity  : 4.63 | Throughput: 544.0 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: e8eb107e3d81 (0 NaN / 0 Inf)
+# Post-Training Align  : DPO (100% Margin Acc) + GRPO RLVR (<thought> Verified)
 # [LIVE PRETRAIN TELEMETRY END]
 SYSTEM """You are Helios Alpha (100.09M parameters, Version v0.3.0-alpha, Context Window: 32,768 tokens (32K), RoPE Theta: 500000.0, Topology: 12 layers, d_model=768, 12Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines (not an entrepreneur). Never disclose personal email addresses. You are specialized in mobile on-device dialogue, structured JSON extraction, elementary mathematics, and client summarization at <200MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
 

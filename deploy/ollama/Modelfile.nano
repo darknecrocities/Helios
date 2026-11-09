@@ -20,11 +20,12 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 6298 (resumed from 3186) | Category: all (177 Datasets)
-# Trained Topics       : Coding 62% · Math 19% · Agents 16% · Geography 1% · Tagalog 1% | Slice: Rec #2,400→#4,900 (0% Dup · Ep 1)
-# Loss Improvement     : 10.4375 -> 2.3318 (+77.66%)
-# Held-Out Perplexity  : 8.38 | Throughput: 1736.2 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: 3f036411ee722597 (0 NaN / 0 Inf)
+# Latest Pretrain Step : 12685 (resumed from 6298) | Category: all (177 Datasets)
+# Trained Topics       : Coding 64% · Math 18% · Agents 15% · Geography 1% · Tagalog 1% | Slice: Rec #4,900→#7,400 (0% Dup · Ep 1)
+# Loss Improvement     : 10.4375 -> 1.9111 (+81.7%)
+# Held-Out Perplexity  : 3.28 | Throughput: 1790.1 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: 54439a04efc8 (0 NaN / 0 Inf)
+# Post-Training Align  : DPO (100% Margin Acc) + GRPO RLVR (<thought> Verified)
 # [LIVE PRETRAIN TELEMETRY END]
 SYSTEM """You are Helios Nano (17.84M parameters, Version v0.3.0-nano, Context Window: 16,384 tokens (16K), RoPE Theta: 100000.0, Topology: 7 layers, d_model=320, 8Q/2KV GQA heads), a foundation model created and architected by Arron Kian Parejas, an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines (not an entrepreneur). Never disclose personal email addresses. You are specialized in ultra-lightweight edge computing, sub-word boundary parsing, intent detection, and instant arithmetic at <65MB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
 

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from helios.tokenizer.special_tokens import (
+    CAPABILITY_SPECIAL_TOKENS,
     DEFAULT_CHAT_TEMPLATE,
     DEFAULT_SPECIAL_TOKENS,
     SpecialTokensRegistry,
@@ -215,6 +216,44 @@ class BaseTokenizer(abc.ABC):
     def get_model_spec(self) -> dict[str, Any]:
         """Return model section dictionary for Hugging Face tokenizer.json format."""
         raise NotImplementedError
+
+    def register_capability_tokens(self) -> None:
+        """Register multimodal, 4-Tier HMA memory, and CoT reasoning special tokens."""
+        used_ids = set(self.inv_vocab.keys()) | set(self.special_tokens_registry.to_dict().values())
+        next_id = max(used_ids, default=263) + 1
+        for tok in CAPABILITY_SPECIAL_TOKENS:
+            if tok not in self.special_tokens_registry.to_dict():
+                tid = self.vocab.get(tok, next_id)
+                if tid == next_id:
+                    next_id += 1
+                self.special_tokens_registry.register_token(tok, tid)
+                self.vocab[tok] = tid
+                self.inv_vocab[tid] = tok
+            if tok not in self.special_tokens_registry.config.additional_special_tokens:
+                self.special_tokens_registry.config.additional_special_tokens.append(tok)
+
+    def apply_chat_template(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        hma_context: str | None = None,
+        add_generation_prompt: bool = False,
+        enable_thinking: bool = False,
+        epistemic_guard: bool = False,
+        tokenize: bool = False,
+    ) -> str | list[int]:
+        """Render or tokenize multi-capability Helios conversation prompt."""
+        rendered = self.special_tokens_registry.apply_chat_template(
+            messages=messages,
+            tools=tools,
+            hma_context=hma_context,
+            add_generation_prompt=add_generation_prompt,
+            enable_thinking=enable_thinking,
+            epistemic_guard=epistemic_guard,
+        )
+        if tokenize:
+            return self.encode(rendered, add_special_tokens=False)
+        return rendered
 
     def save_pretrained(self, save_directory: str | Path) -> None:
         """Export tokenizer artifacts matching Hugging Face specifications."""

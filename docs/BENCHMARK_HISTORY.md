@@ -36,3 +36,9 @@ Standardized evaluation harness results across academic reasoning, code, and age
 | 2026-11-09 12:52:56 | `db081d2c80245f83...` | `core` | **HeldOut-ALL** | `perplexity` | **42.380** | Loss +99.8% | Category: all | PPL +94.3% |
 | 2026-11-09 12:52:56 | `a7d04f10e430d010...` | `pro` | **HeldOut-ALL** | `perplexity` | **408.130** | Loss +99.7% | Category: all | PPL +99.7% |
 | 2026-11-09 12:52:56 | `ec07d590bd6a51f1...` | `flagship` | **HeldOut-ALL** | `perplexity` | **105913.580** | Loss +99.9% | Category: all | PPL +100.0% |
+| 2026-11-09 17:02:31 | `c578366d1cee35a2...` | `nano` | **HeldOut-ALL** | `perplexity` | **3.280** | Loss +81.7% | Category: all | PPL +60.9% |
+| 2026-11-09 17:02:31 | `529922b3bbd00fb7...` | `alpha` | **HeldOut-ALL** | `perplexity` | **4.630** | Loss +99.5% | Category: all | PPL +67.4% |
+| 2026-11-09 17:02:31 | `3cc7fcce7d6ee417...` | `beta` | **HeldOut-ALL** | `perplexity` | **6.460** | Loss +98.7% | Category: all | PPL +80.2% |
+| 2026-11-09 17:02:31 | `24583ebadc3c7ab0...` | `core` | **HeldOut-ALL** | `perplexity` | **7.530** | Loss +100.0% | Category: all | PPL +82.2% |
+| 2026-11-09 17:02:31 | `9982f18782e0969e...` | `pro` | **HeldOut-ALL** | `perplexity` | **23.400** | Loss +99.8% | Category: all | PPL +94.3% |
+| 2026-11-09 17:02:31 | `5776d786964f5ebb...` | `flagship` | **HeldOut-ALL** | `perplexity` | **399.350** | Loss +99.9% | Category: all | PPL +99.6% |

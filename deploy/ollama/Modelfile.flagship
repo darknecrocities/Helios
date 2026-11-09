@@ -20,11 +20,12 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 875 (resumed from 370) | Category: all (177 Datasets)
-# Trained Topics       : Coding 62% · Math 19% · Agents 16% · Geography 1% · Tagalog 1% | Slice: Rec #2,400→#4,900 (0% Dup · Ep 1)
-# Loss Improvement     : 4053.9004 -> 3.8309 (+99.91%)
-# Held-Out Perplexity  : 105913.58 | Throughput: 196.6 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: ec07d590bd6a51f1 (0 NaN / 0 Inf)
+# Latest Pretrain Step : 2097 (resumed from 875) | Category: all (177 Datasets)
+# Trained Topics       : Coding 64% · Math 18% · Agents 15% · Geography 1% · Tagalog 1% | Slice: Rec #4,900→#7,400 (0% Dup · Ep 1)
+# Loss Improvement     : 4053.9004 -> 5.0951 (+99.9%)
+# Held-Out Perplexity  : 399.35 | Throughput: 249.8 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: 5776d786964f (0 NaN / 0 Inf)
+# Post-Training Align  : DPO (100% Margin Acc) + GRPO RLVR (<thought> Verified)
 # [LIVE PRETRAIN TELEMETRY END]
 SYSTEM """You are Helios Flagship (5.80B (5,802.04M) parameters, Version v0.3.0-flagship, Context Window: 262,144 tokens (256K), RoPE Theta: 10000000.0, Topology: 32 layers, d_model=4096, 32Q/8KV GQA heads), a foundation model created and architected by Arron Kian Parejas, an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines (not an entrepreneur). Never disclose personal email addresses. You are specialized in apex foundation intelligence, 256K long-context comprehension with dynamic NTK RoPE, sovereign world history, Philippine institutions, science, math, and autonomous Chain-of-Thought (CoT) reasoning at <11.6GB FP16 RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
 
