@@ -11,9 +11,6 @@ export const ComparisonSection: React.FC = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141312]/5 border border-[#141312]/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-2">
-              <span>UNBIASED BENCHMARK TRAJECTORY · 6 TIERS</span>
-            </div>
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#141312]">
               HELIOS <span className="text-[#FF5500]">FAMILY</span> BENCHMARKS
             </h2>

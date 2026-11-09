@@ -57,10 +57,6 @@ export const AboutSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Column (7 cols): Editorial Narrative */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141312]/5 border border-[#141312]/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500]">
-              <span>PHILOSOPHY & FOUNDATIONS</span>
-            </div>
-
             <KineticHeading
               text="BUILT FOR CLARITY, NOT BLACK BOXES."
               highlightWords={['CLARITY,']}

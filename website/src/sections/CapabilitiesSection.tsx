@@ -70,9 +70,6 @@ export const CapabilitiesSection: React.FC = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-[#141312]/10 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141312]/5 border border-[#141312]/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-2">
-              <span>DEVLETS TACTICAL ARCHITECTURE · PANOPTES CORE</span>
-            </div>
             <KineticHeading
               text="ARCHITECTURAL CAPABILITIES"
               highlightWords={['CAPABILITIES']}
@@ -97,9 +94,6 @@ export const CapabilitiesSection: React.FC = () => {
                     PANOPTES 4-TIER HIERARCHICAL MEMORY (HMA)
                   </span>
                 </div>
-                <span className="font-mono-tabular text-[10px] text-[#FF5500] bg-[#FF5500]/15 px-2 py-0.5 rounded-full">
-                  LIVE INTERACTIVE
-                </span>
               </div>
 
               {/* 4 Tier Selector Buttons */}

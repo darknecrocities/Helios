@@ -213,9 +213,6 @@ export const FamilySection: React.FC = () => {
         {/* Top Header Bar with Segmented Tier Jumper Tabs */}
         <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between pb-4 border-b border-white/10 gap-4 shrink-0">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-1.5">
-              <span>KEEBY HORIZONTAL SCROLL TRAJECTORY · 6 TIERS</span>
-            </div>
             <h2 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-white">
               THE <span className="text-[#FF5500]">HELIOS</span> MODEL FAMILY
             </h2>

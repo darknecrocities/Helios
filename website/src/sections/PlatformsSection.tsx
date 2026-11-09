@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Check, Copy, ArrowUpRight, Code2, Cpu, Wrench, BookOpen } from 'lucide-react';
-import { OllamaLogo, HuggingFaceLogo, OpenClawLogo, HermesAgentLogo } from '../components/PlatformLogos';
+import { Check, Copy, ArrowUpRight, Code2, Cpu, BookOpen } from 'lucide-react';
+import { OllamaLogo, HuggingFaceLogo, OpenClawLogo, HermesAgentLogo, AntigravityLogo } from '../components/PlatformLogos';
 import { KineticHeading } from '../components/KineticText';
 
 interface PlatformSnippet {
@@ -98,7 +98,7 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))`,
   {
     id: 'mcp',
     name: 'Antigravity MCP Agent',
-    icon: Wrench,
+    icon: AntigravityLogo,
     language: 'json',
     description: 'Register Helios as an autonomous agent reasoning provider.',
     command: `{
@@ -138,9 +138,6 @@ export const PlatformsSection: React.FC<PlatformsSectionProps> = ({ onOpenDocs }
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-[#141312]/10 gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141312]/5 border border-[#141312]/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-2">
-              <span>DEVELOPER DEPLOYMENT HUB</span>
-            </div>
             <KineticHeading
               text="RUN HELIOS ANYWHERE"
               highlightWords={['HELIOS']}
