@@ -214,13 +214,15 @@ class ChatSession:
         return format_card("Hierarchical Memory Architecture Status", fields)
 
     def stats_status(self) -> str:
-        """Generate human-readable session performance statistics."""
+        """Generate human-readable session performance and checkpoint improvement statistics."""
         avg_throughput = (
             self.total_generated_tokens / self.total_generation_time_s
             if self.total_generation_time_s > 0
             else 0.0
         )
+        tier_key = resolve_tier_key(self.preset)
         fields = [
+            ("Active Model Tier", f"{tier_key} ({self.preset})"),
             ("Total User Turns", f"{self.total_turns}"),
             ("Total Prompt Tokens", f"{self.total_prompt_tokens}"),
             ("Total Generated Tokens", f"{self.total_generated_tokens}"),
@@ -228,7 +230,39 @@ class ChatSession:
             ("Average Throughput", f"{avg_throughput:.2f} tokens/sec"),
             ("Hardware Device", str(self.device)),
         ]
-        return format_card("Helios Chat Performance Telemetry", fields)
+        try:
+            from helios_pipeline.evaluation.health import inspect_tier_checkpoint
+
+            rep = inspect_tier_checkpoint(tier_key)
+            fields.extend(
+                [
+                    ("", ""),
+                    ("Checkpoint Status", f"{rep.status} ({rep.diagnostic_reason})"),
+                    ("Last Checkpoint Path", rep.checkpoint_path),
+                    ("Pretrained Steps", f"{rep.resumed_from_step} -> {rep.total_steps}"),
+                    ("Pretrained Category", f"{rep.category} ({rep.datasets_synced} datasets)"),
+                    (
+                        "Loss Improvement",
+                        f"{rep.initial_loss:.4f} -> {rep.final_loss:.4f} ({rep.loss_improvement_pct:+.2f}%)",
+                    ),
+                    (
+                        "Held-Out Perplexity",
+                        f"{rep.heldout_ppl if rep.heldout_ppl is not None else 'N/A'} "
+                        + (
+                            f"(Prev: {rep.previous_ppl}, {rep.ppl_reduction_pct:+.2f}%)"
+                            if rep.previous_ppl and rep.ppl_reduction_pct is not None
+                            else ""
+                        ),
+                    ),
+                    (
+                        "Pretrain Throughput",
+                        f"{rep.train_tok_per_s:.1f} train tok/s | {rep.infer_tok_per_s:.1f} infer tok/s",
+                    ),
+                ]
+            )
+        except Exception:
+            pass
+        return format_card("Helios Chat Performance & Checkpoint Telemetry", fields)
 
     def handle_turn(
         self,

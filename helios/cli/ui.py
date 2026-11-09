@@ -31,8 +31,42 @@ def print_typewriter_stream(text: str, delay: float = 0.007) -> None:
     sys.stdout.flush()
 
 
+def _format_live_checkpoint_lines(preset: str) -> str:
+    """Build live checkpoint health and improvement telemetry lines for UI banners."""
+    try:
+        from helios_pipeline.evaluation.health import inspect_tier_checkpoint
+
+        tier_key = preset.split("-")[0].lower()
+        rep = inspect_tier_checkpoint(tier_key)
+        if rep.status == "HEALTHY":
+            h_badge = f"[bold green]HEALTHY[/bold green] (SHA-256 `{rep.sha256_digest[:10]}...` · {rep.tensor_count}T 0 NaN/Inf)"
+        elif rep.status == "CORRUPTED":
+            h_badge = f"[bold red]CORRUPTED[/bold red] ({rep.diagnostic_reason})"
+        else:
+            h_badge = "[yellow]UNINITIALIZED[/yellow] (Run /train to pretrain on OneTouch)"
+
+        if rep.total_steps > 0:
+            imp_line = (
+                f"Loss {rep.initial_loss:.4f} → [bold green]{rep.final_loss:.4f}[/bold green] "
+                f"([bold green]{rep.loss_improvement_pct:+.1f}% Gain[/bold green]) · "
+                f"Held-Out PPL: [bold white]{rep.heldout_ppl or 'N/A'}[/bold white] · "
+                f"Steps: {rep.resumed_from_step}→{rep.total_steps} [{rep.category}]"
+            )
+        else:
+            imp_line = "No continuous pretraining steps recorded yet"
+
+        return (
+            f"  [bold cyan]● Ckpt Health   :[/bold cyan] {h_badge}\n"
+            f"  [bold cyan]● Improvement   :[/bold cyan] [white]{imp_line}[/white]\n"
+            f"  [bold cyan]● Dataset SOT   :[/bold cyan] [white]{rep.datasets_synced} External Datasets Synced (120,616 Records / 90.38M Tokens)[/white]\n"
+        )
+    except Exception:
+        return ""
+
+
 def render_chat_banner(tier_info: dict[str, Any], device: Any) -> None:
     """Render glowing cyan/gold header banner in a stylish Rich panel."""
+    live_lines = _format_live_checkpoint_lines(tier_info.get("preset", "nano-20m"))
     content = (
         f"Helios Foundation Interactive Terminal Chat (v0.3.0)\n"
         f"[bold yellow]☀️  HELIOS COGNITIVE RUNTIME[/bold yellow]\n"
@@ -42,15 +76,16 @@ def render_chat_banner(tier_info: dict[str, Any], device: Any) -> None:
         f"  [bold cyan]● Context Window:[/bold cyan] [white]{tier_info['context']} (RoPE θ={tier_info['rope_theta']})[/white]\n"
         f"  [bold cyan]● Hardware Tier :[/bold cyan] [white]{device} · {tier_info['ram_target']}[/white]\n"
         f"  [bold cyan]● Memory Store  :[/bold cyan] [white]HMA SQLite WAL + In-Memory Semantic BM25[/white]\n"
-        f"  [bold cyan]● External Disk :[/bold cyan] [white]/Volumes/One Touch/Helios/ (0B internal SSD)[/white]\n\n"
-        f"[dim cyan]Commands: /models · /model <tier> · /think <on|off> · /memory · /stats · /reset · /exit[/dim cyan]"
+        f"  [bold cyan]● External Disk :[/bold cyan] [white]/Volumes/One Touch/Helios/ (0B internal SSD)[/white]\n"
+        f"{live_lines}\n"
+        f"[dim cyan]Commands: /models · /model <tier> · /status · /categories · /train · /sync · /bench · /stats · /doctor · /exit[/dim cyan]"
     )
     console.print(
         Panel(
             content,
             border_style="cyan",
             title="[bold yellow]⚡ HELIOS AI COGNITIVE RUNTIME[/bold yellow]",
-            subtitle="[dim]Hierarchical Memory Architecture + Dynamic CoT[/dim]",
+            subtitle="[dim]Hierarchical Memory Architecture + Dynamic CoT + Live Pretrain Telemetry[/dim]",
         )
     )
 

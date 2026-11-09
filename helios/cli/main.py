@@ -236,7 +236,13 @@ def train_cmd(
         None,
         "--duration",
         "-d",
-        help="Flexible duration string e.g. '5m', '90s', '1h' (overrides --minutes).",
+        help="Flexible duration string e.g. '5m', '20m', '90s', '1h' (overrides --minutes).",
+    ),
+    category: str = typer.Option(
+        "all",
+        "--category",
+        "-c",
+        help="Pretraining dataset category (all, fineweb, math, history, coding, science, geography, law, agents, tagalog).",
     ),
     device: str = typer.Option(
         "auto",
@@ -244,10 +250,15 @@ def train_cmd(
         help="Compute device ('auto', 'npu', 'mps', 'cuda', 'cpu').",
     ),
     sync: str | None = typer.Option(
-        None,
+        "all",
         "--sync",
         "-s",
-        help="Post-training sync targets ('all' or comma list: hf,ollama,git).",
+        help="Post-training sync targets ('all', 'none', or comma list: hf,ollama,git).",
+    ),
+    no_sync: bool = typer.Option(
+        False,
+        "--no-sync",
+        help="Disable automatic post-training multi-platform synchronization.",
     ),
     upload_weights: bool = typer.Option(
         False,
@@ -255,16 +266,18 @@ def train_cmd(
         help="Upload large model weights to Hugging Face Hub (manifest/config always synced).",
     ),
 ) -> None:
-    """Pretrain Helios models on external OneTouch drive with auto-benchmarking & sync."""
+    """Pretrain Helios models on external OneTouch drive with category selection, auto-bench & sync."""
     from helios_pipeline.workflow import parse_duration, run_train_workflow
 
     dur = parse_duration(duration, default_minutes=minutes)
+    effective_sync = None if no_sync else sync
     code = run_train_workflow(
         tiers_spec=tiers,
         minutes=dur,
         device=device,
-        sync=sync,
+        sync=effective_sync,
         upload_weights=upload_weights,
+        category=category,
     )
     if code != 0:
         raise typer.Exit(code=code)
