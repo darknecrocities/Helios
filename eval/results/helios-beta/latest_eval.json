@@ -2,7 +2,7 @@
   "tier_id": "helios-beta",
   "display_name": "Helios Beta",
   "preset": "beta-300m",
-  "timestamp_utc": "2026-11-08T13:02:52.481710+00:00",
+  "timestamp_utc": "2026-11-09T06:44:35.419439+00:00",
   "base_checkpoint_status": "Measured",
   "hma_system_status": "Measured",
   "variant_evaluated": "Base Pretrained + HMA-Grounded (v0.3.0-beta, 64K Ctx)",
@@ -27,7 +27,7 @@
     "runtime_buffers_overhead_mb": 96.0,
     "total_active_ram_2k_mb": 295.88,
     "total_active_ram_max_ctx_mb": 1783.88,
-    "measured_process_peak_rss_mb": 1861.16
+    "measured_process_peak_rss_mb": 207.94
   },
   "measured_base_neural": {
     "mmlu": 26.4,
