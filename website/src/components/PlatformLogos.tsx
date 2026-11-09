@@ -260,3 +260,128 @@ export const PyTorchSafeTensorsLogo: React.FC<{ className?: string; size?: numbe
     <circle cx="18" cy="17.5" r="3" fill="#FF5500" />
   </svg>
 );
+
+export const OpenClawLogo: React.FC<{ className?: string; size?: number }> = ({
+  className = '',
+  size = 32,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 36 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    aria-label="OpenClaw Agent"
+  >
+    {/* Stylized cybernetic agent claw / precision robotics icon */}
+    <circle cx="18" cy="18" r="14" stroke="#FF5500" strokeWidth="2" strokeDasharray="3 2" opacity="0.6" />
+    <path
+      d="M12 9C12 9 8 13.5 8 18C8 22.5 11 26 15 27L17 22C14.5 21.5 12.8 19.8 12.8 18C12.8 15.5 15 13 16 12L12 9Z"
+      fill="#FF5500"
+    />
+    <path
+      d="M24 9C24 9 28 13.5 28 18C28 22.5 25 26 21 27L19 22C21.5 21.5 23.2 19.8 23.2 18C23.2 15.5 21 13 20 12L24 9Z"
+      fill="#FF7722"
+    />
+    <circle cx="18" cy="18" r="2.8" fill="#141312" stroke="#FF5500" strokeWidth="1.5" />
+    <line x1="18" y1="5" x2="18" y2="10" stroke="#FF5500" strokeWidth="2" strokeLinecap="round" />
+    <line x1="18" y1="26" x2="18" y2="31" stroke="#FF5500" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+export const HermesAgentLogo: React.FC<{ className?: string; size?: number }> = ({
+  className = '',
+  size = 32,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 36 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    aria-label="Hermes Agent"
+  >
+    {/* Stylized Nous Research Hermes winged caduceus / agent helmet */}
+    <path
+      d="M18 5L27 15C25 18 22 20 18 20C14 20 11 18 9 15L18 5Z"
+      fill="#FFA000"
+      stroke="#FF8000"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M7 13C4 10 3 6 4 4C6 5 10 8 11 11"
+      stroke="#FFB300"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M29 13C32 10 33 6 32 4C30 5 26 8 25 11"
+      stroke="#FFB300"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M18 20V31M15 27L18 31L21 27"
+      stroke="#FFA000"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle cx="18" cy="14" r="2" fill="#141312" />
+  </svg>
+);
+
+export const GoogleColabLogo: React.FC<{ className?: string; size?: number }> = ({
+  className = '',
+  size = 32,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 36 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    aria-label="Google Colab"
+  >
+    <path
+      d="M12.5 13C10.0147 13 8 15.2386 8 18C8 20.7614 10.0147 23 12.5 23C14.9853 23 17 20.7614 17 18C17 15.2386 14.9853 13 12.5 13Z"
+      stroke="#F9AB00"
+      strokeWidth="3.2"
+    />
+    <path
+      d="M23.5 13C21.0147 13 19 15.2386 19 18C19 20.7614 21.0147 23 23.5 23C25.9853 23 28 20.7614 28 18C28 15.2386 25.9853 13 23.5 13Z"
+      stroke="#E37400"
+      strokeWidth="3.2"
+    />
+    <circle cx="12.5" cy="18" r="1.5" fill="#F9AB00" />
+    <circle cx="23.5" cy="18" r="1.5" fill="#E37400" />
+  </svg>
+);
+
+export const JupyterLogo: React.FC<{ className?: string; size?: number }> = ({
+  className = '',
+  size = 32,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 36 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    aria-label="Jupyter Notebook"
+  >
+    <path
+      d="M18 10C11.5 10 6 12.8 6 16.5C6 20.2 11.5 23 18 23C24.5 23 30 20.2 30 16.5C30 12.8 24.5 10 18 10Z"
+      stroke="#F37626"
+      strokeWidth="2.2"
+      fill="none"
+    />
+    <circle cx="18" cy="7" r="2.5" fill="#F37626" />
+    <circle cx="28" cy="27" r="2" fill="#767676" />
+    <circle cx="8" cy="27" r="2" fill="#767676" />
+  </svg>
+);

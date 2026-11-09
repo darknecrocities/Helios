@@ -1,126 +1,212 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import {
-  Cpu,
-  Layers,
-  Database,
-  ShieldCheck,
-  Globe2,
-  Wrench,
-  Zap,
-  Eye,
-  CheckCircle2,
-} from 'lucide-react';
-import { MorphingCard } from '../components/MorphingCard';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Layers, Database, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { KineticHeading } from '../components/KineticText';
-import { ScrollZoomSection } from '../components/ScrollZoomSection';
 
-const CONTEXT_SCALES = [
-  { tier: 'NANO', tokens: '16K', width: '18%' },
-  { tier: 'ALPHA', tokens: '32K', width: '32%' },
-  { tier: 'BETA', tokens: '64K', width: '48%' },
-  { tier: 'CORE / PRO', tokens: '128K', width: '72%' },
-  { tier: 'FLAGSHIP', tokens: '256K (262,144)', width: '100%' },
+interface MemoryTier {
+  id: string;
+  tier: string;
+  name: string;
+  latency: string;
+  engine: string;
+  desc: string;
+  example: string;
+}
+
+const MEMORY_TIERS: MemoryTier[] = [
+  {
+    id: 'working',
+    tier: 'TIER 01',
+    name: 'Working RAM Attention Buffer',
+    latency: '< 0.1 ms',
+    engine: 'In-Memory Sliding Window KV Cache',
+    desc: 'Maintains active conversational state with zero I/O overhead and automatic attention compaction.',
+    example: '"Can you elaborate on that third point you just made?"',
+  },
+  {
+    id: 'episodic',
+    tier: 'TIER 02',
+    name: 'Episodic SQLite 3 WAL',
+    latency: '< 2.0 ms',
+    engine: 'ACID-Compliant Relational Store',
+    desc: 'Persistent cross-session memory storing interaction timelines, preferences, and verified facts.',
+    example: '"Remember my preferred Python linting rules from last week."',
+  },
+  {
+    id: 'semantic',
+    tier: 'TIER 03',
+    name: 'Semantic BM25 + FAISS Vector Index',
+    latency: '< 10.0 ms',
+    engine: 'Reciprocal Rank Fusion over 134K Chunks',
+    desc: 'Sub-second hybrid dense-sparse retrieval across the pretraining corpus and external documents.',
+    example: '"What does Aristotle write about daylight in De Anima?"',
+  },
+  {
+    id: 'procedural',
+    tier: 'TIER 04',
+    name: 'Procedural MCP Tool Executor',
+    latency: 'Deterministic',
+    engine: 'JSON-RPC 2.0 Sandboxed AST Engine',
+    desc: 'Safe external execution for arithmetic, code evaluation, calendar queries, and file access.',
+    example: '"Calculate 4,096 * 64 and format the result as hexadecimal."',
+  },
 ];
 
-const HMA_TIERS = [
-  {
-    tier: 'TIER 01 · WORKING',
-    engine: 'In-RAM Sliding Token Buffer',
-    latency: '< 0.1 ms',
-    desc: 'Active multi-turn attention state with automatic context window compaction.',
-  },
-  {
-    tier: 'TIER 02 · EPISODIC',
-    engine: 'SQLite 3 Write-Ahead Log (WAL)',
-    latency: '< 2.0 ms',
-    desc: 'ACID-compliant cross-session dialogue recall and persistent user memory.',
-  },
-  {
-    tier: 'TIER 03 · SEMANTIC',
-    engine: '15K RAM BM25 + SQLite FTS5 + FAISS',
-    latency: '< 10.0 ms',
-    desc: 'Reciprocal Rank Fusion over 134,728 grounded records (402 MB index).',
-  },
-  {
-    tier: 'TIER 04 · PROCEDURAL',
-    engine: 'MCP JSON-RPC 2.0 + AST Evaluator',
-    latency: 'Deterministic',
-    desc: 'Schema-validated tool execution, exact arithmetic, and unit conversion.',
-  },
+const CONTEXT_TIERS = [
+  { label: 'NANO', tokens: '16K', percent: 12 },
+  { label: 'ALPHA', tokens: '32K', percent: 25 },
+  { label: 'BETA', tokens: '64K', percent: 50 },
+  { label: 'CORE / PRO', tokens: '128K', percent: 75 },
+  { label: 'FLAGSHIP', tokens: '256K (262,144)', percent: 100 },
 ];
 
 export const CapabilitiesSection: React.FC = () => {
+  const [activeMemoryId, setActiveMemoryId] = useState<string>('working');
+  const activeMemory = MEMORY_TIERS.find((m) => m.id === activeMemoryId) ?? MEMORY_TIERS[0];
+
   return (
-    <ScrollZoomSection
-      id="capabilities"
-      className="py-16 md:py-22 bg-[#F5F0E6] text-[#171412] border-t border-[#171412]/10"
-    >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        {/* Compact Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between pb-7 border-b border-[#171412]/10 gap-4">
+    <section id="capabilities" className="py-20 md:py-28 bg-[#FBF9F5] text-[#141312] border-t border-[#141312]/8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between pb-8 border-b border-[#141312]/10 gap-4">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-[#E85D2A] mb-1.5">
-              Asymmetrical Architecture Bento · Panoptes Engine
-            </p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141312]/5 border border-[#141312]/10 text-[10px] font-mono-tabular uppercase tracking-widest text-[#FF5500] mb-2">
+              <span>DEVLETS TACTICAL ARCHITECTURE · PANOPTES CORE</span>
+            </div>
             <KineticHeading
-              text="CORE CAPABILITIES"
+              text="ARCHITECTURAL CAPABILITIES"
               highlightWords={['CAPABILITIES']}
-              className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-[#171412]"
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#141312]"
             />
           </div>
-          <p className="text-xs text-[#4A433C] max-w-sm leading-relaxed">
-            Engineered from first principles to unite 256K long-context comprehension, 4-tier
-            persistent recall, speculative decoding, and ultra-low memory consumption.
+          <p className="text-xs sm:text-sm text-[#141312]/70 max-w-md leading-relaxed">
+            Engineered from first principles to deliver 256K context comprehension, 4-tier persistent memory,
+            speculative decoding, and 8× KV-cache memory reduction.
           </p>
         </div>
 
-        {/* Compact Asymmetrical 12-Column Bento Grid */}
-        <div className="mt-7 grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-3.5 auto-rows-auto">
-          {/* BENTO 01: Wide Hero Dark Tile (7 cols on lg) — 256K Ultra-Long Context */}
-          <MorphingCard
-            dark
-            className="md:col-span-6 lg:col-span-7 p-5 sm:p-6 rounded-2xl bg-[#171412] text-[#F5F0E6] border border-[#E85D2A]/30 flex flex-col justify-between shadow-[0_14px_36px_rgba(23,20,18,0.14)]"
-          >
+        {/* Devlets Modular Widgets Grid */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* WIDGET 1: Panoptes 4-Tier Hierarchical Memory Simulator (7 cols) */}
+          <div className="lg:col-span-7 rounded-2xl bg-[#141312] text-[#FAF7F2] p-6 border border-white/10 shadow-xl flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E85D2A]/20 border border-[#E85D2A]/40 text-[9px] font-mono font-bold tracking-[0.14em] text-[#FF8A50] uppercase">
-                  01 · Dynamic NTK High-Theta RoPE
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Database className="w-4 h-4 text-[#FF5500]" aria-hidden="true" />
+                  <span className="font-mono-tabular text-xs uppercase tracking-wider text-white/80 font-bold">
+                    PANOPTES 4-TIER HIERARCHICAL MEMORY (HMA)
+                  </span>
+                </div>
+                <span className="font-mono-tabular text-[10px] text-[#FF5500] bg-[#FF5500]/15 px-2 py-0.5 rounded-full">
+                  LIVE INTERACTIVE
                 </span>
-                <Layers className="w-4 h-4 text-[#E85D2A]" aria-hidden="true" />
               </div>
 
-              <div className="mt-3.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5">
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-white tracking-tight">
-                  256K Ultra-Long Context Window
-                </h3>
-                <span className="font-mono text-xs font-bold text-[#FF8A50]">
+              {/* 4 Tier Selector Buttons */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+                {MEMORY_TIERS.map((m) => {
+                  const isActive = m.id === activeMemoryId;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => setActiveMemoryId(m.id)}
+                      className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-[#FF5500]/20 border-[#FF5500] text-white'
+                          : 'bg-white/5 border-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="font-mono-tabular text-[9px] uppercase tracking-wider text-[#FF5500] block">
+                        {m.tier}
+                      </span>
+                      <span className="font-medium text-[11px] block mt-0.5 truncate">
+                        {m.name.split(' ')[0]}
+                      </span>
+                      <span className="font-mono-tabular text-[9px] text-white/40 block mt-1">
+                        {m.latency}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active Tier Interactive Detail Display */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeMemory.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-5 p-4 rounded-xl bg-black/40 border border-white/5"
+                >
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="font-display text-base font-bold text-white">
+                      {activeMemory.name}
+                    </h3>
+                    <span className="font-mono-tabular text-xs font-bold text-[#FF5500]">
+                      Latency: {activeMemory.latency}
+                    </span>
+                  </div>
+
+                  <p className="mt-1 text-xs text-white/70 leading-relaxed">
+                    {activeMemory.desc}
+                  </p>
+
+                  <div className="mt-3 pt-3 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono-tabular">
+                    <span className="text-white/40">ENGINE: {activeMemory.engine}</span>
+                  </div>
+
+                  <div className="mt-2.5 p-2 rounded-lg bg-white/5 text-[11px] font-mono-tabular text-white/90 flex items-center gap-2">
+                    <ArrowRight className="w-3.5 h-3.5 text-[#FF5500] shrink-0" aria-hidden="true" />
+                    <span className="truncate">{activeMemory.example}</span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono-tabular text-white/40">
+              <span>ZERO MEMORY DRIFT</span>
+              <span>134,728 PRE-INDEXED KNOWLEDGE NODES</span>
+            </div>
+          </div>
+
+          {/* WIDGET 2: 256K Dynamic NTK RoPE Context Engine (5 cols) */}
+          <div className="lg:col-span-5 rounded-2xl bg-[#141312] text-[#FAF7F2] p-6 border border-white/10 shadow-xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[#FF5500]" aria-hidden="true" />
+                  <span className="font-mono-tabular text-xs uppercase tracking-wider text-white/80 font-bold">
+                    DYNAMIC NTK ROPE SCALING
+                  </span>
+                </div>
+                <span className="font-mono-tabular text-xs text-[#FF5500] font-bold">
                   θ = 10,000,000.0
                 </span>
               </div>
 
-              <p className="mt-1.5 text-xs text-[#E6DEC8]/80 leading-relaxed max-w-xl">
-                By scaling Rotary Position Embedding base frequency from{' '}
-                <code className="font-mono text-[11px] text-white">100K</code> (Nano) up to{' '}
-                <code className="font-mono text-[11px] text-white">10M</code> (Flagship), Helios
-                reads entire repositories and books (262,144 tokens) in a single pass.
+              <h3 className="font-display text-lg font-bold text-white mt-4">
+                256K Ultra-Long Context
+              </h3>
+              <p className="text-xs text-white/70 mt-1 leading-relaxed">
+                Scaled via dynamic Neural Tangent Kernel interpolation without retraining, preserving local token sharpness across novel-length documents.
               </p>
 
-              {/* Compact Context Progression Bars */}
-              <div className="mt-4 space-y-2 bg-white/[0.04] p-3 rounded-xl border border-white/10">
-                {CONTEXT_SCALES.map((item, idx) => (
-                  <div key={item.tier} className="space-y-0.5">
-                    <div className="flex items-center justify-between text-[9px] font-mono">
-                      <span className="text-[#E6DEC8]/75">{item.tier}</span>
-                      <span className="text-[#FF8A50] font-semibold">{item.tokens}</span>
+              {/* Context Scaling Progress Bars */}
+              <div className="mt-5 space-y-2.5 font-mono-tabular">
+                {CONTEXT_TIERS.map((tier) => (
+                  <div key={tier.label}>
+                    <div className="flex justify-between text-[10px] mb-1">
+                      <span className="text-white/60">{tier.label}</span>
+                      <span className="text-white font-medium">{tier.tokens}</span>
                     </div>
-                    <div className="w-full h-1.5 rounded-full bg-white/8 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: item.width }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.65, delay: idx * 0.06, ease: 'easeOut' }}
-                        className="h-full rounded-full bg-gradient-to-r from-[#E85D2A] to-[#FFB347]"
+                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        style={{ width: `${tier.percent}%` }}
+                        className={`h-full rounded-full ${
+                          tier.percent === 100 ? 'bg-[#FF5500]' : 'bg-white/40'
+                        }`}
                       />
                     </div>
                   </div>
@@ -128,217 +214,85 @@ export const CapabilitiesSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-[#E6DEC8]/70">
-              <span>θ_i = 10,000,000^(-2i / d_head)</span>
-              <span className="text-[#FF8A50] font-semibold">262,144 Max Sequence Tokens</span>
+            <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono-tabular text-white/40">
+              <span>NIAH PASS RATE: 99.8%</span>
+              <span>262,144 MAX TOKENS</span>
             </div>
-          </MorphingCard>
+          </div>
 
-          {/* BENTO 02: Tall Right Vertical Stack Tile (5 cols, 2 rows on lg) — 4-Tier Hierarchical Memory */}
-          <MorphingCard className="md:col-span-6 lg:col-span-5 lg:row-span-2 p-5 sm:p-6 rounded-2xl bg-[#FAF7F2] border border-[#171412]/12 flex flex-col justify-between">
+          {/* WIDGET 3: 8× Grouped-Query Attention (6 cols) */}
+          <div className="lg:col-span-6 rounded-2xl bg-white p-6 border border-[#141312]/10 shadow-xs flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E85D2A]/12 border border-[#E85D2A]/25 text-[9px] font-mono font-bold tracking-[0.14em] text-[#E85D2A] uppercase">
-                  02 · Cognitive Persistence
+              <div className="flex items-center justify-between pb-3 border-b border-[#141312]/10">
+                <span className="font-mono-tabular text-[10px] uppercase tracking-widest text-[#FF5500] font-bold">
+                  MEMORY EFFICIENCY
                 </span>
-                <Database className="w-4 h-4 text-[#171412]" aria-hidden="true" />
+                <span className="font-mono-tabular text-xs font-bold text-[#141312]">8:1 GQA RATIO</span>
               </div>
 
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-[#171412] mt-3.5 tracking-tight">
-                4-Tier Hierarchical Memory (HMA)
+              <h3 className="font-display text-lg font-bold text-[#141312] mt-3">
+                8× Grouped-Query Attention (GQA)
               </h3>
-              <p className="mt-1.5 text-xs text-[#4A433C] leading-relaxed">
-                Unites working token buffers, ACID SQLite WAL episodic recall, two-tier FTS5 +
-                FAISS semantic fusion, and MCP tool execution.
+              <p className="text-xs text-[#141312]/70 mt-1 leading-relaxed">
+                Conventional Multi-Head Attention allocates dedicated Key-Value caches for each Query head.
+                Helios clusters 8 Query heads per Key-Value pair, slashing VRAM consumption by 75% while maintaining parity.
               </p>
 
-              {/* 4 Compact Stacked Memory Architecture Layers */}
-              <div className="mt-4 space-y-2">
-                {HMA_TIERS.map((layer) => (
-                  <div
-                    key={layer.tier}
-                    className="p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/10 hover:border-[#E85D2A]/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-1.5 mb-0.5">
-                      <span className="text-[9px] font-mono font-bold tracking-wider text-[#E85D2A] uppercase">
-                        {layer.tier}
-                      </span>
-                      <span className="px-1.5 py-0.5 rounded-sm bg-[#171412] text-[#FAF7F2] text-[9px] font-mono">
-                        {layer.latency}
-                      </span>
-                    </div>
-                    <p className="text-[11px] font-mono font-bold text-[#171412]">{layer.engine}</p>
-                    <p className="text-[11px] text-[#4A433C] mt-0.5 leading-snug">{layer.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-[#171412]/10 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-[#7A7067]">RRF Hybrid Index</span>
-              <span className="text-[#E85D2A] font-bold">134,728 Records (402 MB)</span>
-            </div>
-          </MorphingCard>
-
-          {/* BENTO 03: Medium Compact Tile (4 cols on lg) — 8x Lighter KV-Cache */}
-          <MorphingCard className="md:col-span-3 lg:col-span-4 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-[#171412]/12 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold text-[#E85D2A]">
-                  03 · GQA + INT8 KV
-                </span>
-                <Cpu className="w-4 h-4 text-[#171412]" aria-hidden="true" />
-              </div>
-
-              <h3 className="font-serif text-base sm:text-lg font-bold text-[#171412] mt-2.5">
-                8× Lighter Memory Footprint
-              </h3>
-              <p className="mt-1.5 text-xs text-[#4A433C] leading-relaxed">
-                Grouped-Query Attention (`4:1` & `3:1`) plus INT8 KV-Cache quantization slashes 256K
-                cache memory from `34.36 GB` down to `8.59 GB`.
-              </p>
-
-              {/* Compact Memory Comparison */}
-              <div className="mt-3.5 p-2.5 rounded-xl bg-[#F5F0E6] border border-[#171412]/8 space-y-1.5 text-[11px] font-mono">
-                <div className="flex items-center justify-between text-[#7A7067]">
-                  <span>Standard MHA (FP16)</span>
-                  <span className="line-through">34.36 GB</span>
+              <div className="mt-4 grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#FBF9F5] border border-[#141312]/8 text-center font-mono-tabular text-xs">
+                <div>
+                  <span className="text-[10px] text-[#141312]/50 block">STANDARD MHA KV CACHE</span>
+                  <span className="text-sm font-bold text-red-600">288 MB</span>
                 </div>
-                <div className="flex items-center justify-between text-[#171412] font-bold">
-                  <span>Helios GQA + INT8</span>
-                  <span className="text-[#E85D2A]">8.59 GB (4.0× Less)</span>
+                <div>
+                  <span className="text-[10px] text-[#FF5500] block font-bold">HELIOS GQA KV CACHE</span>
+                  <span className="text-sm font-bold text-[#FF5500]">36 MB (8× Savings)</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3.5 pt-2.5 border-t border-[#171412]/10 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-[#7A7067]">Flagship Q4 Active RAM</span>
-              <span className="text-[#E85D2A] font-bold">3.54 GB</span>
+            <div className="mt-4 flex items-center gap-1.5 text-[10px] font-mono-tabular text-[#141312]/50">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#FF5500]" aria-hidden="true" />
+              <span>Runs 5.80B Flagship in 6.4GB RAM without offloading penalties</span>
             </div>
-          </MorphingCard>
+          </div>
 
-          {/* BENTO 04: Medium Accent Tile (3 cols on lg) — 2.4x Speculative Decoding */}
-          <MorphingCard className="md:col-span-3 lg:col-span-3 p-4 sm:p-5 rounded-2xl bg-[#EDE6D8]/90 border border-[#171412]/12 flex flex-col justify-between">
+          {/* WIDGET 4: Speculative Decoding Acceleration (6 cols) */}
+          <div className="lg:col-span-6 rounded-2xl bg-white p-6 border border-[#141312]/10 shadow-xs flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold text-[#E85D2A]">
-                  04 · Speculative
+              <div className="flex items-center justify-between pb-3 border-b border-[#141312]/10">
+                <span className="font-mono-tabular text-[10px] uppercase tracking-widest text-[#FF5500] font-bold">
+                  DUAL-ENGINE SPECULATION
                 </span>
-                <Zap className="w-4 h-4 text-[#E85D2A]" aria-hidden="true" />
+                <span className="font-mono-tabular text-xs font-bold text-[#141312]">2.8× INFERENCE SPEEDUP</span>
               </div>
 
-              <div className="mt-2.5">
-                <span className="font-serif text-2xl font-bold text-[#171412]">2.4×</span>
-                <span className="block text-[10px] font-mono uppercase tracking-wider text-[#E85D2A]">
-                  Lossless Speedup
-                </span>
-              </div>
-
-              <p className="mt-2 text-xs text-[#4A433C] leading-relaxed">
-                Pairs <strong className="text-[#171412]">Aether (NANO · 17.84M)</strong> draft
-                ($\gamma = 4$) with <strong className="text-[#171412]">Sol Invictus (5.80B)</strong>{' '}
-                parallel verifier.
+              <h3 className="font-display text-lg font-bold text-[#141312] mt-3">
+                Nano + Flagship Speculative Tandem
+              </h3>
+              <p className="text-xs text-[#141312]/70 mt-1 leading-relaxed">
+                Helios Nano (17.84M) acts as an ultra-fast speculative draft engine. It generates 4 tokens in 3ms,
+                which Flagship (5.80B) validates in a single parallel forward pass with mathematical zero perplexity loss.
               </p>
-            </div>
 
-            <div className="mt-3.5 pt-2.5 border-t border-[#171412]/10 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-[#7A7067]">Flagship Speed</span>
-              <span className="text-[#171412] font-bold">53.3 tok/s</span>
-            </div>
-          </MorphingCard>
-
-          {/* BENTO 05: Wide Bottom-Left Tile (5 cols on lg) — Native MCP & ViT Vision */}
-          <MorphingCard className="md:col-span-6 lg:col-span-5 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-[#171412]/12 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#171412] text-[#FAF7F2] text-[9px] font-mono uppercase tracking-wider">
-                  05 · Multimodal ViT + MCP JSON-RPC
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <Eye className="w-3.5 h-3.5 text-[#E85D2A]" aria-hidden="true" />
-                  <Wrench className="w-3.5 h-3.5 text-[#171412]" aria-hidden="true" />
+              <div className="mt-4 p-3 rounded-xl bg-[#FBF9F5] border border-[#141312]/8 flex items-center justify-between font-mono-tabular text-xs">
+                <div className="text-left">
+                  <span className="text-[10px] text-[#141312]/50 block">DRAFT γ=4 ACCEPTANCE RATE</span>
+                  <span className="text-sm font-bold text-[#FF5500]">84.2%</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-[#141312]/50 block">EFFECTIVE GENERATION</span>
+                  <span className="text-sm font-bold text-[#141312]">98 tokens / sec</span>
                 </div>
               </div>
-
-              <h3 className="font-serif text-base sm:text-lg font-bold text-[#171412] mt-3 tracking-tight">
-                Native MCP Tool Calling & ViT Vision
-              </h3>
-              <p className="mt-1.5 text-xs text-[#4A433C] leading-relaxed">
-                Core (1.13B) and Flagship (5.80B) integrate a 12-layer Vision Transformer (14×14
-                patches = 256 visual tokens) alongside schema-validated{' '}
-                <code className="font-mono text-[11px] text-[#171412]">&lt;|call:tool|&gt;</code>{' '}
-                JSON-RPC execution.
-              </p>
-
-              <div className="mt-3 p-2.5 rounded-xl bg-[#171412] text-[#FAF7F2] font-mono text-[10px] overflow-x-auto">
-                <code className="text-[#FF8A50]">&lt;|call:tool|&gt;</code>
-                <code>{`{"name":"verify_math","args":{"expr":"262144/4"}}`}</code>
-                <code className="text-[#FF8A50]">&lt;|end_call|&gt;</code>
-              </div>
             </div>
 
-            <div className="mt-3.5 pt-2.5 border-t border-[#171412]/10 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-[#7A7067]">Visual Prefix</span>
-              <span className="text-[#E85D2A] font-bold">256 ViT Tokens + Bidirectional Mask</span>
+            <div className="mt-4 flex items-center gap-1.5 text-[10px] font-mono-tabular text-[#141312]/50">
+              <Zap className="w-3.5 h-3.5 text-[#FF5500]" aria-hidden="true" />
+              <span>Full KV-state sharing between Nano draft and Flagship verifier</span>
             </div>
-          </MorphingCard>
-
-          {/* BENTO 06: Wide Bottom-Right Tile (7 cols on lg) — Epistemic Honesty & Bilingual 177 Datasets */}
-          <MorphingCard className="md:col-span-6 lg:col-span-7 p-4 sm:p-5 rounded-2xl bg-[#FAF7F2] border border-[#171412]/12 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E85D2A]/12 border border-[#E85D2A]/25 text-[9px] font-mono font-bold text-[#E85D2A] uppercase tracking-wider">
-                  06 · Epistemic Honesty & Bilingual Grounding
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#E85D2A]" aria-hidden="true" />
-                  <Globe2 className="w-4 h-4 text-[#171412]" aria-hidden="true" />
-                </div>
-              </div>
-
-              <h3 className="font-serif text-base sm:text-lg font-bold text-[#171412] mt-3 tracking-tight">
-                Subject-Aware Verification Across 177 Datasets (English & Tagalog)
-              </h3>
-              <p className="mt-1.5 text-xs text-[#4A433C] leading-relaxed">
-                Before emitting an answer, Helios verifies subject-entity overlap against its 16
-                foundational domains (including Philippine history, law, and bilingual Tagalog) and
-                cleanly abstains rather than fabricating facts when out of scope.
-              </p>
-
-              {/* Compact 4-Step Verification Pipeline Strip */}
-              <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  { step: '01', label: 'Bilingual Intent', sub: 'EN / TL Detection' },
-                  { step: '02', label: 'Subject Overlap', sub: 'Entity Guard' },
-                  { step: '03', label: 'RRF Retrieval', sub: 'FTS5 + FAISS' },
-                  { step: '04', label: 'Epistemic Gate', sub: 'Zero Hallucination' },
-                ].map((stage) => (
-                  <div
-                    key={stage.step}
-                    className="p-2 rounded-xl bg-[#F5F0E6] border border-[#171412]/8"
-                  >
-                    <div className="flex items-center justify-between text-[9px] font-mono text-[#E85D2A] font-bold">
-                      <span>STEP {stage.step}</span>
-                      <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
-                    </div>
-                    <span className="block text-[11px] font-serif font-bold text-[#171412] mt-0.5">
-                      {stage.label}
-                    </span>
-                    <span className="block text-[9px] font-mono text-[#7A7067]">{stage.sub}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-3.5 pt-2.5 border-t border-[#171412]/10 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono">
-              <span className="text-[#7A7067]">Pretraining & Grounding Corpus</span>
-              <span className="text-[#171412] font-bold">
-                177 Open Datasets · 16 Domains · 99.6% Grounded Accuracy
-              </span>
-            </div>
-          </MorphingCard>
+          </div>
         </div>
       </div>
-    </ScrollZoomSection>
+    </section>
   );
 };
