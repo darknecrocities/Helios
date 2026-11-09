@@ -25,6 +25,12 @@ export interface CurriculumStats {
   tokensFormatted: string;
   cumulativeUniqueTrained: number;
   activeCursorOffset: number;
+  totalSteps?: number;
+  tokensTrained?: number;
+  tokensTrainedFormatted?: string;
+  heldoutPpl?: number;
+  lossReductionPct?: number;
+  dpoAccuracyPct?: number;
   activeEpoch: number;
   duplicationRatePct: number;
   deduplicationProtocol: string;
