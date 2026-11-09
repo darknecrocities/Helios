@@ -255,7 +255,12 @@ def sample_non_repeating_corpus(
         sessions.append(session_meta)
         ledger["sessions"] = sessions[-50:]
         save_curriculum_ledger(storage.base_dir, ledger)
-        update_trained_topics_docs(ledger)
+        target_doc = (
+            DEFAULT_DOCS_LOG
+            if str(storage.base_dir).startswith("/Volumes/One Touch")
+            else storage.base_dir / "TRAINED_TOPICS_HISTORY.md"
+        )
+        update_trained_topics_docs(ledger, doc_path=target_doc)
 
     return texts, session_meta
 

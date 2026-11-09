@@ -11,9 +11,9 @@ import { ComparisonSection } from './sections/ComparisonSection';
 import { PlatformsSection } from './sections/PlatformsSection';
 import {
   EditorialReasoningSection,
-  EditorialTrainingSection,
   EditorialHonestySection,
 } from './sections/OpusEditorialSections';
+import { PretrainedCurriculumSection } from './sections/PretrainedCurriculumSection';
 import { DocsView } from './pages/DocsView';
 
 export const App: React.FC = () => {
@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (activeView !== 'landing') return;
 
-    const sectionIds = ['hero', 'about', 'family', 'capabilities', 'comparison', 'platforms'];
+    const sectionIds = ['hero', 'about', 'family', 'training', 'capabilities', 'comparison', 'platforms'];
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 260;
       for (const id of sectionIds) {
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
             <BrandBelt />
             <EditorialReasoningSection />
             <FamilySection />
-            <EditorialTrainingSection />
+            <PretrainedCurriculumSection />
             <CapabilitiesSection />
             <ComparisonSection />
             <EditorialHonestySection />

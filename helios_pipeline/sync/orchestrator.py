@@ -262,6 +262,13 @@ def run_sync(
         rep.status["hf"] = f"skipped: report {report} does not exist"
 
     if "git" in want:
+        try:
+            from scripts.sync_pretrain_metrics_to_landing import sync_metrics
+
+            sync_metrics()
+        except Exception:
+            pass
+
         candidate_files = [
             report,
             Path("eval/reports/pretrain_timeboxed.json"),
@@ -271,6 +278,7 @@ def run_sync(
             Path("docs/TRAINING_HISTORY.md"),
             Path("docs/CHECKPOINT_HISTORY.md"),
             Path("docs/BENCHMARK_HISTORY.md"),
+            Path("website/src/data/pretrain_metrics.json"),
             *[Path(f"deploy/ollama/Modelfile.{r.tier}") for r in health_reports],
         ]
         existing_files = [p for p in candidate_files if p.exists()]

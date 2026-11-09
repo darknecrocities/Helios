@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { id: 'hero', label: 'Helios' },
   { id: 'about', label: 'About' },
   { id: 'family', label: 'Models' },
+  { id: 'training', label: 'Datasets' },
   { id: 'capabilities', label: 'Capabilities' },
   { id: 'comparison', label: 'Comparison' },
   { id: 'platforms', label: 'Deploy' },
