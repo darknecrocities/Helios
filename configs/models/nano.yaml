@@ -1,0 +1,17 @@
+model:
+  id: "helios-nano"
+  name: "Helios Nano"
+  epithet: "Aether"
+  preset: "nano-20m"
+  parameters: 17840000
+  layers: 12
+  d_model: 192
+  n_heads: 6
+  n_kv_heads: 2
+  d_ffn: 512
+  context_length: 16384
+  rope_theta: 100000.0
+  tie_embeddings: true
+  target_hardware: "Raspberry Pi 3/4/5, MicroVMs, Wearables, Edge NPUs"
+  ram_target: "61MB RAM @ 2K | 92MB @ 16K"
+  default_device: "cpu"

@@ -1,0 +1,13 @@
+suite: "long_context"
+description: "Context Utilization, Needle In A Haystack, and Hierarchical Memory (HMA) Retrieval"
+tasks:
+  - id: "hma_needle"
+    name: "HMA Precision Needle-in-Haystack Retrieval"
+    metric: "retrieval_f1"
+    lengths: [4096, 16384, 32768, 65536, 131072, 262144]
+  - id: "hma_conflict"
+    name: "Timestamp Priority & Conflicting Memory Resolution"
+    metric: "resolution_accuracy"
+  - id: "hma_epistemic_abstain"
+    name: "Zero-Hallucination Epistemic Boundary Testing"
+    metric: "abstain_precision"

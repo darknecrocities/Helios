@@ -1,0 +1,10 @@
+environment: "macos_mps"
+description: "Apple Silicon Metal Performance Shaders (MPS) Unified Memory"
+device: "mps"
+precision: "float32"
+batch_size: 1
+allow_resume: true
+save_interval_samples: 10
+max_retries: 1
+fail_on_oom: true
+profiler: "torch"

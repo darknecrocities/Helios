@@ -9,6 +9,11 @@ import { FamilySection } from './sections/FamilySection';
 import { CapabilitiesSection } from './sections/CapabilitiesSection';
 import { ComparisonSection } from './sections/ComparisonSection';
 import { PlatformsSection } from './sections/PlatformsSection';
+import {
+  EditorialReasoningSection,
+  EditorialTrainingSection,
+  EditorialHonestySection,
+} from './sections/OpusEditorialSections';
 import { DocsView } from './pages/DocsView';
 
 export const App: React.FC = () => {
@@ -89,9 +94,12 @@ export const App: React.FC = () => {
             <HeroSection onOpenDocs={handleOpenDocs} />
             <AboutSection />
             <BrandBelt />
+            <EditorialReasoningSection />
             <FamilySection />
+            <EditorialTrainingSection />
             <CapabilitiesSection />
             <ComparisonSection />
+            <EditorialHonestySection />
             <PlatformsSection onOpenDocs={handleOpenDocs} />
           </motion.main>
         ) : (

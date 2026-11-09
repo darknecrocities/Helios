@@ -1,0 +1,17 @@
+suite: "performance"
+description: "Hardware Efficiency, Memory Profiling, and Generation Throughput"
+tasks:
+  - id: "throughput"
+    name: "Tokens Per Second (tok/sec)"
+    batch_sizes: [1, 2, 4]
+    prompt_tokens: 128
+    gen_tokens: 256
+  - id: "ttft"
+    name: "Time To First Token (TTFT in ms)"
+    prompt_tokens: [128, 1024, 4096]
+  - id: "memory_rss"
+    name: "Peak Process Resident Set Size (RSS in MB)"
+    durations: "steady_state"
+  - id: "kv_cache_scaling"
+    name: "KV Cache Growth per 1K Context"
+    metric: "mb_per_1k_tokens"

@@ -1,0 +1,17 @@
+suite: "coding"
+description: "Sandboxed Python Code Synthesis and Algorithmic Correctness"
+tasks:
+  - id: "humaneval"
+    name: "HumanEval Python Synthesis"
+    dataset: "openai/openai_humaneval"
+    split: "test"
+    metric: "pass_at_1"
+    sandbox: "isolated_subprocess"
+    timeout_sec: 5.0
+  - id: "mbpp"
+    name: "Mostly Basic Python Problems (MBPP)"
+    dataset: "google-research-datasets/mbpp"
+    split: "test"
+    metric: "pass_at_1"
+    sandbox: "isolated_subprocess"
+    timeout_sec: 5.0

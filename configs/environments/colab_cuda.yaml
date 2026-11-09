@@ -1,0 +1,12 @@
+environment: "colab_cuda"
+description: "Google Colab NVIDIA CUDA Acceleration (T4, V100, A100, L4)"
+device: "cuda"
+precision: "bfloat16"
+batch_size: 1
+max_batch_size: 4
+allow_resume: true
+save_interval_samples: 50
+max_retries: 3
+fail_on_oom: true
+artifact_storage: "persistent"
+profiler: "torch_cuda"

@@ -1,0 +1,16 @@
+suite: "medical"
+description: "Biomedical Literature, Clinical Decision Support, and Medical Examinations"
+tasks:
+  - id: "medmcqa"
+    name: "Medical Multiple Choice QA (MedMCQA)"
+    dataset: "medmcqa"
+    split: "validation"
+    few_shot: 0
+    metric: "accuracy"
+  - id: "pubmedqa"
+    name: "PubMedQA Biomedical Question Answering"
+    dataset: "pubmed_qa"
+    subset: "pqa_labeled"
+    split: "test"
+    few_shot: 0
+    metric: "accuracy"
