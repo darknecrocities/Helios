@@ -425,8 +425,14 @@ class SpecialTokensRegistry:
 
             if msg.get("tool_calls"):
                 for tc in msg["tool_calls"]:
-                    fn = tc.get("function", tc) if isinstance(tc, dict) else {"name": str(tc), "arguments": {}}
-                    parts.append(self.format_tool_call(str(fn.get("name", "")), fn.get("arguments", {})))
+                    fn = (
+                        tc.get("function", tc)
+                        if isinstance(tc, dict)
+                        else {"name": str(tc), "arguments": {}}
+                    )
+                    parts.append(
+                        self.format_tool_call(str(fn.get("name", "")), fn.get("arguments", {}))
+                    )
 
             parts.append(cfg.eos_token)
 

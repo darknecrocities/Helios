@@ -246,9 +246,15 @@ class DPOTrainer:
     def _encode_pair(
         self, pair: PreferencePair, vocab_size: int
     ) -> tuple[torch.Tensor, torch.Tensor, int]:
-        p_ids = [t % vocab_size for t in self.tokenizer.encode(pair.prompt, add_special_tokens=True)]
-        c_ids = [t % vocab_size for t in self.tokenizer.encode(pair.chosen, add_special_tokens=False)]
-        r_ids = [t % vocab_size for t in self.tokenizer.encode(pair.rejected, add_special_tokens=False)]
+        p_ids = [
+            t % vocab_size for t in self.tokenizer.encode(pair.prompt, add_special_tokens=True)
+        ]
+        c_ids = [
+            t % vocab_size for t in self.tokenizer.encode(pair.chosen, add_special_tokens=False)
+        ]
+        r_ids = [
+            t % vocab_size for t in self.tokenizer.encode(pair.rejected, add_special_tokens=False)
+        ]
 
         max_p = max(8, self.config.seq_len // 3)
         p_ids = p_ids[:max_p]
@@ -271,7 +277,9 @@ class DPOTrainer:
         except Exception:
             pass
 
-        dev = torch.device("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
+        dev = torch.device(
+            "mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu"
+        )
         if self.config.preset in ("core-1b", "pro-3b", "flagship-6b", "core", "pro", "flagship"):
             dev = torch.device("cpu")
 
@@ -307,7 +315,9 @@ class DPOTrainer:
                 c_list.append(c_t)
                 r_list.append(r_t)
                 p_lens.append(p_l)
-            encoded_batches.append((torch.stack(c_list).to(dev), torch.stack(r_list).to(dev), p_lens))
+            encoded_batches.append(
+                (torch.stack(c_list).to(dev), torch.stack(r_list).to(dev), p_lens)
+            )
 
         # Pre-cache reference logprobs under frozen initial weights (0 extra model memory!)
         ref_cache: list[tuple[torch.Tensor, torch.Tensor]] = []
@@ -363,7 +373,9 @@ class DPOTrainer:
         if self.config.save_checkpoint and loaded_compat and st_path.exists():
             from helios_pipeline.evaluation.health import compute_file_sha256
 
-            state = {k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()}
+            state = {
+                k: v.detach().cpu().contiguous().clone() for k, v in model.state_dict().items()
+            }
             save_file(state, str(st_path))
             sha = compute_file_sha256(st_path)
             (latest_dir / "SHA256SUMS").write_text(f"{sha}  model.safetensors\n", encoding="utf-8")

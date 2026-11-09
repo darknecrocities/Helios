@@ -65,7 +65,9 @@ class DistributedContext:
     def is_main_process(self) -> bool:
         return self.rank == 0
 
-    def init_process_group_if_needed(self, master_addr: str = "127.0.0.1", master_port: int = 29505) -> None:
+    def init_process_group_if_needed(
+        self, master_addr: str = "127.0.0.1", master_port: int = 29505
+    ) -> None:
         """Initialize torch.distributed if world_size > 1 and not yet initialized."""
         if self.world_size <= 1 or not dist.is_available():
             return
@@ -160,9 +162,7 @@ class ZeROShardedOptimizer:
 
         # Assign each parameter to an owning rank via greedy load-balanced byte assignment
         self.param_owner: dict[int, int] = {}
-        self.rank_buckets: list[list[nn.Parameter]] = [
-            [] for _ in range(self.effective_world_size)
-        ]
+        self.rank_buckets: list[list[nn.Parameter]] = [[] for _ in range(self.effective_world_size)]
         bucket_numel = [0] * self.effective_world_size
 
         for p in self.all_params:
@@ -266,7 +266,9 @@ class ZeROShardedOptimizer:
 class DistributedShardSampler:
     """Deterministic rank-strided sampler with zero cross-rank record duplication."""
 
-    def __init__(self, total_records: int, rank: int = 0, world_size: int = 1, start_offset: int = 0) -> None:
+    def __init__(
+        self, total_records: int, rank: int = 0, world_size: int = 1, start_offset: int = 0
+    ) -> None:
         self.total_records = max(1, int(total_records))
         self.rank = int(rank)
         self.world_size = max(1, int(world_size))

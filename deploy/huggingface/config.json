@@ -9,20 +9,42 @@
     "AutoTokenizer": "helios.tokenizer.base.HeliosTokenizer"
   },
   "vocab_size": 32000,
-  "hidden_size": 320,
-  "num_hidden_layers": 7,
-  "num_attention_heads": 8,
-  "num_key_value_heads": 2,
-  "intermediate_size": 864,
-  "max_position_embeddings": 512,
-  "rope_theta": 10000.0,
+  "hidden_size": 4096,
+  "num_hidden_layers": 32,
+  "num_attention_heads": 32,
+  "num_key_value_heads": 8,
+  "intermediate_size": 11008,
+  "max_position_embeddings": 262144,
+  "rope_theta": 10000000.0,
+  "rope_scaling_factor": 1.0,
   "rms_norm_eps": 1e-05,
   "tie_word_embeddings": true,
   "initializer_range": 0.02,
   "dropout": 0.0,
-  "torch_dtype": "float32",
+  "torch_dtype": "bfloat16",
   "transformers_version": "4.40.0",
+  "model_version": "0.3.0-flagship",
   "model_family": "Helios",
   "developer": "Arron Kian Parejas",
-  "developer_email": "parejasarronkian@gmail.com"
+  "developer_email": "parejasarronkian@gmail.com",
+  "capabilities": {
+    "hma_4tier_memory": true,
+    "cot_first_principles_reasoning": true,
+    "mcp_procedural_tool_calling": true,
+    "multimodal_vision_patch14": true,
+    "epistemic_abstention_guard": true,
+    "bilingual_languages": [
+      "en",
+      "tl"
+    ]
+  },
+  "vision_config": {
+    "image_size": 224,
+    "patch_size": 14,
+    "num_channels": 3,
+    "hidden_size": 1024,
+    "num_hidden_layers": 12,
+    "num_attention_heads": 16,
+    "intermediate_size": 4096
+  }
 }

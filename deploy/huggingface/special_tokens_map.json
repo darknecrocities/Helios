@@ -7,6 +7,11 @@
     "<|end_header_id|>",
     "<|call:tool|>",
     "<|return:tool|>",
-    "<|refusal|>"
+    "<|refusal|>",
+    "<|image|>",
+    "<|memory_start|>",
+    "<|memory_end|>",
+    "<thought>",
+    "</thought>"
   ]
 }

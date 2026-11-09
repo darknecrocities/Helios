@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ShieldCheck, Eye, Cpu } from 'lucide-react';
 import { KineticHeading } from '../components/KineticText';
+import pretrainData from '../data/pretrain_metrics.json';
 
 const AXIOMS = [
   {
@@ -79,7 +80,7 @@ export const AboutSection: React.FC = () => {
                 Conceived and engineered from the ground up by{' '}
                 <strong className="text-[#141312] font-semibold">Arron Kian Parejas</strong> in the Philippines,{' '}
                 <strong className="text-[#FF5500]">Helios</strong> breaks that paradigm. Every single component—from
-                its custom 48,000-token BPE vocabulary and Dynamic NTK RoPE attention to its 177-dataset pretraining corpus—is
+                its custom 48,000-token BPE vocabulary and Dynamic NTK RoPE attention to its {pretrainData.curriculum.totalDatasets}-dataset pretraining corpus—is
                 open-source, mathematically verifiable, and engineered to run locally without cloud tethering.
               </p>
             </div>

@@ -301,8 +301,21 @@ def build_pretrain_metrics_payload() -> dict[str, Any]:
             },
         ]
 
-    active_cursor = 4900
-    cumulative_trained = 6148
+    active_cursor = 7400
+    cumulative_trained = 13640
+
+    if TOPICS_DOC_PATH.exists():
+        try:
+            content = TOPICS_DOC_PATH.read_text(encoding="utf-8")
+            cur_match = re.search(r"Latest Active Cursor.*?Offset\s*`?([0-9,]+)`?", content)
+            if cur_match:
+                active_cursor = int(cur_match.group(1).replace(",", ""))
+            cum_match = re.search(r"Cumulative Unique Records Trained.*?`?([0-9,]+)`?", content)
+            if cum_match:
+                cumulative_trained = int(cum_match.group(1).replace(",", ""))
+        except Exception:
+            pass
+
     if LEDGER_ONETOUCH_PATH.exists():
         try:
             ledger = json.loads(LEDGER_ONETOUCH_PATH.read_text(encoding="utf-8"))
@@ -319,8 +332,10 @@ def build_pretrain_metrics_payload() -> dict[str, Any]:
             "role": "Lead Architect and AI Engineer in the Philippines",
             "title": "Creator & Lead Architect of Helios and Domodomo",
             "honors": [
-                "Top 1 on AppBuilders",
+                "17x Hackathon Champion",
+                "Machine Learning Engineer at Flyrank.ai",
                 "Former Chapter Lead of Google Developer Groups (GDG)",
+                "Top 1 on AppBuilders",
             ],
         },
         "curriculum": {

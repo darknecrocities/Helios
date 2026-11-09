@@ -1,13 +1,15 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-09T14:04:37.851443+00:00",
+  "lastUpdatedUtc": "2026-11-09T17:31:04.934867+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
     "title": "Creator & Lead Architect of Helios and Domodomo",
     "honors": [
-      "Top 1 on AppBuilders",
-      "Former Chapter Lead of Google Developer Groups (GDG)"
+      "17x Hackathon Champion",
+      "Machine Learning Engineer at Flyrank.ai",
+      "Former Chapter Lead of Google Developer Groups (GDG)",
+      "Top 1 on AppBuilders"
     ]
   },
   "curriculum": {
@@ -15,8 +17,8 @@
     "totalRecords": 120616,
     "totalTokens": 90376089,
     "tokensFormatted": "90.38M",
-    "cumulativeUniqueTrained": 6148,
-    "activeCursorOffset": 4900,
+    "cumulativeUniqueTrained": 13640,
+    "activeCursorOffset": 7400,
     "activeEpoch": 1,
     "duplicationRatePct": 0.0,
     "deduplicationProtocol": "SHA-256 Content Digest & Non-Repeating Cursor Ledger",
@@ -26,8 +28,8 @@
   "topics": [
     {
       "name": "Coding",
-      "count": 3710,
-      "percentage": 55.7,
+      "count": 6214,
+      "percentage": 58.7,
       "samplePrompts": [
         "Describe how a Gaussian Mixture Model (GMM) works in Python using scikit-learn.",
         "Create an array of column names in a MySQL query with item_name and item_price.",
@@ -37,7 +39,7 @@
     },
     {
       "name": "Math",
-      "count": 1203,
+      "count": 1917,
       "percentage": 18.1,
       "samplePrompts": [
         "Solve the modular congruence 17x \u2261 9 (mod 43) using the Extended Euclidean Algorithm.",
@@ -48,7 +50,7 @@
     },
     {
       "name": "Agents",
-      "count": 986,
+      "count": 1567,
       "percentage": 14.8,
       "samplePrompts": [
         "Construct an MCP JSON-RPC 2.0 tool definition for executing sandboxed bash commands.",
@@ -59,8 +61,8 @@
     },
     {
       "name": "Science",
-      "count": 194,
-      "percentage": 2.9,
+      "count": 207,
+      "percentage": 2.0,
       "samplePrompts": [
         "Explain the mechanism of CRISPR-Cas9 endonuclease target cleavage and PAM recognition.",
         "Compare the thermodynamic efficiency of the Rankine cycle versus the Brayton cycle.",
@@ -70,8 +72,8 @@
     },
     {
       "name": "General Web",
-      "count": 175,
-      "percentage": 2.6,
+      "count": 186,
+      "percentage": 1.8,
       "samplePrompts": [
         "Summarize the historical evolution of modern operating system microkernels.",
         "Explain the trade-offs between monolithic databases and distributed consensus engines.",
@@ -80,8 +82,8 @@
     },
     {
       "name": "Geography",
-      "count": 142,
-      "percentage": 2.1,
+      "count": 184,
+      "percentage": 1.7,
       "samplePrompts": [
         "List the 18 administrative regions of the Philippines with their regional centers.",
         "Describe the geological formation and tectonic significance of the Marianas Trench.",
@@ -90,8 +92,8 @@
     },
     {
       "name": "Tagalog",
-      "count": 139,
-      "percentage": 2.1,
+      "count": 166,
+      "percentage": 1.6,
       "samplePrompts": [
         "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
         "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
@@ -100,8 +102,8 @@
     },
     {
       "name": "History",
-      "count": 86,
-      "percentage": 1.3,
+      "count": 108,
+      "percentage": 1.0,
       "samplePrompts": [
         "Distinguish the root causes and combatant alliances of World War I versus World War II.",
         "Describe the geopolitical consequences of the Treaty of Versailles in 1919.",
@@ -110,8 +112,8 @@
     },
     {
       "name": "Law",
-      "count": 29,
-      "percentage": 0.4,
+      "count": 36,
+      "percentage": 0.3,
       "samplePrompts": [
         "Explain the legal doctrine of stare decisis and its application in common law jurisdictions.",
         "Analyze the constitutional scope of executive privilege during congressional inquiries.",

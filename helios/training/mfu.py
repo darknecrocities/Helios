@@ -182,21 +182,19 @@ class MFUProfiler:
         )
         achieved_flops_per_sec = flops_per_step / elapsed
         achieved_tflops = achieved_flops_per_sec / 1e12
-        mfu_pct = min(
-            100.0, (achieved_tflops / max(1e-6, self.hw_specs.peak_tflops_fp16)) * 100.0
-        )
+        mfu_pct = min(100.0, (achieved_tflops / max(1e-6, self.hw_specs.peak_tflops_fp16)) * 100.0)
 
         # Memory traffic estimate: weights read/write + activations
-        weight_traffic_bytes = float(self.total_params) * bytes_per_param * (3.0 if is_training else 1.0)
-        act_traffic_bytes = float(tokens * self.config.d_model * self.config.n_layers) * bytes_per_param * 4.0
+        weight_traffic_bytes = (
+            float(self.total_params) * bytes_per_param * (3.0 if is_training else 1.0)
+        )
+        act_traffic_bytes = (
+            float(tokens * self.config.d_model * self.config.n_layers) * bytes_per_param * 4.0
+        )
         total_bytes = max(1.0, weight_traffic_bytes + act_traffic_bytes)
         arith_intensity = flops_per_step / total_bytes
         ridge = self.hw_specs.ridge_point_flops_per_byte
-        regime = (
-            "Compute-Bound"
-            if arith_intensity >= ridge
-            else "Memory-Bandwidth-Bound"
-        )
+        regime = "Compute-Bound" if arith_intensity >= ridge else "Memory-Bandwidth-Bound"
 
         return MFUProfileReport(
             preset=self.preset,

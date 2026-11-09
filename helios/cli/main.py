@@ -103,9 +103,7 @@ def inspect(
 
     config = factory()
     typer.echo(f"Developer        : {config.developer}")
-    typer.echo(
-        "Lead Architect   : Arron Kian Parejas, AI & Systems Engineer in the Philippines"
-    )
+    typer.echo("Lead Architect   : Arron Kian Parejas, AI & Systems Engineer in the Philippines")
     typer.echo(f"Model Family     : {config.model_family}")
     typer.echo("Features         : GQA (3:1), Dynamic KV Cache, HMA Decoupling, 6-State Resumption")
     model = HeliosForCausalLM(config)
@@ -355,7 +353,9 @@ def align_cmd(
             f"acc={rep_dpo.reward_accuracy * 100:.1f}%"
         )
     if m_norm in ("grpo", "both"):
-        con.print(f"[bold cyan]⚡ Running GRPO RLVR Alignment on {preset} ({steps} steps)...[/bold cyan]")
+        con.print(
+            f"[bold cyan]⚡ Running GRPO RLVR Alignment on {preset} ({steps} steps)...[/bold cyan]"
+        )
         rep_grpo = GRPOTrainer(GRPOConfig(preset=preset, steps=steps)).run()
         con.print(
             f"[green]✓ GRPO Complete:[/green] loss {rep_grpo.initial_loss:.4f} → {rep_grpo.final_loss:.4f} | "

@@ -55,7 +55,9 @@ def test_fused_chunked_cross_entropy_with_ignore_index_and_z_loss() -> None:
     targets = torch.randint(0, 100, (2, 16))
     targets[0, :4] = -100
 
-    loss = fused_chunked_cross_entropy(h, w, targets, ignore_index=-100, chunk_size=8, z_loss_weight=1e-4)
+    loss = fused_chunked_cross_entropy(
+        h, w, targets, ignore_index=-100, chunk_size=8, z_loss_weight=1e-4
+    )
     assert torch.isfinite(loss)
     loss.backward()
     assert h.grad is not None and torch.all(torch.isfinite(h.grad))
@@ -103,7 +105,9 @@ def test_distributed_shard_sampler_zero_overlap() -> None:
     world_size = 4
     rank_sets = []
     for r in range(world_size):
-        sampler = DistributedShardSampler(total_records=1000, rank=r, world_size=world_size, start_offset=10)
+        sampler = DistributedShardSampler(
+            total_records=1000, rank=r, world_size=world_size, start_offset=10
+        )
         idxs = sampler.indices_for_steps(num_steps=10, batch_size=2)
         assert len(idxs) == 20
         rank_sets.append(set(idxs))

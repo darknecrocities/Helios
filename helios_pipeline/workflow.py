@@ -185,6 +185,16 @@ def run_train_workflow(
         f"({ds_sync['total_records']:,} records) to docs/DATASET_CATALOG.md[/green]"
     )
 
+    try:
+        from scripts.sync_pretrain_metrics_to_landing import sync_metrics
+
+        sync_metrics()
+        console.print(
+            "[green]✓ Synchronized pretraining curriculum metrics to website/src/data/pretrain_metrics.json[/green]"
+        )
+    except Exception as exc:
+        console.print(f"[dim yellow]Notice: landing metrics sync: {exc}[/dim yellow]")
+
     render_health_and_improvement_table(
         title=f"Automated Post-Training Benchmark & Health Report (Category: {cat_key.upper()})"
     )

@@ -16,8 +16,9 @@ from pathlib import Path
 
 from huggingface_hub import HfApi
 
-from helios.cli.utils import load_model_and_config, load_or_create_tokenizer
+from helios.cli.utils import load_or_create_tokenizer
 from helios.export.hf import export_huggingface
+from helios.model.config import HeliosConfig
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("helios.deploy.hf")
@@ -56,7 +57,8 @@ def resolve_hf_token() -> str:
 def deploy_to_huggingface(
     repo_id: str = "Darknecrocities/Helios",
     output_dir: Path | str = "deploy/huggingface",
-    checkpoint_dir: Path | str = "checkpoints/helios_core_pretrained",
+    checkpoint_dir: Path | str = "/Volumes/One Touch/Helios/checkpoints/flagship_continuous/latest",
+    preset: str = "flagship-6b",
     include_physical: bool = True,
 ) -> str:
     """Package and upload Helios foundation model to Hugging Face Hub."""
@@ -69,20 +71,39 @@ def deploy_to_huggingface(
     user_info = api.whoami()
     logger.info("Authenticated as: %s", user_info.get("name", "Unknown"))
 
-    # 1. Load model, config, tokenizer
-    logger.info("Loading certified model weights and tokenizer from %s...", checkpoint_dir)
-    model, config = load_model_and_config(model_path=checkpoint_dir)
-    tokenizer = load_or_create_tokenizer(checkpoint_dir)
+    # Remove any duplicate legacy safetensors in target_dir so HF Hub parses only model.safetensors
+    legacy_st = target_dir / "helios_model.safetensors"
+    if legacy_st.exists():
+        legacy_st.unlink()
+        logger.info("Removed duplicate local %s", legacy_st)
 
-    # 2. Export standard Hugging Face repository files
-    logger.info("Generating Hugging Face repository package at %s...", target_dir)
+    # 1. Load Flagship 5.80B (6B) config and tokenizer
+    config = HeliosConfig.from_preset(preset)
+    ckpt_path = Path(checkpoint_dir)
+    if not ckpt_path.exists():
+        ckpt_path = Path("checkpoints/helios_core_pretrained").resolve()
+    tok_dir = (
+        ckpt_path
+        if (ckpt_path / "tokenizer.json").exists()
+        else Path("checkpoints/helios_core_pretrained").resolve()
+    )
+    tokenizer = load_or_create_tokenizer(tok_dir)
+
+    # 2. Export standard Hugging Face repository files (preserving curated README.md)
+    logger.info(
+        "Generating Hugging Face repository package for %s (%s) at %s...",
+        config.model_family,
+        preset,
+        target_dir,
+    )
     export_res = export_huggingface(
         output_dir=target_dir,
         config=config,
-        model=model,
+        model=None,
         tokenizer=tokenizer,
+        checkpoint_path=ckpt_path,
         repo_id=repo_id,
-        generate_card=True,
+        generate_card=False,
     )
     logger.info(
         "Exported SafeTensors: %s (%d bytes)",
@@ -90,22 +111,38 @@ def deploy_to_huggingface(
         export_res["weights_bytes"],
     )
 
-    # 3. Copy physical model formats into deploy directory
+    # 3. Copy non-safetensors physical model formats into deploy directory
     if include_physical:
         phys_dir = Path("dist/physical_models").resolve()
         if phys_dir.exists():
             for f in phys_dir.iterdir():
-                if f.is_file() and not f.name.endswith(".tmp"):
+                if (
+                    f.is_file()
+                    and not f.name.endswith(".tmp")
+                    and not f.name.endswith(".safetensors")
+                ):
                     dest = target_dir / f.name
                     shutil.copy2(f, dest)
                     logger.info("Copied physical artifact: %s", f.name)
 
-    # 4. Upload directory to Hugging Face Hub
+    # 4. Delete duplicate helios_model.safetensors on remote if present
+    try:
+        api.delete_file(
+            path_in_repo="helios_model.safetensors",
+            repo_id=repo_id,
+            commit_message="chore: remove duplicate helios_model.safetensors in favor of canonical model.safetensors",
+            token=token,
+        )
+        logger.info("Deleted duplicate remote helios_model.safetensors on %s", repo_id)
+    except Exception:
+        pass
+
+    # 5. Upload directory to Hugging Face Hub
     logger.info("Uploading model files to Hugging Face Hub repo '%s'...", repo_id)
     upload_url = api.upload_folder(
         repo_id=repo_id,
         folder_path=str(target_dir),
-        commit_message="Deploy Helios Open-Weight Foundation Model Ecosystem (Weights, SafeTensors, Tokenizer, ONNX, TFLite)",
+        commit_message="feat(hf): deploy Helios Flagship 5.80B (6B) BF16 SafeTensors, Multi-Capability Chat Template, and audited benchmarks",
         token=token,
     )
     logger.info("Uploaded folder commit: %s", upload_url)

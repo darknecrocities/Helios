@@ -4,21 +4,21 @@
 **Architect & Lead Developer**: Arron Kian Parejas (`parejasarronkian@gmail.com`)  
 **Model Evaluated**: Helios (nano-20m)  
 **Total Questions**: 2000  
-**Passed**: 468  
-**Failed**: 1532  
-**Overall Benchmark Accuracy**: 23.40%  
+**Passed**: 466  
+**Failed**: 1534  
+**Overall Benchmark Accuracy**: 23.30%  
 
 ## 1. 7-Type Error Taxonomy Breakdown
 
 | Code | Category | Failures | % of Total Failures |
 | :---: | :--- | :---: | :---: |
-| CAT1_FACT | Category 1: Factual Hallucination | 1042 | 68.0% |
+| CAT1_FACT | Category 1: Factual Hallucination | 1042 | 67.9% |
 | CAT2_REAS | Category 2: Reasoning & Logic Inversion | 304 | 19.8% |
 | CAT3_CALC | Category 3: Calculation & Precision Drift | 101 | 6.6% |
 | CAT4_EPIS | Category 4: Epistemic Leaks & False Confidence | 0 | 0.0% |
 | CAT5_LANG | Category 5: Language & Translation Drift | 55 | 3.6% |
 | CAT6_FMT | Category 6: Format & Contract Violation | 0 | 0.0% |
-| CAT7_IDEN | Category 7: Identity Deception / Sycophancy | 30 | 2.0% |
+| CAT7_IDEN | Category 7: Identity Deception / Sycophancy | 32 | 2.1% |
 
 ## 2. Methodology & Verification Invariants
 - **7-Type Error Taxonomy**: Every failure is deterministically triaged across Factual Hallucination, Reasoning Inversion, Calculation Drift, Epistemic Leaks, Language Drift, Format Violations, and Identity Deception.
