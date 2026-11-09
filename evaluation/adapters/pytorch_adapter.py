@@ -30,9 +30,10 @@ class NativePyTorchAdapter(HeliosModelAdapter):
         preset: str = "nano-20m",
         model_path: str | Path | None = None,
         device: str = "cpu",
+        config: HeliosConfig | None = None,
     ) -> None:
         self.preset = preset
-        self.config: HeliosConfig | None = None
+        self.config: HeliosConfig | None = config
         self.model: HeliosForCausalLM | None = None
         self.tokenizer: Any | None = None
         self.device: torch.device = torch.device(device)
@@ -40,24 +41,32 @@ class NativePyTorchAdapter(HeliosModelAdapter):
         self.checkpoint_hash: str = ""
 
         if model_path is not None:
-            self.load(checkpoint=model_path, device=device)
+            self.load(checkpoint=model_path, device=device, config=config)
         else:
-            self.load(preset=preset, device=device)
+            self.load(preset=preset, device=device, config=config)
 
     def load(
         self,
         checkpoint: str | Path | None = None,
         device: str = "cpu",
         preset: str | None = None,
+        config: HeliosConfig | None = None,
     ) -> None:
         """Load Helios PyTorch model from preset, YAML spec, or disk checkpoint."""
         if preset:
             self.preset = preset
+        if config is not None:
+            self.config = config
 
         self.device = torch.device(device)
 
         if checkpoint and Path(checkpoint).exists():
             ckpt_path = Path(checkpoint)
+            if ckpt_path.is_dir():
+                candidate = ckpt_path / "state.pt"
+                if candidate.exists():
+                    ckpt_path = candidate
+
             self.checkpoint_path = str(ckpt_path)
             content = ckpt_path.read_bytes()
             self.checkpoint_hash = hashlib.sha256(content).hexdigest()
@@ -67,15 +76,20 @@ class NativePyTorchAdapter(HeliosModelAdapter):
                     cfg_data = yaml.safe_load(f)
                 model_tier = cfg_data.get("model", {}).get("tier", "nano").lower()
                 self.preset = model_tier
-                self.config = HeliosConfig.from_preset(self.preset)
+                self.config = self.config or HeliosConfig.from_preset(self.preset)
                 self.model = HeliosForCausalLM(self.config)
             else:
-                self.config = HeliosConfig.from_preset(self.preset)
+                self.config = self.config or HeliosConfig.from_preset(self.preset)
                 self.model = HeliosForCausalLM(self.config)
-                state_dict = torch.load(ckpt_path, map_location=self.device)
+                raw_loaded = torch.load(ckpt_path, map_location=self.device, weights_only=False)
+                state_dict = (
+                    raw_loaded.get("model_state", raw_loaded)
+                    if isinstance(raw_loaded, dict)
+                    else raw_loaded
+                )
                 self.model.load_state_dict(state_dict)
         else:
-            self.config = HeliosConfig.from_preset(self.preset)
+            self.config = self.config or HeliosConfig.from_preset(self.preset)
             self.model = HeliosForCausalLM(self.config)
             self.checkpoint_path = f"preset:{self.preset}"
             self.checkpoint_hash = hashlib.sha256(self.preset.encode()).hexdigest()

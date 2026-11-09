@@ -1,0 +1,60 @@
+# HELIOS Resumable Continuous Training Pipeline Configuration
+version: "0.3.0"
+
+storage:
+  external_drive_path: "/Volumes/One Touch"
+  candidate_paths:
+    - "/Volumes/One Touch"
+    - "/Volumes/OneTouch"
+  require_external_drive: true
+  prohibit_internal_storage_fallback: true
+  total_capacity_gb: 1000.0
+  minimum_free_space_gb: 100.0   # 10% reserve capacity floor
+  quota_limit_gb: 450.0          # Sub-500GB quota ceiling
+  base_folder: "Helios"
+  dataset_cache: "datasets/cache"
+  raw_shards: "datasets/raw"
+  processed_data: "datasets/processed"
+  tokenized_data: "datasets/tokenized"
+  checkpoints: "checkpoints"
+  checkpoint_staging: "checkpoints/staging"
+  logs: "logs"
+  manifests: "manifests"
+
+curriculum:
+  stages:
+    stage_a:
+      name: "General Pretraining"
+      source: "HuggingFaceFW/fineweb"
+      weight: 0.40
+    stage_b:
+      name: "Domain Reasoning (Math, Science, Code)"
+      weight: 0.30
+    stage_c:
+      name: "Supervised Fine-Tuning & Multi-turn Dialogue"
+      weight: 0.20
+    stage_d:
+      name: "Agentic Workflows & MCP Tool Reasoning"
+      weight: 0.10
+
+training:
+  default_tier: "nano"
+  batch_size: 2
+  seq_len: 2048
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0003
+  weight_decay: 0.1
+  checkpoint_interval_steps: 50
+  min_checkpoints_to_keep: 2
+  yield_pacing_ms: 10
+
+git_sync:
+  enabled_by_default: false
+  target_branch: "automation/helios-training-history"
+  max_file_size_mb: 5
+  prohibited_patterns:
+    - "*.pt"
+    - "*.pth"
+    - "*.bin"
+    - "*.safetensors"
+    - "*.parquet"

@@ -220,6 +220,90 @@ def auto_improve_cmd(
     typer.echo(f"  Certified Model: {res['certified_checkpoint']}")
 
 
+@app.command(name="train")
+def train_cmd(
+    tiers: str = typer.Argument(
+        "all",
+        help="Model tier to pretrain ('all' or comma-separated nano,alpha,beta,core,pro,flagship).",
+    ),
+    minutes: float = typer.Option(
+        5.0,
+        "--minutes",
+        "-m",
+        help="Pretraining duration limit in minutes (default 5.0).",
+    ),
+    duration: str | None = typer.Option(
+        None,
+        "--duration",
+        "-d",
+        help="Flexible duration string e.g. '5m', '90s', '1h' (overrides --minutes).",
+    ),
+    device: str = typer.Option(
+        "auto",
+        "--device",
+        help="Compute device ('auto', 'npu', 'mps', 'cuda', 'cpu').",
+    ),
+    sync: str | None = typer.Option(
+        None,
+        "--sync",
+        "-s",
+        help="Post-training sync targets ('all' or comma list: hf,ollama,git).",
+    ),
+    upload_weights: bool = typer.Option(
+        False,
+        "--upload-weights",
+        help="Upload large model weights to Hugging Face Hub (manifest/config always synced).",
+    ),
+) -> None:
+    """Pretrain Helios models on external OneTouch drive with auto-benchmarking & sync."""
+    from helios_pipeline.workflow import parse_duration, run_train_workflow
+
+    dur = parse_duration(duration, default_minutes=minutes)
+    code = run_train_workflow(
+        tiers_spec=tiers,
+        minutes=dur,
+        device=device,
+        sync=sync,
+        upload_weights=upload_weights,
+    )
+    if code != 0:
+        raise typer.Exit(code=code)
+
+
+@app.command(name="doctor")
+def doctor_cmd() -> None:
+    """Inspect environment, external OneTouch persistent volume, and NPU acceleration."""
+    from helios_pipeline.workflow import run_doctor
+
+    code = run_doctor()
+    if code != 0:
+        raise typer.Exit(code=code)
+
+
+@app.command(name="sync")
+def sync_cmd(
+    targets: str = typer.Argument(
+        "all",
+        help="Sync targets: 'all' or comma-separated list of 'hf,ollama,git'.",
+    ),
+    upload_weights: bool = typer.Option(
+        False,
+        "--upload-weights",
+        help="Upload large model weights to Hugging Face Hub.",
+    ),
+) -> None:
+    """Synchronize latest benchmark reports, checkpoints, and models across platforms."""
+    from rich.console import Console
+
+    from helios_pipeline.sync.orchestrator import run_sync
+
+    con = Console()
+    con.print(f"[cyan]Initiating multi-platform synchronization for targets: {targets}...[/cyan]")
+    rep = run_sync(targets=targets, upload_weights=upload_weights)
+    for target, status in rep.status.items():
+        con.print(f"  sync {target}: {status}")
+
+
 # Subcommand Groups
 export_app.info.cls = CaseInsensitiveTyperGroup
 app.add_typer(export_app, name="export")
