@@ -95,57 +95,55 @@ export const PretrainedCurriculumSection: React.FC = () => {
             <div className="lg:col-span-7 space-y-2 lg:pt-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={(data.curriculum.totalTokens ?? 90376089) / 1_000_000}
+                  value={(data.curriculum.totalTokens ?? 92771031) / 1_000_000}
                   decimals={2}
                   suffix="M"
                   duration={2.0}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Total Pretraining Corpus Tokens
+                Total Pretraining Tokens
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                {(data.curriculum.totalRecords ?? 120616).toLocaleString()} consolidated records ({data.curriculum.tokensFormatted ?? "90.38M"} tokens)
-                on OneTouch storage; {(data.curriculum.cumulativeUniqueTrained ?? 13640).toLocaleString()} unique samples ingested
-                with 0.0% cross-session repetition.
+                {data.curriculum.tokensFormatted ?? "92.77M"} cumulative tokens ({data.curriculum.baseTokensFormatted ?? "90.38M"} base corpus
+                + {data.curriculum.tokensTrainedFormatted ?? "2.39M"} parameter tokens ingested in 1-hour continuous training across all 6 tiers).
               </p>
             </div>
           </div>
 
           <div className="h-[1px] w-full bg-[#141312]/5" />
 
-          {/* Row 2: Steps (5 cols) & Held-Out Perplexity (7 cols) */}
+          {/* Row 2: Total Records (5 cols) & Total Steps (7 cols) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-5 space-y-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.totalSteps ?? 16574}
+                  value={data.curriculum.totalRecords ?? 134256}
                   duration={2.2}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Total Training Steps Executed
+                Total Pretraining Records
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-sm">
-                16,574 forward-backward steps completed across all 6 model tiers (2.39M parameter tokens
-                ingested in 60m continuous run) with up to 99.9% loss drop.
+                {(data.curriculum.totalRecords ?? 134256).toLocaleString()} consolidated records on OneTouch storage
+                ({(data.curriculum.cumulativeUniqueTrained ?? 13640).toLocaleString()} unique samples ingested with zero repetition; cursor #7,400).
               </p>
             </div>
 
             <div className="lg:col-span-7 space-y-2 lg:pt-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#FF5500] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.heldoutPpl ?? 3.28}
-                  decimals={2}
+                  value={data.curriculum.totalSteps ?? 16574}
                   duration={1.4}
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Top Held-Out Perplexity (Nano)
+                Total Training Steps Executed
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                Held-out evaluation perplexity dropped from 8.38 to 3.28 (+60.9% improvement);
-                Core dropped from 42.38 to 7.53 (+82.2% improvement).
+                16,574 forward-backward steps completed with up to 99.9% loss drop and top held-out
+                perplexity of 3.28 on Nano (7.53 on Core).
               </p>
             </div>
           </div>

@@ -21,8 +21,11 @@ export interface PlatformProfile {
 export interface CurriculumStats {
   totalDatasets: number;
   totalRecords: number;
+  baseRecords?: number;
   totalTokens: number;
+  baseTokens?: number;
   tokensFormatted: string;
+  baseTokensFormatted?: string;
   cumulativeUniqueTrained: number;
   activeCursorOffset: number;
   totalSteps?: number;

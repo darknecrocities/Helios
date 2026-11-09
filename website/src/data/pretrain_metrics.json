@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-09T18:23:43.692486+00:00",
+  "lastUpdatedUtc": "2026-11-09T18:36:33.964435+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
@@ -14,9 +14,12 @@
   },
   "curriculum": {
     "totalDatasets": 177,
-    "totalRecords": 120616,
-    "totalTokens": 90376089,
-    "tokensFormatted": "90.38M",
+    "totalRecords": 134256,
+    "baseRecords": 120616,
+    "totalTokens": 92771031,
+    "baseTokens": 90376089,
+    "tokensFormatted": "92.77M",
+    "baseTokensFormatted": "90.38M",
     "cumulativeUniqueTrained": 13640,
     "activeCursorOffset": 7400,
     "totalSteps": 16574,

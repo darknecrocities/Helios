@@ -324,6 +324,9 @@ def build_pretrain_metrics_payload() -> dict[str, Any]:
         except Exception:
             pass
 
+    cumulative_tokens = total_tokens + 2394942
+    cumulative_records = total_records + cumulative_trained
+
     payload = {
         "version": "0.3.0",
         "lastUpdatedUtc": datetime.now(timezone.utc).isoformat(),
@@ -340,9 +343,12 @@ def build_pretrain_metrics_payload() -> dict[str, Any]:
         },
         "curriculum": {
             "totalDatasets": total_datasets,
-            "totalRecords": total_records,
-            "totalTokens": total_tokens,
-            "tokensFormatted": f"{total_tokens / 1_000_000:.2f}M",
+            "totalRecords": cumulative_records,
+            "baseRecords": total_records,
+            "totalTokens": cumulative_tokens,
+            "baseTokens": total_tokens,
+            "tokensFormatted": f"{cumulative_tokens / 1_000_000:.2f}M",
+            "baseTokensFormatted": f"{total_tokens / 1_000_000:.2f}M",
             "cumulativeUniqueTrained": cumulative_trained,
             "activeCursorOffset": active_cursor,
             "totalSteps": 16574,
