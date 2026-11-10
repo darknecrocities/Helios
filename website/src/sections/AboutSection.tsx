@@ -135,8 +135,8 @@ export const AboutSection: React.FC = () => {
             >
               <div className="relative group">
                 <img
-                  src="/assets/head_statue2.png"
-                  alt="Helios Classical Marble Sculpture"
+                  src="/assets/ancient-greek-style-female-statue-isolated-on-transparent-background-png.webp"
+                  alt="Ancient Greek Style Statue"
                   className="w-64 sm:w-76 md:w-84 h-auto object-contain drop-shadow-[0_24px_45px_rgba(20,19,18,0.22)] transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
