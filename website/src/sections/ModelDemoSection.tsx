@@ -6,7 +6,6 @@ import {
   Volume2,
   VolumeX,
   Maximize2,
-  Terminal,
   Cpu,
   Layers,
   CheckCircle2,
@@ -108,13 +107,6 @@ export const ModelDemoSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#141312]/10 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-            <span className="font-mono-tabular text-[10px] uppercase tracking-[0.25em] text-[#141312]/70">
-              Live Model Execution · Ollama Local Host
-            </span>
-          </div>
-
           <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-[#141312] tracking-tight">
             See Helios Running Live on Everyday Hardware.
           </h2>
@@ -159,27 +151,8 @@ export const ModelDemoSection: React.FC = () => {
 
             {/* Display Bezel Interior Frame */}
             <div className="relative rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-[#0D0C0B] border border-white/5 aspect-[16/10] sm:aspect-[16/10.5]">
-              {/* Window Title Bar */}
-              <div className="h-8 sm:h-9 bg-[#171615] border-b border-white/5 px-3 sm:px-4 flex items-center justify-between text-xs text-white/50 select-none">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] border border-[#E0443E]/50" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]/50" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]/50" />
-                </div>
-
-                <div className="flex items-center gap-1.5 font-mono-tabular text-[10px] sm:text-[11px] text-white/70">
-                  <Terminal className="w-3 h-3 text-[#FF5500]" />
-                  <span>ollama run {activeVideo.badge}</span>
-                </div>
-
-                <div className="flex items-center gap-2 font-mono-tabular text-[9px] sm:text-[10px] text-[#10B981]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping" />
-                  <span>LOCAL MPS (60 FPS)</span>
-                </div>
-              </div>
-
               {/* Video Player */}
-              <div className="relative w-full h-[calc(100%-2rem)] sm:h-[calc(100%-2.25rem)] bg-black">
+              <div className="relative w-full h-full bg-black">
                 <video
                   ref={videoRef}
                   key={activeVideo.src}
