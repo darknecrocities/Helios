@@ -77,11 +77,7 @@ export const AboutSection: React.FC = () => {
                 their knowledge boundary, models hallucinate confident falsehoods.
               </p>
               <p>
-                Conceived and engineered from the ground up by{' '}
-                <strong className="text-[#141312] font-semibold">Arron Kian Parejas</strong> in the Philippines,{' '}
-                <strong className="text-[#FF5500]">Helios</strong> breaks that paradigm. Every single component—from
-                its custom 48,000-token BPE vocabulary and Dynamic NTK RoPE attention to its {pretrainData.curriculum.totalDatasets}-dataset pretraining corpus—is
-                open-source, mathematically verifiable, and engineered to run locally without cloud tethering.
+                <strong className="text-[#FF5500]">Helios</strong> changes that completely. Built from first principles to bring high-performance intelligence directly to your everyday laptop, Helios runs 100% offline with zero subscriptions, zero cloud lock-in, and zero hidden data collection. Everything—from its fast, modern vocabulary to its verified {pretrainData.curriculum.totalDatasets}-dataset curriculum—is completely open, transparent, and built to give you true private AI power.
               </p>
             </div>
 
