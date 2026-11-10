@@ -384,8 +384,8 @@ def train_all(
             topics_summary = str(session_meta.get("trained_topics_summary", ""))
             cursor_range = str(session_meta.get("cursor_range", ""))
 
-            # Slice 30 seconds per tier per micro-round to ensure interleaved progress across all models
-            slice_sec = 30.0
+            # Continuous training slice: 180s for single tier, 30s for multi-tier round-robin
+            slice_sec = 180.0 if len(tiers) == 1 else 30.0
             for tier in tiers:
                 logger.info(
                     "Cycle #%d | Tier: %s | Cumulative: %s / %s tokens",
@@ -404,7 +404,8 @@ def train_all(
                 )
                 cumulative_tokens += res.tokens
                 latest_results[tier] = res
-                evict_ephemeral_training_cache(storage)
+                if len(tiers) > 1:
+                    evict_ephemeral_training_cache(storage)
 
                 if cumulative_tokens >= target_tokens:
                     logger.info("Campaign Target Reached: %s tokens trained!", f"{cumulative_tokens:,}")
