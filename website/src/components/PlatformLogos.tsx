@@ -99,49 +99,13 @@ export const AntigravityLogo: React.FC<{ className?: string; size?: number }> = 
   className = '',
   size = 32,
 }) => (
-  <svg
+  <img
+    src="/assets/antigravity_mark.png"
+    alt="Google Antigravity"
     width={size}
     height={size}
-    viewBox="0 0 36 36"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-    aria-label="Google Antigravity"
-  >
-    {/* Google Antigravity 4-color orbital delta & Gemini spark mark */}
-    <defs>
-      <linearGradient id="ag-grad-main" x1="6" y1="6" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#4285F4" />
-        <stop offset="40%" stopColor="#9B72CB" />
-        <stop offset="75%" stopColor="#D96570" />
-        <stop offset="100%" stopColor="#F4B400" />
-      </linearGradient>
-    </defs>
-    {/* Outer Google 4-color orbital ring */}
-    <path
-      d="M5.5 21.5C4.2 17.5 8.5 12.2 16.5 9.8C24.5 7.4 31.2 9 32.4 13"
-      stroke="#4285F4"
-      strokeWidth="2.3"
-      strokeLinecap="round"
-    />
-    {/* Levitating Antigravity Delta Wing */}
-    <path
-      d="M18 4.5L28.5 26.5H23.2L18 15.2L12.8 26.5H7.5L18 4.5Z"
-      fill="url(#ag-grad-main)"
-    />
-    {/* Central Gemini 4-point star spark */}
-    <path
-      d="M18 17.5C18.4 20.6 19.9 22.1 23 22.5C19.9 22.9 18.4 24.4 18 27.5C17.6 24.4 16.1 22.9 13 22.5C16.1 22.1 17.6 20.6 18 17.5Z"
-      fill="#FBBC04"
-    />
-    {/* Front foreground orbital arc */}
-    <path
-      d="M32.4 13C33.6 17 29.2 22.4 21.2 24.8C13.2 27.2 6.7 25.5 5.5 21.5"
-      stroke="#34A853"
-      strokeWidth="2.3"
-      strokeLinecap="round"
-    />
-  </svg>
+    className={`inline-block object-contain ${className}`}
+  />
 );
 
 export const PythonLogo: React.FC<{ className?: string; size?: number }> = ({
@@ -287,98 +251,26 @@ export const OpenClawLogo: React.FC<{ className?: string; size?: number }> = ({
   className = '',
   size = 32,
 }) => (
-  <svg
+  <img
+    src="/assets/openclaw_mark.png"
+    alt="OpenClaw Agent"
     width={size}
     height={size}
-    viewBox="0 0 36 36"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-    aria-label="OpenClaw Agent"
-  >
-    {/* Official OpenClaw crimson lobster / crab mascot with dual pincer claws */}
-    {/* Antennae */}
-    <path
-      d="M15.5 11.5C14 8.5 11.5 6.8 8.5 6.5M20.5 11.5C22 8.5 24.5 6.8 27.5 6.5"
-      stroke="#FF3B30"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-    />
-    {/* Left Pincer Claw */}
-    <path
-      d="M11 16C7.8 14.8 5.2 12 5.2 8.5C5.2 5.5 7.4 3.5 9.8 4.2C8.6 5.8 8.8 7.8 10.4 8.8C11.8 7.8 12.6 6.2 12.2 4.6C14.2 5.8 14.8 8.8 13.4 11.5L12.5 14"
-      fill="#FF3B30"
-    />
-    {/* Right Pincer Claw */}
-    <path
-      d="M25 16C28.2 14.8 30.8 12 30.8 8.5C30.8 5.5 28.6 3.5 26.2 4.2C27.4 5.8 27.2 7.8 25.6 8.8C24.2 7.8 23.4 6.2 23.8 4.6C21.8 5.8 21.2 8.8 22.6 11.5L23.5 14"
-      fill="#FF3B30"
-    />
-    {/* Side Walking Legs */}
-    <path
-      d="M12 19L7.5 20.5M12 22L8 24.5M24 19L28.5 20.5M24 22L28 24.5"
-      stroke="#E02E24"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    {/* Carapace Body & Segmented Tail */}
-    <ellipse cx="18" cy="18.5" rx="6.2" ry="6.8" fill="#FF3B30" />
-    <path
-      d="M14.2 24.2H21.8L20.6 28.5H15.4L14.2 24.2Z"
-      fill="#E02E24"
-    />
-    <path
-      d="M15.4 28.5H20.6L22.5 32H13.5L15.4 28.5Z"
-      fill="#FF5500"
-    />
-    {/* Stalked Eyes */}
-    <circle cx="15.4" cy="15.2" r="1.8" fill="#FFFFFF" />
-    <circle cx="20.6" cy="15.2" r="1.8" fill="#FFFFFF" />
-    <circle cx="15.4" cy="15.2" r="0.9" fill="#141312" />
-    <circle cx="20.6" cy="15.2" r="0.9" fill="#141312" />
-  </svg>
+    className={`inline-block object-contain ${className}`}
+  />
 );
 
 export const HermesAgentLogo: React.FC<{ className?: string; size?: number }> = ({
   className = '',
   size = 32,
 }) => (
-  <svg
+  <img
+    src="/assets/hermes_girl_logo.png"
+    alt="Hermes Agent"
     width={size}
     height={size}
-    viewBox="0 0 36 36"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-    aria-label="Hermes Agent"
-  >
-    {/* Official Nous Research Hermes Winged Caduceus Emblem */}
-    {/* Outspread Layered Greek Wings */}
-    <path
-      d="M16.5 12.5C12.5 11.8 7.5 9.2 4 5.5C4.5 9.2 7.2 12.2 11.5 13.5C7.8 13.8 5.8 12.8 4.8 11.5C6.2 14.8 9.8 16.5 15.8 16.2"
-      fill="#F59E0B"
-    />
-    <path
-      d="M19.5 12.5C23.5 11.8 28.5 9.2 32 5.5C31.5 9.2 28.8 12.2 24.5 13.5C28.2 13.8 30.2 12.8 31.2 11.5C29.8 14.8 26.2 16.5 20.2 16.2"
-      fill="#F59E0B"
-    />
-    {/* Central Caduceus Staff & Orb Finial */}
-    <line x1="18" y1="6.5" x2="18" y2="32.5" stroke="#D97706" strokeWidth="2.2" strokeLinecap="round" />
-    <circle cx="18" cy="5.2" r="2.3" fill="#FBBF24" stroke="#D97706" strokeWidth="1.2" />
-    {/* Twin Intertwined Serpents (Figure-8 Helix) */}
-    <path
-      d="M13.5 11.5C11.5 13.5 12.5 16.5 18 19C23.5 21.5 23.5 25 18 27.5C14.5 29 14.5 31 16.5 32"
-      stroke="#F59E0B"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M22.5 11.5C24.5 13.5 23.5 16.5 18 19C12.5 21.5 12.5 25 18 27.5C21.5 29 21.5 31 19.5 32"
-      stroke="#D97706"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-  </svg>
+    className={`inline-block object-contain ${className}`}
+  />
 );
 
 export const GoogleColabLogo: React.FC<{ className?: string; size?: number }> = ({
