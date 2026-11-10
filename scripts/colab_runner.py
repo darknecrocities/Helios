@@ -402,6 +402,8 @@ def run_h100_pretraining(
             for batch in batches:
                 if TERMINATION_REQUESTED:
                     break
+                if hasattr(torch.compiler, "cudagraph_mark_step_begin"):
+                    torch.compiler.cudagraph_mark_step_begin()
                 input_ids = batch["input_ids"].to(device=device)
                 labels = batch["labels"].to(device=device)
                 optimizer.zero_grad()
