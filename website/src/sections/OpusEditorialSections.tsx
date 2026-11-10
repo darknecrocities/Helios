@@ -22,6 +22,11 @@ interface EditorialBlockProps {
     heading: string;
     detail: string;
   }[];
+  sideVideo?: {
+    src: string;
+    caption: string;
+    badge: string;
+  };
   bgVariant?: 'cream' | 'sand';
 }
 
@@ -35,6 +40,7 @@ const EditorialNarrativeSection: React.FC<EditorialBlockProps> = ({
   marginalia,
   quote,
   specGrid,
+  sideVideo,
   bgVariant = 'cream',
 }) => {
   const bgClass = bgVariant === 'sand' ? 'bg-[#F4EFE6]' : 'bg-[#FBF9F5]';
@@ -85,6 +91,28 @@ const EditorialNarrativeSection: React.FC<EditorialBlockProps> = ({
                 </div>
               ))}
             </div>
+
+            {/* Side In-Situ Video Player Widget */}
+            {sideVideo && (
+              <div className="pt-4 border-t border-[#141312]/10 space-y-2">
+                <div className="rounded-xl overflow-hidden bg-black/90 border border-[#141312]/15 shadow-md aspect-video relative group">
+                  <video
+                    src={sideVideo.src}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[9px] font-mono-tabular text-[#FF5500] border border-white/10">
+                    {sideVideo.badge}
+                  </div>
+                </div>
+                <p className="text-[11px] font-mono-tabular text-[#141312]/60 leading-normal">
+                  {sideVideo.caption}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right Long-Form Reading Column (8 cols): Opus Magazine Prose */}
@@ -148,6 +176,11 @@ export const EditorialReasoningSection: React.FC = () => (
       { label: "Speculative Tandem", value: "Nano (17.8M) → Flagship (5.8B)" },
       { label: "Verified Speedup", value: "2.4× – 2.8× Lossless" },
     ]}
+    sideVideo={{
+      src: "/assets/video/helios_ollama_reasoning.mp4",
+      badge: "LIVE DELIBERATION",
+      caption: "Screen capture of Helios decomposing complex mathematical equations into step-by-step proofs before outputting answers."
+    }}
     specGrid={[
       {
         heading: "Deliberative Scratchpad",
