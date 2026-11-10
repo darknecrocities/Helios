@@ -4,26 +4,102 @@
 
 ## 1. Cumulative Curriculum Status
 - **Total External Datasets Synced**: `177` (`120,616` consolidated records)
-- **Cumulative Unique Records Trained**: `21,132`
-- **Latest Active Cursor (`all`)**: Offset `9,900` / `120,616` (Epoch `1`)
-- **Latest Trained Topics Summary**: `Coding 64% · Math 18% · Agents 14% · Geography 1% · Tagalog 1% · History 1% · Science 1% · General Web 1% · Law 1%`
+- **Cumulative Unique Records Trained**: `75,132`
+- **Latest Active Cursor (`all`)**: Offset `27,900` / `120,616` (Epoch `1`)
+- **Latest Trained Topics Summary**: `History 38% · Coding 37% · Math 12% · Agents 10% · Geography 1% · Tagalog 1% · Science 1% · Law 1% · General Web 1%`
 - **Cross-Session Duplication Rate**: `0.0%`
 
 ## 2. Cumulative Topics Trained Across All Sessions
 
 | Topic Domain | Records / Samples Trained | Share | Duplication Rate |
 | :--- | ---: | ---: | :--- |
-| **Coding** | `8,718` | `60.1%` | `0% (SHA-256 Verified)` |
-| **Math** | `2,628` | `18.1%` | `0% (SHA-256 Verified)` |
-| **Agents** | `2,121` | `14.6%` | `0% (SHA-256 Verified)` |
-| **Geography** | `230` | `1.6%` | `0% (SHA-256 Verified)` |
-| **Science** | `224` | `1.5%` | `0% (SHA-256 Verified)` |
-| **Tagalog** | `198` | `1.4%` | `0% (SHA-256 Verified)` |
-| **General Web** | `197` | `1.4%` | `0% (SHA-256 Verified)` |
-| **History** | `137` | `0.9%` | `0% (SHA-256 Verified)` |
-| **Law** | `43` | `0.3%` | `0% (SHA-256 Verified)` |
+| **Coding** | `26,742` | `53.6%` | `0% (SHA-256 Verified)` |
+| **Math** | `7,940` | `15.9%` | `0% (SHA-256 Verified)` |
+| **History** | `6,918` | `13.9%` | `0% (SHA-256 Verified)` |
+| **Agents** | `6,418` | `12.9%` | `0% (SHA-256 Verified)` |
+| **Geography** | `715` | `1.4%` | `0% (SHA-256 Verified)` |
+| **Tagalog** | `473` | `0.9%` | `0% (SHA-256 Verified)` |
+| **Science** | `359` | `0.7%` | `0% (SHA-256 Verified)` |
+| **General Web** | `263` | `0.5%` | `0% (SHA-256 Verified)` |
+| **Law** | `99` | `0.2%` | `0% (SHA-256 Verified)` |
 
 ## 3. Session-by-Session Non-Repeating Training Log
+
+### Session #9 — `2026-11-10 04:55:11 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #24,900→#27,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (998), **Agents** (800), **Geography** (107), **Tagalog** (45), **Science** (27), **Law** (13), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Construct Python code to count the occurrence of a specific word in a given sentence.
+sentence = "She sells se"*
+  - *"Write a bash script to build a Jupyter Notebook environment from scratch.
+Not applicable"*
+  - *"Create a function in Python to convert a given string to its corresponding ASCII code."*
+  - *"Generate a Python program to apply custom formatting for the following output.
+Given a list of strings, output"*
+
+### Session #8 — `2026-11-10 04:47:20 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #21,900→#24,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (986), **Agents** (792), **Geography** (131), **Tagalog** (67), **Science** (25), **Law** (15), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Develop a Python script to print the first 10 cubes of natural numbers."*
+  - *"Create a python function that takes in two strings and output their combined length.
+string_1 = "Hello"
+string"*
+  - *"Develop a function in Python to randomly select one element from a given array.
+[1, 2, 3, 4]"*
+  - *"Develop a Python script to train a multi-layer perceptron to identify MNIST handwritten digits.
+Not applicable"*
+
+### Session #7 — `2026-11-10 04:39:45 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #18,900→#21,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (875), **Agents** (707), **History** (661), **Geography** (66), **Tagalog** (58), **Science** (28), **General Web** (11), **Law** (7)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Explain why the following C++ code would not compile.
+string result = to_string(3.14);"*
+  - *"Generate a JavaScript code snippet to toggle a given CSS class on an element with a given ID.
+element_id: "but"*
+  - *"Suggest a code segment to render a greeting message in a terminal window using Python."*
+  - *"Suppose a functiona and a variable are already defined. Write a code statement to assign the value of the vari"*
+
+### Session #6 — `2026-11-10 04:32:09 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #15,900→#18,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (788), **Agents** (634), **Geography** (69), **History** (38), **Tagalog** (36), **Science** (17), **General Web** (11), **Law** (8)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Create two classes 'Circle' and 'Rectangle' in Java which print the circumference and area of their respective"*
+  - *"What is an HTML tag?"*
+  - *"Write a function in Java to instantiate an Employee class with a given name and age."*
+  - *"Explain the difference between subclasses and superclasses."*
+
+### Session #5 — `2026-11-10 04:24:22 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #12,900→#15,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (821), **Agents** (705), **Geography** (52), **Tagalog** (37), **History** (31), **Science** (18), **General Web** (11), **Law** (6)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Build a function to identify a duplicate element in a list
+list = [2,4,8,7,2,5]"*
+  - *"Combine the two strings into one and save it as a variable called full_name.
+first_name = 'John'
+last_name = '"*
+  - *"Calculate the number of days from January 1, 2021 to June 30, 2021."*
+  - *"Given the function, predict the output.
+def foo(a, b):
+    return a + b
+
+print(foo(3, 5))"*
+
+### Session #4 — `2026-11-10 04:16:49 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #9,900→#12,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (844), **Agents** (659), **Geography** (60), **History** (35), **Tagalog** (32), **Science** (20), **General Web** (11), **Law** (7)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Generate random numbers in range [0,10] in C++."*
+  - *"Construct a simple Java program that calculates the sum of two integers."*
+  - *"Name three software design principles."*
+  - *"Write a Java program to remove the duplicates in an array."*
 
 ### Session #3 — `2026-11-10 03:33:06 UTC` (Category: `all`)
 - **Corpus Slice**: `Rec #7,400→#9,900 (0% Dup · Ep 1)` (`7492` unique texts, `0` duplicates skipped)
