@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-09T18:36:33.964435+00:00",
+  "lastUpdatedUtc": "2026-11-10T03:40:43.268361+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
@@ -14,14 +14,14 @@
   },
   "curriculum": {
     "totalDatasets": 177,
-    "totalRecords": 134256,
+    "totalRecords": 141748,
     "baseRecords": 120616,
     "totalTokens": 92771031,
     "baseTokens": 90376089,
     "tokensFormatted": "92.77M",
     "baseTokensFormatted": "90.38M",
-    "cumulativeUniqueTrained": 13640,
-    "activeCursorOffset": 7400,
+    "cumulativeUniqueTrained": 21132,
+    "activeCursorOffset": 9900,
     "totalSteps": 16574,
     "tokensTrained": 2394942,
     "tokensTrainedFormatted": "2.39M",
@@ -37,8 +37,8 @@
   "topics": [
     {
       "name": "Coding",
-      "count": 6214,
-      "percentage": 58.7,
+      "count": 8718,
+      "percentage": 60.1,
       "samplePrompts": [
         "Describe how a Gaussian Mixture Model (GMM) works in Python using scikit-learn.",
         "Create an array of column names in a MySQL query with item_name and item_price.",
@@ -48,7 +48,7 @@
     },
     {
       "name": "Math",
-      "count": 1917,
+      "count": 2628,
       "percentage": 18.1,
       "samplePrompts": [
         "Solve the modular congruence 17x \u2261 9 (mod 43) using the Extended Euclidean Algorithm.",
@@ -59,8 +59,8 @@
     },
     {
       "name": "Agents",
-      "count": 1567,
-      "percentage": 14.8,
+      "count": 2121,
+      "percentage": 14.6,
       "samplePrompts": [
         "Construct an MCP JSON-RPC 2.0 tool definition for executing sandboxed bash commands.",
         "Format a Nous Research Hermes XML function call with schema validation.",
@@ -69,9 +69,19 @@
       ]
     },
     {
+      "name": "Geography",
+      "count": 230,
+      "percentage": 1.6,
+      "samplePrompts": [
+        "List the 18 administrative regions of the Philippines with their regional centers.",
+        "Describe the geological formation and tectonic significance of the Marianas Trench.",
+        "Explain the atmospheric circulation patterns governing the Pacific Ring of Fire."
+      ]
+    },
+    {
       "name": "Science",
-      "count": 207,
-      "percentage": 2.0,
+      "count": 224,
+      "percentage": 1.5,
       "samplePrompts": [
         "Explain the mechanism of CRISPR-Cas9 endonuclease target cleavage and PAM recognition.",
         "Compare the thermodynamic efficiency of the Rankine cycle versus the Brayton cycle.",
@@ -80,29 +90,9 @@
       ]
     },
     {
-      "name": "General Web",
-      "count": 186,
-      "percentage": 1.8,
-      "samplePrompts": [
-        "Summarize the historical evolution of modern operating system microkernels.",
-        "Explain the trade-offs between monolithic databases and distributed consensus engines.",
-        "Detail the core principles of the Open Source Initiative and software licensing."
-      ]
-    },
-    {
-      "name": "Geography",
-      "count": 184,
-      "percentage": 1.7,
-      "samplePrompts": [
-        "List the 18 administrative regions of the Philippines with their regional centers.",
-        "Describe the geological formation and tectonic significance of the Marianas Trench.",
-        "Explain the atmospheric circulation patterns governing the Pacific Ring of Fire."
-      ]
-    },
-    {
       "name": "Tagalog",
-      "count": 166,
-      "percentage": 1.6,
+      "count": 198,
+      "percentage": 1.4,
       "samplePrompts": [
         "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
         "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
@@ -110,9 +100,19 @@
       ]
     },
     {
+      "name": "General Web",
+      "count": 197,
+      "percentage": 1.4,
+      "samplePrompts": [
+        "Summarize the historical evolution of modern operating system microkernels.",
+        "Explain the trade-offs between monolithic databases and distributed consensus engines.",
+        "Detail the core principles of the Open Source Initiative and software licensing."
+      ]
+    },
+    {
       "name": "History",
-      "count": 108,
-      "percentage": 1.0,
+      "count": 137,
+      "percentage": 0.9,
       "samplePrompts": [
         "Distinguish the root causes and combatant alliances of World War I versus World War II.",
         "Describe the geopolitical consequences of the Treaty of Versailles in 1919.",
@@ -121,7 +121,7 @@
     },
     {
       "name": "Law",
-      "count": 36,
+      "count": 43,
       "percentage": 0.3,
       "samplePrompts": [
         "Explain the legal doctrine of stare decisis and its application in common law jurisdictions.",

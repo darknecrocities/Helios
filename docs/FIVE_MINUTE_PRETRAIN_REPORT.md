@@ -1,15 +1,15 @@
 # HELIOS Continuous Pretraining & Improvement Telemetry Report
 
-Generated: 2026-11-09 17:02 UTC · Budget: 60 min total · Category: `all` (177 External Datasets Synced) · Storage: `/Volumes/One Touch` (Verified External Drive)
+Generated: 2026-11-10 03:39 UTC · Budget: 1 min total · Category: `all` (177 External Datasets Synced) · Storage: `/Volumes/One Touch` (Verified External Drive)
 
 | Tier | Mode | Device | Category | Steps (Prev → Total) | Loss Trajectory (Init → Prev → Curr / Gain) | Held-Out Loss | Held-Out PPL (Before → After) | Train tok/s | Infer tok/s | Checkpoint Health & SHA-256 | Context / CoT Budget |
 | :--- | :--- | :--- | :--- | ---: | :--- | ---: | :--- | ---: | ---: | :--- | ---: |
-| nano | full_parameter | mps | `all` | 6298 → **12685** (+6387) | 10.4375 → 2.3318 → 1.9111 (+81.7%) | 1.1888 | 8.38 → **3.28** (+60.9%) | 1790.1 | 10160.0 | HEALTHY (`c578366d1cee`) | 16,384 / 2,048 |
-| alpha | full_parameter | mps | `all` | 1412 → **3366** (+1954) | 10.5483 → 1.4382 → 0.0484 (+99.5%) | 1.5335 | 14.20 → **4.63** (+67.4%) | 544.0 | 3193.5 | HEALTHY (`529922b3bbd0`) | 32,768 / 4,096 |
-| beta | full_parameter | mps | `all` | 585 → **1459** (+874) | 10.6157 → 2.9597 → 0.1355 (+98.7%) | 1.8652 | 32.56 → **6.46** (+80.2%) | 120.0 | 1114.2 | HEALTHY (`3cc7fcce7d6e`) | 65,536 / 8,192 |
-| core | block_slice | cpu | `all` | 3803 → **8036** (+4233) | 2016.0848 → 3.0406 → 0.3438 (+100.0%) | 2.019 | 42.38 → **7.53** (+82.2%) | 864.5 | 8154.1 | HEALTHY (`24583ebadc3c`) | 131,072 / 16,384 |
-| pro | block_slice | cpu | `all` | 1691 → **3595** (+1904) | 3031.3721 → 8.1789 → 7.7093 (+99.8%) | 3.1527 | 408.13 → **23.40** (+94.3%) | 389.0 | 3613.3 | HEALTHY (`9982f18782e0`) | 131,072 / 24,576 |
-| flagship | block_slice | cpu | `all` | 875 → **2097** (+1222) | 4053.9004 → 3.8309 → 5.0951 (+99.9%) | 5.9898 | 105913.58 → **399.35** (+99.6%) | 249.8 | 2142.6 | HEALTHY (`5776d786964f`) | 262,144 / 32,768 |
+| nano | full_parameter | mps | `all` | 12685 → **12785** (+100) | 10.4375 → 1.9111 → 0.0460 (+99.6%) | 0.8852 | 3.28 → **2.42** (+26.2%) | 1653.2 | 8765.3 | HEALTHY (`91939b57ef50`) | 16,384 / 2,048 |
+| alpha | full_parameter | mps | `all` | 3366 → **3403** (+37) | 10.5483 → 0.0484 → 0.0597 (+99.4%) | 1.1093 | 4.63 → **3.03** (+34.6%) | 620.1 | 2975.4 | HEALTHY (`b50e9e1fd0c0`) | 32,768 / 4,096 |
+| beta | full_parameter | mps | `all` | 1459 → **1479** (+20) | 10.6157 → 0.1355 → 5.9101 (+44.3%) | 1.5816 | 6.46 → **4.86** (+24.8%) | 157.5 | 1050.2 | HEALTHY (`e45edf2414b5`) | 65,536 / 8,192 |
+| core | block_slice | cpu | `all` | 8036 → **8110** (+74) | 2016.0848 → 0.3438 → 2.6278 (+99.9%) | 1.9273 | 7.53 → **6.87** (+8.8%) | 907.0 | 7440.1 | HEALTHY (`2880196c3c95`) | 131,072 / 16,384 |
+| pro | block_slice | cpu | `all` | 3595 → **3633** (+38) | 3031.3721 → 7.7093 → 4.5457 (+99.8%) | 3.3108 | 23.40 → **27.41** (-17.1%) | 455.5 | 3610.1 | HEALTHY (`05f65c008b51`) | 131,072 / 24,576 |
+| flagship | block_slice | cpu | `all` | 2097 → **2120** (+23) | 4053.9004 → 5.0951 → 0.1892 (+100.0%) | 5.7503 | 399.35 → **314.28** (+21.3%) | 277.1 | 1980.1 | HEALTHY (`ef85adf032fd`) | 262,144 / 32,768 |
 
 ## Last Checkpoint Persistence & How to Run in `helios chat`
 - Every tier's latest verified checkpoint is atomically saved to `/Volumes/One Touch/Helios/checkpoints/<tier>_continuous/latest/` (`model.safetensors`, `state.pt`, `config.json`, `manifest.json`, `SHA256SUMS`).
