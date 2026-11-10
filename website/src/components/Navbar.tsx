@@ -86,11 +86,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { scrollY } = useScroll();
   const smoothScrollY = useSpring(scrollY, { damping: 30, stiffness: 260, mass: 0.7 });
 
-  const navMaxWidth = useTransform(smoothScrollY, [0, 140], [1320, 1080]);
+  const navMaxWidth = useTransform(smoothScrollY, [0, 140], [1320, 1180]);
   const navTopOffset = useTransform(smoothScrollY, [0, 140], [0, 14]);
   const navBorderRadius = useTransform(smoothScrollY, [0, 140], [0, 9999]);
-  const navPaddingY = useTransform(smoothScrollY, [0, 140], [18, 10]);
-  const navPaddingX = useTransform(smoothScrollY, [0, 140], [28, 20]);
+  const navPaddingY = useTransform(smoothScrollY, [0, 140], [16, 9]);
+  const navPaddingX = useTransform(smoothScrollY, [0, 140], [24, 14]);
 
   useEffect(() => {
     const unsubscribe = scrollY.on('change', (latest) => {
@@ -114,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none px-2 sm:px-4">
       <motion.nav
         style={{
           maxWidth: navMaxWidth,
@@ -125,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           paddingLeft: navPaddingX,
           paddingRight: navPaddingX,
         }}
-        className={`pointer-events-auto w-full transition-colors duration-300 flex items-center justify-between gap-4 ${
+        className={`pointer-events-auto w-full transition-colors duration-300 flex items-center justify-between gap-2 sm:gap-4 overflow-visible ${
           isScrolled
             ? 'bg-[#141312]/92 text-[#FAF7F2] backdrop-blur-xl border border-white/10 shadow-[0_16px_40px_rgba(20,19,18,0.22)]'
             : activeView === 'docs'
@@ -136,29 +136,29 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Brand Identity */}
         <button
           onClick={() => handleSectionNavigate('hero')}
-          className="flex items-center gap-3 focus:outline-none cursor-pointer shrink-0"
+          className="flex items-center gap-2.5 focus:outline-none cursor-pointer shrink-0"
         >
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-[#FF5500]/50 bg-[#141312] shrink-0">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-[#FF5500]/50 bg-[#141312] shrink-0">
             <img
               src="/assets/helios_logo.png"
               alt="Helios Logo"
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-display font-bold tracking-[0.22em] text-sm sm:text-base">
+          <span className="font-display font-bold tracking-[0.20em] text-sm sm:text-base">
             HELIOS
           </span>
         </button>
 
         {/* Center Minimalist Links */}
-        <div className="hidden lg:flex items-center gap-1 shrink-0">
+        <div className="hidden xl:flex items-center gap-0.5 shrink-0">
           {NAV_LINKS.map((item) => {
             const isActive = activeView === 'landing' && activeSection === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleSectionNavigate(item.id)}
-                className={`relative px-3.5 py-1.5 rounded-full text-xs font-mono-tabular tracking-wider uppercase transition-colors cursor-pointer whitespace-nowrap ${
+                className={`relative px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-mono-tabular tracking-wider uppercase transition-colors cursor-pointer whitespace-nowrap ${
                   isActive
                     ? 'text-white font-bold'
                     : 'text-[#FAF7F2]/70 hover:text-white'
@@ -178,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Right: Platform Repos & Docs Switcher */}
-        <div className="hidden sm:flex items-center gap-2 shrink-0">
+        <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 shrink-0">
           <GitHubStarButton />
 
           <a
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             title="Ollama"
-            className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
           >
             <OllamaLogo size={16} />
           </a>
@@ -195,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             title="Hugging Face"
-            className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
           >
             <HuggingFaceLogo size={16} />
           </a>
@@ -205,7 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               setActiveView(activeView === 'docs' ? 'landing' : 'docs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="px-4 py-1.5 rounded-full text-xs font-mono-tabular font-bold tracking-wider uppercase bg-[#FF5500] text-white hover:bg-[#E64A00] transition-all cursor-pointer active:scale-95"
+            className="px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-mono-tabular font-bold tracking-wider uppercase bg-[#FF5500] text-white hover:bg-[#E64A00] transition-all cursor-pointer active:scale-95 shrink-0"
           >
             {activeView === 'docs' ? 'Showcase' : 'Docs'}
           </button>
