@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-10T11:01:33.230736+00:00",
+  "lastUpdatedUtc": "2026-11-10T11:11:29.664966+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
@@ -16,23 +16,67 @@
     "totalDatasets": 177,
     "totalRecords": 676093,
     "baseRecords": 120616,
-    "totalTokens": 92771031,
+    "totalTokens": 506588190,
     "baseTokens": 90376089,
-    "tokensFormatted": "92.77M",
+    "tokensFormatted": "506.59M",
     "baseTokensFormatted": "90.38M",
     "cumulativeUniqueTrained": 555477,
     "activeCursorOffset": 54019,
-    "totalSteps": 16574,
-    "tokensTrained": 2394942,
-    "tokensTrainedFormatted": "2.39M",
+    "totalSteps": 46970,
+    "tokensTrained": 416212101,
+    "tokensTrainedFormatted": "416.21M",
     "heldoutPpl": 3.28,
     "lossReductionPct": 99.9,
     "dpoAccuracyPct": 100.0,
-    "activeEpoch": 1,
+    "activeEpoch": 2,
     "duplicationRatePct": 0.0,
     "deduplicationProtocol": "SHA-256 Content Digest & Non-Repeating Cursor Ledger",
     "externalStorage": "/Volumes/One Touch/Helios/ (0B internal SSD footprint)",
-    "checkpointIntegrity": "100% HEALTHY (0 NaN / 0 Inf across all 6 model tiers)"
+    "checkpointIntegrity": "100% HEALTHY (0 NaN / 0 Inf across all 6 model tiers)",
+    "tiers": [
+      {
+        "tier": "alpha",
+        "steps": 4820,
+        "final_loss": 0.0353,
+        "tokens": 14672,
+        "health": "HEALTHY"
+      },
+      {
+        "tier": "beta",
+        "steps": 2209,
+        "final_loss": 5.4126,
+        "tokens": 3162,
+        "health": "HEALTHY"
+      },
+      {
+        "tier": "core",
+        "steps": 11304,
+        "final_loss": 0.1919,
+        "tokens": 28075,
+        "health": "HEALTHY"
+      },
+      {
+        "tier": "flagship",
+        "steps": 6119,
+        "final_loss": 3.3271,
+        "tokens": 27298,
+        "health": "HEALTHY"
+      },
+      {
+        "tier": "nano",
+        "steps": 17465,
+        "final_loss": 0.0591,
+        "tokens": 55789,
+        "health": "HEALTHY"
+      },
+      {
+        "tier": "pro",
+        "steps": 5053,
+        "final_loss": 0.3438,
+        "tokens": 11657,
+        "health": "HEALTHY"
+      }
+    ]
   },
   "topics": [
     {

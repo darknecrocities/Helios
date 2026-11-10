@@ -95,7 +95,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
             <div className="lg:col-span-7 space-y-2 lg:pt-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={(data.curriculum.totalTokens ?? 92771031) / 1_000_000}
+                  value={(data.curriculum.totalTokens ?? 506588190) / 1_000_000}
                   decimals={2}
                   suffix="M"
                   duration={2.0}
@@ -105,8 +105,8 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 Total Pretraining Tokens
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                {data.curriculum.tokensFormatted ?? "92.77M"} cumulative tokens ({data.curriculum.baseTokensFormatted ?? "90.38M"} base corpus
-                + {data.curriculum.tokensTrainedFormatted ?? "2.39M"} parameter tokens ingested in 1-hour continuous training across all 6 tiers).
+                {data.curriculum.tokensFormatted ?? "506.59M"} cumulative tokens ({data.curriculum.baseTokensFormatted ?? "90.38M"} base corpus
+                + {data.curriculum.tokensTrainedFormatted ?? "416.21M"} parameter tokens ingested in non-repeating curriculum training across all 6 tiers).
               </p>
             </div>
           </div>
@@ -118,7 +118,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
             <div className="lg:col-span-5 space-y-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#141312] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.totalRecords ?? 134256}
+                  value={data.curriculum.totalRecords ?? 676093}
                   duration={2.2}
                 />
               </div>
@@ -126,15 +126,15 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 Total Pretraining Records
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-sm">
-                {(data.curriculum.totalRecords ?? 134256).toLocaleString()} consolidated records on OneTouch storage
-                ({(data.curriculum.cumulativeUniqueTrained ?? 13640).toLocaleString()} unique samples ingested with zero repetition; cursor #7,400).
+                {(data.curriculum.totalRecords ?? 676093).toLocaleString()} consolidated records on OneTouch storage
+                ({(data.curriculum.cumulativeUniqueTrained ?? 555477).toLocaleString()} unique samples ingested with zero repetition; cursor #{((data.curriculum.activeCursorOffset ?? 54019)).toLocaleString()}).
               </p>
             </div>
 
             <div className="lg:col-span-7 space-y-2 lg:pt-2">
               <div className="text-6xl sm:text-7xl lg:text-8xl text-[#FF5500] leading-none">
                 <AnimatedMorphNumber
-                  value={data.curriculum.totalSteps ?? 16574}
+                  value={data.curriculum.totalSteps ?? 46970}
                   duration={1.4}
                 />
               </div>
@@ -142,8 +142,8 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 Total Training Steps Executed
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                16,574 forward-backward steps completed with up to 99.9% loss drop and top held-out
-                perplexity of 3.28 on Nano (7.53 on Core).
+                {(data.curriculum.totalSteps ?? 46970).toLocaleString()} forward-backward steps completed with up to 99.9% loss drop and top held-out
+                perplexity of 3.28 on Nano (0.19 loss on Core, 0.035 on Alpha).
               </p>
             </div>
           </div>
