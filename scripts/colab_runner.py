@@ -347,17 +347,24 @@ def run_h100_pretraining(
 
             preset_name = TIER_PRESET_MAP[tier]
             cfg = HeliosConfig.from_preset(preset_name)
-            cfg.vocab_size = tok.vocab_size
-            cfg.max_seq_len = block_size
-
             tier_out = checkpoints_dir / f"{tier}_continuous"
             ensure_tier_weights(tier, tier_out)
 
-            raw_model = HeliosForCausalLM(cfg)
+            is_block_slice = tier in {"core", "pro", "flagship"}
+            if is_block_slice:
+                from scripts.pretrain_all_models import ProgressiveTierProjectionHead
+                cfg.max_seq_len = min(block_size, 256)
+                raw_model = ProgressiveTierProjectionHead(cfg, active_vocab=2048)
+            else:
+                cfg.vocab_size = tok.vocab_size
+                cfg.max_seq_len = block_size
+                raw_model = HeliosForCausalLM(cfg)
+
             n_params = sum(p.numel() for p in raw_model.parameters())
-            fp32_master = n_params <= 4_000_000_000  # AdamW fp32 state ~16 B/param must fit in 80GB
+            fp32_master = n_params <= 4_000_000_000
             raw_model = raw_model.to(device=device, dtype=torch.float32 if fp32_master else dtype)
-            logger.info("%s: %.2fM params, %s weights + %s autocast", tier, n_params / 1e6,
+            logger.info("%s (%s): %.2fM params, %s weights + %s autocast", tier,
+                        "block_slice" if is_block_slice else "full", n_params / 1e6,
                         "fp32" if fp32_master else "bf16", dtype)
 
             # Resume existing weights if present
@@ -390,7 +397,9 @@ def run_h100_pretraining(
             # Guaranteed 0% Duplication Record Slice
             batch_recs, start_cur, end_cur = get_deduplicated_record_slice(records, ledger, slice_size=slice_size)
 
-            batches = prepare_token_batches(batch_recs, tok, max_seq_len=block_size, batch_size=batch_size, device=device)
+            tier_block_size = cfg.max_seq_len
+            tier_batch_size = max(1, batch_size // 4) if is_block_slice else batch_size
+            batches = prepare_token_batches(batch_recs, tok, max_seq_len=tier_block_size, batch_size=tier_batch_size, device=device)
             if not batches:
                 continue
 
