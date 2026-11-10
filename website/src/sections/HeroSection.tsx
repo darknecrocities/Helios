@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ArrowDown, Copy, Check, Terminal, ExternalLink } from 'lucide-react';
+import { ArrowDown, ExternalLink } from 'lucide-react';
 import { HuggingFaceLogo } from '../components/PlatformLogos';
 
 interface HeroSectionProps {
@@ -18,17 +18,6 @@ const HERO_TIERS = [
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDocs }) => {
   const containerRef = useRef<HTMLElement>(null);
-  const [selectedTier, setSelectedTier] = useState<string>('flagship');
-  const [copied, setCopied] = useState<boolean>(false);
-
-  const activeTierData = HERO_TIERS.find((t) => t.tag === selectedTier) ?? HERO_TIERS[5];
-  const activeCommand = `ollama run parejasarronkian/Helios:${selectedTier}`;
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(activeCommand);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // Kinetic scroll progress across 200vh track (pinned for 100vh)
   const { scrollYProgress } = useScroll({
@@ -44,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDocs }) => {
   const orbitsOpacity = useTransform(smoothScroll, [0, 0.35, 0.65], [1, 0.7, 0]);
   const bgScale = useTransform(smoothScroll, [0, 1], [1, 1.4]);
 
-  // Foreground copy & quick-run terminal fade gently on initial scroll
+  // Foreground copy & quick action bar fade gently on initial scroll
   const contentY = useTransform(smoothScroll, [0, 0.38], ['0%', '25%']);
   const contentOpacity = useTransform(smoothScroll, [0, 0.30], [1, 0]);
 
@@ -160,62 +149,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDocs }) => {
             </p>
           </div>
 
-          {/* Devlets-Inspired Tactile Terminal & Runner Widget */}
-          <div className="mt-4 sm:mt-5 w-full max-w-xl mx-auto rounded-2xl bg-[#141312]/95 border border-white/10 p-3 sm:p-4 backdrop-blur-xl shadow-2xl text-left">
-            {/* Terminal Header & Tier Tabs */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-white/10">
-              <div className="flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5 text-[#FF5500]" aria-hidden="true" />
-                <span className="font-mono-tabular text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50">
-                  Quick Run (Ollama)
-                </span>
-              </div>
-
-              {/* 6-Tier Segmented Switcher */}
-              <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/5 overflow-x-auto scrollbar-none max-w-full">
-                {HERO_TIERS.map((tier) => (
-                  <button
-                    key={tier.tag}
-                    onClick={() => setSelectedTier(tier.tag)}
-                    className={`px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono-tabular uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
-                      selectedTier === tier.tag
-                        ? 'bg-[#FF5500] text-white font-bold shadow-xs'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    :{tier.tag}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Command Display & One-Click Copy */}
-            <div className="mt-2.5 flex items-center justify-between gap-2 bg-black/50 rounded-xl px-3 py-2 border border-white/5 font-mono-tabular">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-[#FF5500] font-bold select-none text-xs">$</span>
-                <span className="text-[11px] sm:text-xs text-white/90 truncate">{activeCommand}</span>
-              </div>
-
-              <button
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FF5500] hover:bg-[#E64A00] text-white text-[10px] sm:text-[11px] font-medium transition-colors shrink-0 cursor-pointer shadow-xs active:scale-95 min-h-[32px]"
-                aria-label="Copy run command"
-              >
-                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
-              </button>
-            </div>
-
-            {/* Micro Telemetry Bar */}
-            <div className="mt-2 flex items-center justify-between text-[9px] sm:text-[10px] font-mono-tabular text-white/50 px-1">
-              <span>{activeTierData.name} ({activeTierData.params})</span>
-              <span>Req: {activeTierData.ram}</span>
-              <span className="hidden sm:inline">{activeTierData.arch}</span>
-            </div>
-          </div>
-
           {/* Quick Action Navigation Bar */}
-          <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-2.5 w-full">
+          <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-2.5 w-full">
             <a
               href="#family"
               className="px-5 py-2 rounded-full bg-[#FAF7F2] text-[#0D0C0B] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] hover:bg-[#FF5500] hover:text-white transition-all shadow-md active:scale-95"
