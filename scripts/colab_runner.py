@@ -376,12 +376,13 @@ def run_h100_pretraining(
                 except Exception as ex:
                     logger.warning("Could not resume %s: %s", tier, ex)
 
-            # Optional torch.compile
+            # Optional torch.compile (default: PyTorch SDPA native kernels; compile with default backend when requested)
             model = raw_model
             if enable_compile and torch.cuda.is_available() and hasattr(torch, "compile"):
                 try:
-                    model = torch.compile(raw_model, mode="reduce-overhead")
-                    logger.info("Compiled %s model via TorchDynamo/Inductor.", tier)
+                    # mode="default" avoids aggressive CUDAGraph capturing which breaks on dynamic RoPE caching and L4 SM counts
+                    model = torch.compile(raw_model, mode="default")
+                    logger.info("Compiled %s model via TorchDynamo/Inductor (mode=default).", tier)
                 except Exception as e:
                     logger.warning("torch.compile fallback: %s", e)
                     model = raw_model
@@ -456,16 +457,20 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--warmup-steps", type=int, default=20)
     parser.add_argument("--slice-size", type=int, default=4000)
-    parser.add_argument("--no-compile", action="store_true")
+    parser.add_argument("--compile", action="store_true", help="Enable torch.compile (default: False for max stability across GPU tiers)")
+    parser.add_argument("--no-compile", action="store_true", help="Deprecated: torch.compile is disabled by default")
     parser.add_argument("--skip-hf-sync", action="store_true")
     args = parser.parse_args()
+
+    # Enable compile only if --compile is explicitly passed and --no-compile is not
+    enable_compile = args.compile and not args.no_compile
 
     run_h100_pretraining(
         drive_root=args.drive_root,
         target_tokens=args.target_tokens,
         batch_size=args.batch_size,
         block_size=args.block_size,
-        enable_compile=not args.no_compile,
+        enable_compile=enable_compile,
         hf_sync=not args.skip_hf_sync,
         lr=args.lr,
         warmup_steps=args.warmup_steps,
