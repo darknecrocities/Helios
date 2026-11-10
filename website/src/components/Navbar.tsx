@@ -12,6 +12,7 @@ interface NavbarProps {
 const NAV_LINKS = [
   { id: 'hero', label: 'Helios' },
   { id: 'about', label: 'About' },
+  { id: 'demo', label: 'Demo' },
   { id: 'family', label: 'Models' },
   { id: 'training', label: 'Datasets' },
   { id: 'capabilities', label: 'Capabilities' },
