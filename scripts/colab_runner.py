@@ -1,8 +1,10 @@
-"""H100/A100 High-Throughput Pretraining Runner for Helios Family (2B Tokens Target).
+"""H100/A100/L4 High-Throughput Pretraining Runner for Helios Family (2B Tokens Target).
 
 Features:
 - Native bfloat16 mixed precision with PyTorch SDPA (Scaled Dot-Product Attention).
-- `torch.compile(model, mode="reduce-overhead")` for inductor kernel fusion.
+- Resilient Auto-Downloader: If corpus or checkpoints are missing from Google Drive,
+  it automatically fetches them from Hugging Face Hub (Darknecrocities/Helios-Pretrain-Corpus
+  and Darknecrocities/Helios) directly into Drive so training never crashes!
 - Continuous zero-loss Google Drive auto-checkpointing (`/content/drive/MyDrive/Helios/`).
 - 100% Deduplication Guarantee: loads `curriculum_ledger.json`, uses cryptographic
   hash tracking (`seen_hashes`) and persistent category cursors so zero previously
@@ -56,7 +58,7 @@ signal.signal(signal.SIGINT, sigterm_handler)
 
 
 def configure_h100_environment() -> tuple[torch.device, torch.dtype]:
-    """Detects and configures maximum throughput optimizations for H100/A100 GPUs."""
+    """Detects and configures maximum throughput optimizations for H100/A100/L4 GPUs."""
     if not torch.cuda.is_available():
         logger.warning("No CUDA device detected. Falling back to CPU.")
         return torch.device("cpu"), torch.float32
@@ -66,11 +68,10 @@ def configure_h100_environment() -> tuple[torch.device, torch.dtype]:
     vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
     logger.info("Configuring High-Throughput GPU: %s (VRAM: %.1f GB)", gpu_name, vram_gb)
 
-    # Enable TF32 for matrix multiplications on Ampere/Hopper
+    # Enable TF32 for matrix multiplications on Ampere/Hopper/Ada
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
 
-    # Check SDPA / FlashAttention backend
     if hasattr(torch.nn.functional, "scaled_dot_product_attention"):
         torch.backends.cuda.enable_flash_sdp(True)
         torch.backends.cuda.enable_mem_efficient_sdp(True)
@@ -94,6 +95,89 @@ def clean_ephemeral_cache() -> None:
                         item.unlink()
                 except Exception:
                     pass
+
+
+def ensure_drive_corpus_and_ledger(drive_root: Path) -> tuple[Path, Path]:
+    """Ensures the omni-domain corpus and ledger exist in Drive; downloads from HF if missing."""
+    datasets_dir = drive_root / "datasets"
+    manifests_dir = drive_root / "manifests"
+    datasets_dir.mkdir(parents=True, exist_ok=True)
+    manifests_dir.mkdir(parents=True, exist_ok=True)
+
+    corpus_path = datasets_dir / "helios_massive_pretrain_corpus.jsonl"
+    ledger_path = manifests_dir / "curriculum_ledger.json"
+
+    # 1. Check local repo fallback
+    repo_corpus = Path("data/datasets/helios_massive_pretrain_corpus.jsonl")
+    if not corpus_path.exists() and repo_corpus.exists():
+        logger.info("Copying corpus from repo to Drive: %s", corpus_path)
+        import shutil
+        shutil.copy2(repo_corpus, corpus_path)
+
+    # 2. If still missing, download directly from Hugging Face Hub dataset repo
+    if not corpus_path.exists():
+        logger.info("Corpus missing in Drive. Downloading from Hugging Face Hub (Darknecrocities/Helios-Pretrain-Corpus)...")
+        from huggingface_hub import hf_hub_download
+        token = os.environ.get("HF_TOKEN")
+        dl_path = hf_hub_download(
+            repo_id="Darknecrocities/Helios-Pretrain-Corpus",
+            filename="helios_massive_pretrain_corpus.jsonl",
+            repo_type="dataset",
+            token=token,
+        )
+        import shutil
+        shutil.copy2(dl_path, corpus_path)
+        logger.info("Corpus downloaded successfully to %s", corpus_path)
+
+    # 3. Check ledger
+    if not ledger_path.exists():
+        try:
+            logger.info("Ledger missing in Drive. Downloading from Hugging Face Hub...")
+            from huggingface_hub import hf_hub_download
+            token = os.environ.get("HF_TOKEN")
+            dl_path = hf_hub_download(
+                repo_id="Darknecrocities/Helios-Pretrain-Corpus",
+                filename="curriculum_ledger.json",
+                repo_type="dataset",
+                token=token,
+            )
+            import shutil
+            shutil.copy2(dl_path, ledger_path)
+            logger.info("Ledger downloaded successfully to %s", ledger_path)
+        except Exception as e:
+            logger.warning("Could not download ledger from HF (%s); starting fresh ledger.", e)
+
+    return corpus_path, ledger_path
+
+
+def ensure_tier_weights(tier: str, tier_out: Path) -> None:
+    """Ensures checkpoint weights exist; downloads continuous weights from HF if missing."""
+    latest_dir = tier_out / "latest"
+    latest_st = latest_dir / "model.safetensors"
+    if latest_st.exists():
+        return
+
+    latest_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        from huggingface_hub import hf_hub_download
+        token = os.environ.get("HF_TOKEN")
+        logger.info("Fetching existing %s checkpoint from Hugging Face (Darknecrocities/Helios)...", tier)
+        for fname in ["model.safetensors", "config.json", "manifest.json", "SHA256SUMS"]:
+            try:
+                dl = hf_hub_download(
+                    repo_id="Darknecrocities/Helios",
+                    filename=f"continuous/{tier}/{fname}",
+                    repo_type="model",
+                    token=token,
+                )
+                import shutil
+                shutil.copy2(dl, latest_dir / fname)
+            except Exception:
+                pass
+        if latest_st.exists():
+            logger.info("Successfully fetched %s checkpoint to Drive.", tier)
+    except Exception as e:
+        logger.warning("Could not fetch %s from HF: %s", tier, e)
 
 
 def save_checkpoint_to_drive(
@@ -127,7 +211,7 @@ def save_checkpoint_to_drive(
         "loss": round(float(loss), 4),
         "sha256": sha256,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "hardware": "NVIDIA_H100_SXM5_80GB",
+        "hardware": "COLAB_GPU",
     }
     with open(step_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
@@ -158,7 +242,7 @@ def push_to_huggingface_hub(tier: str, latest_dir: Path, hf_repo: str = "Darknec
         logger.info("Pushing %s checkpoint to Hugging Face (%s)...", tier, hf_repo)
         api.upload_folder(
             folder_path=str(latest_dir),
-            path_in_repo=f"models/{tier}",
+            path_in_repo=f"continuous/{tier}",
             repo_id=hf_repo,
             repo_type="model",
             commit_message=f"Auto-sync {tier} checkpoint from H100 pretraining runner",
@@ -223,14 +307,10 @@ def run_h100_pretraining(
 
     checkpoints_dir = drive_root / "checkpoints"
     manifests_dir = drive_root / "manifests"
-    datasets_dir = drive_root / "datasets"
 
-    corpus_path = datasets_dir / "helios_massive_pretrain_corpus.jsonl"
-    if not corpus_path.exists():
-        corpus_path = Path("data/datasets/helios_massive_pretrain_corpus.jsonl")
+    corpus_path, ledger_path = ensure_drive_corpus_and_ledger(drive_root)
 
     tok = load_or_create_tokenizer()
-    ledger_path = manifests_dir / "curriculum_ledger.json"
     ledger: dict[str, Any] = {"category_cursors": {"all": 0}, "category_epochs": {"all": 1}, "seen_hashes": []}
     if ledger_path.exists():
         try:
@@ -243,14 +323,14 @@ def run_h100_pretraining(
 
     records = load_dataset_records(corpus_path)
     total_records = len(records)
-    logger.info("Loaded %d corpus records for H100 scaling.", total_records)
+    logger.info("Loaded %d corpus records for high-throughput scaling.", total_records)
 
     total_tokens_trained = 0
     cycle = 0
 
     while total_tokens_trained < target_tokens and not TERMINATION_REQUESTED:
         cycle += 1
-        logger.info("=== H100 Cycle #%d | Progress: %d / %d tokens (%.2f%%) ===",
+        logger.info("=== Training Cycle #%d | Progress: %d / %d tokens (%.2f%%) ===",
                     cycle, total_tokens_trained, target_tokens, (total_tokens_trained / target_tokens) * 100)
 
         for tier in ["nano", "alpha", "beta", "core", "pro", "flagship"]:
@@ -269,6 +349,8 @@ def run_h100_pretraining(
             )
 
             tier_out = checkpoints_dir / f"{tier}_continuous"
+            ensure_tier_weights(tier, tier_out)
+
             raw_model = HeliosForCausalLM(cfg).to(device=device, dtype=dtype)
 
             # Resume existing weights if present
@@ -286,7 +368,7 @@ def run_h100_pretraining(
                 except Exception as ex:
                     logger.warning("Could not resume %s: %s", tier, ex)
 
-            # Optional torch.compile on H100
+            # Optional torch.compile
             model = raw_model
             if enable_compile and torch.cuda.is_available() and hasattr(torch, "compile"):
                 try:
@@ -351,7 +433,7 @@ def run_h100_pretraining(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Helios H100 High-Throughput Pretrainer")
+    parser = argparse.ArgumentParser(description="Helios High-Throughput Pretrainer")
     parser.add_argument("--drive-root", type=Path, default=Path("/content/drive/MyDrive/Helios"))
     parser.add_argument("--target-tokens", type=int, default=2_000_000_000)
     parser.add_argument("--batch-size", type=int, default=64)
