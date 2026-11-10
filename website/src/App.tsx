@@ -14,6 +14,7 @@ import {
   EditorialHonestySection,
 } from './sections/OpusEditorialSections';
 import { PretrainedCurriculumSection } from './sections/PretrainedCurriculumSection';
+import { ModelDemoSection } from './sections/ModelDemoSection';
 import { DocsView } from './pages/DocsView';
 
 export const App: React.FC = () => {
@@ -30,7 +31,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (activeView !== 'landing') return;
 
-    const sectionIds = ['hero', 'about', 'family', 'training', 'capabilities', 'comparison', 'platforms'];
+    const sectionIds = ['hero', 'about', 'demo', 'family', 'training', 'capabilities', 'comparison', 'platforms'];
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 260;
       for (const id of sectionIds) {
@@ -93,6 +94,7 @@ export const App: React.FC = () => {
           >
             <HeroSection onOpenDocs={handleOpenDocs} />
             <AboutSection />
+            <ModelDemoSection />
             <BrandBelt />
             <EditorialReasoningSection />
             <FamilySection />
