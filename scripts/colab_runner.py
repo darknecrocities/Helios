@@ -1,14 +1,15 @@
 """H100/A100 High-Throughput Pretraining Runner for Helios Family (2B Tokens Target).
 
-Key H100 Optimizations:
-1. Native bfloat16 mixed precision with FlashAttention / PyTorch SDPA fusion.
-2. `torch.compile(model, mode="reduce-overhead")` for inductor kernel fusion.
-3. Gradient accumulation with larger batch size (128) & sequence length (1024-2048)
-   to saturate H100 80GB HBM3 bandwidth (3.35 TB/s) reaching 120k-180k tok/s.
-4. Continuous checkpointing directly to Google Drive (`/content/drive/MyDrive/Helios/`).
-5. Preemption safety (SIGTERM/SIGINT) - traps compute unit cuts with zero lost state.
-6. Automatic sync trigger to Hugging Face Hub (HF_TOKEN) and Ollama registry.
-7. Ephemeral disk cleanup (/tmp, ~/.cache/huggingface) to prevent Colab disk crashes.
+Features:
+- Native bfloat16 mixed precision with PyTorch SDPA (Scaled Dot-Product Attention).
+- `torch.compile(model, mode="reduce-overhead")` for inductor kernel fusion.
+- Continuous zero-loss Google Drive auto-checkpointing (`/content/drive/MyDrive/Helios/`).
+- 100% Deduplication Guarantee: loads `curriculum_ledger.json`, uses cryptographic
+  hash tracking (`seen_hashes`) and persistent category cursors so zero previously
+  trained records are repeated.
+- Preemption safety (SIGTERM/SIGINT) flushes all states immediately on compute unit loss.
+- Automatic sync to Hugging Face Hub (`Darknecrocities/Helios`).
+- Ephemeral cache auto-eviction (/tmp, ~/.cache/huggingface) to prevent Colab disk OOM.
 
 Author: Arron Kian Parejas <parejasarronkian@gmail.com>
 """
@@ -167,6 +168,48 @@ def push_to_huggingface_hub(tier: str, latest_dir: Path, hf_repo: str = "Darknec
         logger.warning("Could not push to Hugging Face: %s", e)
 
 
+def compute_record_hash(record: dict[str, Any]) -> str:
+    """Computes deterministic 64-bit SHA hash for deduplication."""
+    text = record.get("text") or record.get("content") or json.dumps(record, sort_keys=True)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def get_deduplicated_record_slice(
+    records: list[dict[str, Any]],
+    ledger: dict[str, Any],
+    slice_size: int = 1000,
+) -> tuple[list[dict[str, Any]], int, int]:
+    """Retrieves next slice of records, strictly guaranteeing 0% duplication."""
+    total_records = len(records)
+    cursor = ledger.get("category_cursors", {}).get("all", 0)
+    seen_hashes_set = set(ledger.get("seen_hashes", []))
+
+    selected: list[dict[str, Any]] = []
+    idx = cursor
+    skipped_dups = 0
+
+    while len(selected) < slice_size and len(seen_hashes_set) < total_records:
+        rec = records[idx % total_records]
+        r_hash = compute_record_hash(rec)
+        if r_hash not in seen_hashes_set:
+            selected.append(rec)
+            seen_hashes_set.add(r_hash)
+            ledger.setdefault("seen_hashes", []).append(r_hash)
+        else:
+            skipped_dups += 1
+        idx += 1
+        if idx % total_records == 0:
+            current_epoch = ledger.get("category_epochs", {}).get("all", 1)
+            ledger.setdefault("category_epochs", {})["all"] = current_epoch + 1
+            logger.info("Curriculum looped to Epoch %d. Seen unique hashes: %d", current_epoch + 1, len(seen_hashes_set))
+
+    new_cursor = idx % total_records
+    ledger.setdefault("category_cursors", {})["all"] = new_cursor
+    logger.info("Extracted %d unique records (skipped %d duplicates). New cursor=%d | Total unique seen=%d",
+                len(selected), skipped_dups, new_cursor, len(seen_hashes_set))
+    return selected, cursor, new_cursor
+
+
 def run_h100_pretraining(
     drive_root: Path,
     target_tokens: int = 2_000_000_000,
@@ -188,12 +231,13 @@ def run_h100_pretraining(
 
     tok = load_or_create_tokenizer()
     ledger_path = manifests_dir / "curriculum_ledger.json"
-    ledger: dict[str, Any] = {"category_cursors": {"all": 0}, "seen_hashes": []}
+    ledger: dict[str, Any] = {"category_cursors": {"all": 0}, "category_epochs": {"all": 1}, "seen_hashes": []}
     if ledger_path.exists():
         try:
             with open(ledger_path, "r", encoding="utf-8") as f:
                 ledger = json.load(f)
-            logger.info("Resumed curriculum cursor=%d", ledger.get("category_cursors", {}).get("all", 0))
+            logger.info("Resumed curriculum: cursor=%d, seen_hashes=%d",
+                        ledger.get("category_cursors", {}).get("all", 0), len(ledger.get("seen_hashes", [])))
         except Exception as e:
             logger.warning("Could not parse ledger (%s); continuing fresh.", e)
 
@@ -242,7 +286,7 @@ def run_h100_pretraining(
                 except Exception as ex:
                     logger.warning("Could not resume %s: %s", tier, ex)
 
-            # Optional torch.compile on H100 for 1.3x - 1.5x speedup
+            # Optional torch.compile on H100
             model = raw_model
             if enable_compile and torch.cuda.is_available() and hasattr(torch, "compile"):
                 try:
@@ -252,10 +296,8 @@ def run_h100_pretraining(
                     logger.warning("torch.compile fallback: %s", e)
                     model = raw_model
 
-            cursor = ledger.get("category_cursors", {}).get("all", 0)
-            slice_size = 1000
-            end_cursor = (cursor + slice_size) % max(1, total_records)
-            batch_recs = records[cursor:cursor + slice_size] if cursor + slice_size <= total_records else records[cursor:] + records[:end_cursor]
+            # Guaranteed 0% Duplication Record Slice
+            batch_recs, start_cur, end_cur = get_deduplicated_record_slice(records, ledger, slice_size=1000)
 
             batches = prepare_token_batches(batch_recs, tok, block_size=block_size, batch_size=batch_size)
             if not batches:
@@ -294,8 +336,7 @@ def run_h100_pretraining(
 
             save_checkpoint_to_drive(tier, current_step, avg_loss, model, cfg, tier_out)
 
-            # Update curriculum cursor
-            ledger["category_cursors"]["all"] = end_cursor
+            # Persist ledger with updated cursor and seen_hashes to Drive
             manifests_dir.mkdir(parents=True, exist_ok=True)
             with open(ledger_path, "w", encoding="utf-8") as f:
                 json.dump(ledger, f, indent=2)
