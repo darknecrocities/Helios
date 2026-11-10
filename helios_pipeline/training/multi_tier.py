@@ -326,15 +326,93 @@ def train_tier(
     return result
 
 
+def evict_ephemeral_training_cache(storage: OneTouchStorageManager) -> int:
+    """Safely free temporary streaming and PyTorch caches on external storage without touching checkpoints."""
+    bytes_freed = 0
+    ephemeral_dirs = [
+        storage.base_dir / "data" / "tmp",
+        storage.base_dir / "data" / "hf_cache",
+        storage.base_dir / "datasets" / "cache",
+    ]
+    for d in ephemeral_dirs:
+        if d.exists() and d.is_dir():
+            for p in list(d.glob("*")):
+                try:
+                    if p.is_file():
+                        bytes_freed += p.stat().st_size
+                        p.unlink()
+                    elif p.is_dir():
+                        shutil.rmtree(p, ignore_errors=True)
+                except Exception:
+                    pass
+    if hasattr(torch, "mps") and hasattr(torch.mps, "empty_cache"):
+        torch.mps.empty_cache()
+    gc.collect()
+    return bytes_freed
+
+
 def train_all(
-    tiers: list[str], minutes: float, device_req: str = "auto", category: str = "all"
+    tiers: list[str],
+    minutes: float = 5.0,
+    device_req: str = "auto",
+    category: str = "all",
+    target_tokens: int | None = None,
 ) -> list[TierResult]:
-    """Split wall-clock budget evenly across tiers and train each sequentially without lag or duplication."""
+    """Train all tiers sequentially or in continuous round-robin micro-epochs until token target is reached."""
     from helios.cli.utils import load_or_create_tokenizer
 
     storage = require_onetouch()
     tokenizer = load_or_create_tokenizer()
     cat_key = normalize_category(category)
+
+    # Token-budgeted continuous campaign mode
+    if target_tokens is not None and target_tokens > 0:
+        logger.info(
+            "Initiating Token-Budgeted Continuous Campaign across %s (Target: %s tokens)",
+            tiers, f"{target_tokens:,}",
+        )
+        cumulative_tokens = 0
+        latest_results: dict[str, TierResult] = {}
+        cycle = 0
+
+        # Run continuous round-robin passes across all tiers
+        while cumulative_tokens < target_tokens:
+            cycle += 1
+            texts, session_meta = sample_non_repeating_corpus(
+                storage, limit=3000, seed=42 + cycle, category=cat_key, advance_cursor=True
+            )
+            topics_summary = str(session_meta.get("trained_topics_summary", ""))
+            cursor_range = str(session_meta.get("cursor_range", ""))
+
+            # Slice 30 seconds per tier per micro-round to ensure interleaved progress across all models
+            slice_sec = 30.0
+            for tier in tiers:
+                logger.info(
+                    "Cycle #%d | Tier: %s | Cumulative: %s / %s tokens",
+                    cycle, tier, f"{cumulative_tokens:,}", f"{target_tokens:,}",
+                )
+                res = train_tier(
+                    tier,
+                    slice_sec,
+                    storage,
+                    texts,
+                    tokenizer,
+                    device_req,
+                    category=cat_key,
+                    trained_topics_summary=topics_summary,
+                    cursor_range=cursor_range,
+                )
+                cumulative_tokens += res.tokens
+                latest_results[tier] = res
+                evict_ephemeral_training_cache(storage)
+
+                if cumulative_tokens >= target_tokens:
+                    logger.info("Campaign Target Reached: %s tokens trained!", f"{cumulative_tokens:,}")
+                    break
+
+        return list(latest_results.values())
+
+    # Wall-clock allocated pretraining mode
     texts, session_meta = sample_non_repeating_corpus(
         storage, limit=2500, seed=42, category=cat_key, advance_cursor=True
     )
@@ -346,17 +424,17 @@ def train_all(
         logger.info(
             "Training %s [category=%s | %s] for %.0fs", tier, cat_key, cursor_range, per_tier
         )
-        results.append(
-            train_tier(
-                tier,
-                per_tier,
-                storage,
-                texts,
-                tokenizer,
-                device_req,
-                category=cat_key,
-                trained_topics_summary=topics_summary,
-                cursor_range=cursor_range,
-            )
+        res = train_tier(
+            tier,
+            per_tier,
+            storage,
+            texts,
+            tokenizer,
+            device_req,
+            category=cat_key,
+            trained_topics_summary=topics_summary,
+            cursor_range=cursor_range,
         )
+        results.append(res)
+        evict_ephemeral_training_cache(storage)
     return results

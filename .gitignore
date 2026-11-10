@@ -63,3 +63,6 @@ evaluation_records/
 *.db-wal
 *.db-shm
 data/*.db
+
+# Local agent state (not versioned)
+.agents/

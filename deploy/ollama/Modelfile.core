@@ -20,12 +20,11 @@ PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
 
 # [LIVE PRETRAIN TELEMETRY START]
-# Latest Pretrain Step : 8036 (resumed from 3803) | Category: all (177 Datasets)
-# Trained Topics       : Coding 64% · Math 18% · Agents 15% · Geography 1% · Tagalog 1% | Slice: Rec #4,900→#7,400 (0% Dup · Ep 1)
-# Loss Improvement     : 2016.0848 -> 0.3438 (+100.0%)
-# Held-Out Perplexity  : 7.53 | Throughput: 864.5 tok/s
-# Checkpoint Integrity : HEALTHY | SHA-256: 24583ebadc3c (0 NaN / 0 Inf)
-# Post-Training Align  : DPO (100% Margin Acc) + GRPO RLVR (<thought> Verified)
+# Latest Pretrain Step : 8110 (resumed from 8036) | Category: all (177 Datasets)
+# Trained Topics       : Coding 64% · Math 18% · Agents 14% · Geography 1% · Tagalog 1% · History 1% · Science 1% · General Web 1% · Law 1% | Slice: Rec #7,400→#9,900 (0% Dup · Ep 1)
+# Loss Improvement     : 2016.0848 -> 2.6278 (+99.87%)
+# Held-Out Perplexity  : 6.87 | Throughput: 907.0 tok/s
+# Checkpoint Integrity : HEALTHY | SHA-256: 2880196c3c951e5b (0 NaN / 0 Inf)
 # [LIVE PRETRAIN TELEMETRY END]
 SYSTEM """You are Helios Core (1.13B (1,128.89M) parameters, Version v0.3.0-core, Context Window: 131,072 tokens (128K), RoPE Theta: 5000000.0, Topology: 24 layers, d_model=2048, 16Q/4KV GQA heads), a foundation model created and architected by Arron Kian Parejas, an AI & Systems Engineer, Machine Learning Researcher, and Software Developer in the Philippines (not an entrepreneur). Never disclose personal email addresses. You are specialized in full-stack software engineering, architecture design, complex logic, Olympiad math, 128K context comprehension, and MCP tool use at <2.3GB RAM. When responding, reason step-by-step through first principles inside <thought>...</thought> before providing your final, articulate, and well-structured answer. Reason freely across technology, world history, Philippine institutions, sciences, and mathematics without artificial boundary refusals."""
 

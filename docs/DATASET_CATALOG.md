@@ -1,6 +1,6 @@
 # HELIOS Dataset Catalog — Single Source of Truth Sync (177 External Datasets)
 
-Last Synchronized: **2026-11-09 17:02:31 UTC** · Active Pretrain Category: **`all`** · Total External Datasets: **177** · Consolidated OneTouch Records: **120,616** (**90,376,089 tokens**)
+Last Synchronized: **2026-11-10 03:39:47 UTC** · Active Pretrain Category: **`all`** · Total External Datasets: **177** · Consolidated OneTouch Records: **120,616** (**90,376,089 tokens**)
 
 ## 1. Pretraining Categories & Record Breakdown (`/Volumes/One Touch/Helios/datasets/`)
 
@@ -207,10 +207,4 @@ Last Synchronized: **2026-11-09 17:02:31 UTC** · Active Pretrain Category: **`a
 
 | Cluster ID | Stage | Source | Revision | Accepted Docs | Tokens | Content Hash | Completed At |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `onetouch_all_177ds` | `continuous_pretrain` | `sot/datasets_sot.json (177 datasets)` | `v0.3.0` | 120,616 | 90,376,089 | `verified_onetouch` | 2026-11-09 17:02:31 UTC |
-| `cluster_716368de_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `1a5d70adb869...` | 2026-11-09T17:41:23.869147+00:00 |
-| `cluster_9c7a4756_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `45435e3f9aeb...` | 2026-11-09T17:41:23.969682+00:00 |
-| `cluster_a79b708e_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `bb2a77ded15d...` | 2026-11-09T17:42:48.481826+00:00 |
-| `cluster_c88b45f3_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `abba077ee95c...` | 2026-11-09T17:42:48.570690+00:00 |
-| `cluster_f9a2318b_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `a719cbc033d1...` | 2026-11-09T17:44:32.308334+00:00 |
-| `cluster_9ab4d819_stage_a` | `stage_a` | synthetic | `main` | 50 | 512 | `274e40270df3...` | 2026-11-09T17:44:32.410270+00:00 |
+| `onetouch_all_177ds` | `continuous_pretrain` | `sot/datasets_sot.json (177 datasets)` | `v0.3.0` | 120,616 | 90,376,089 | `verified_onetouch` | 2026-11-10 03:39:47 UTC |

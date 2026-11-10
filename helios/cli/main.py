@@ -242,6 +242,12 @@ def train_cmd(
         "-c",
         help="Pretraining dataset category (all, fineweb, math, history, coding, science, geography, law, agents, tagalog).",
     ),
+    tokens: str | None = typer.Option(
+        None,
+        "--tokens",
+        "-k",
+        help="Target pretraining token budget (e.g. '500m', '1b', '50b').",
+    ),
     device: str = typer.Option(
         "auto",
         "--device",
@@ -265,9 +271,10 @@ def train_cmd(
     ),
 ) -> None:
     """Pretrain Helios models on external OneTouch drive with category selection, auto-bench & sync."""
-    from helios_pipeline.workflow import parse_duration, run_train_workflow
+    from helios_pipeline.workflow import parse_duration, parse_token_budget, run_train_workflow
 
     dur = parse_duration(duration, default_minutes=minutes)
+    tok_budget = parse_token_budget(tokens)
     effective_sync = None if no_sync else sync
     code = run_train_workflow(
         tiers_spec=tiers,
@@ -276,6 +283,7 @@ def train_cmd(
         sync=effective_sync,
         upload_weights=upload_weights,
         category=category,
+        target_tokens=tok_budget,
     )
     if code != 0:
         raise typer.Exit(code=code)

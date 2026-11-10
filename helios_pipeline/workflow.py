@@ -35,6 +35,18 @@ def parse_duration(text: str | None, default_minutes: float = 5.0) -> float:
     return {"s": val / 60, "m": val, "h": val * 60}[unit]
 
 
+def parse_token_budget(text: str | None) -> int | None:
+    """Parse '500m', '1b', '50b' into token count integer."""
+    if not text:
+        return None
+    m = re.fullmatch(r"\s*(\d+(?:\.\d+)?)\s*([kmbgt]?)\s*", text.lower())
+    if not m:
+        raise ValueError(f"Invalid token budget '{text}'. Use e.g. 500m, 1b, 50b.")
+    val, unit = float(m.group(1)), m.group(2) or ""
+    multiplier = {"": 1, "k": 1_000, "m": 1_000_000, "b": 1_000_000_000, "g": 1_000_000_000, "t": 1_000_000_000_000}.get(unit, 1)
+    return int(val * multiplier)
+
+
 def render_categories_table() -> None:
     """Render all 10 selectable pretraining categories and their dataset/record counts."""
     catalog = get_category_catalog()
@@ -135,6 +147,7 @@ def run_train_workflow(
     sync: str | None = "all",
     upload_weights: bool = False,
     category: str = "all",
+    target_tokens: int | None = None,
 ) -> int:
     """Train (OneTouch only), benchmark, sync 177 datasets to docs/, and auto-sync HF/Ollama/Git."""
     from helios.cli.utils import load_or_create_tokenizer
@@ -148,11 +161,15 @@ def run_train_workflow(
     try:
         cat_key = normalize_category(category)
         tiers = parse_tiers(tiers_spec)
-        console.print(
-            f"[bold cyan]☀️  Training {tiers} [category='{cat_key}'] for {minutes:g} min "
+        banner = (
+            f"[bold cyan]☀️  Training {tiers} [category='{cat_key}'] targeting {target_tokens:,} tokens "
+            "on /Volumes/One Touch (auto-resuming from latest checkpoint)...[/bold cyan]"
+            if target_tokens
+            else f"[bold cyan]☀️  Training {tiers} [category='{cat_key}'] for {minutes:g} min "
             "on /Volumes/One Touch (auto-resuming from latest checkpoint)...[/bold cyan]"
         )
-        results = train_all(tiers, minutes, device, category=cat_key)
+        console.print(banner)
+        results = train_all(tiers, minutes, device, category=cat_key, target_tokens=target_tokens)
     except DriveDisconnectedError as e:
         console.print(f"[red]Blocked: OneTouch drive required for pretraining. {e}[/red]")
         return 10

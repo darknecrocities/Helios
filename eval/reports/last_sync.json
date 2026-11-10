@@ -1,7 +1,9 @@
 {
   "status": {
-    "hf": "ok (sync(pretrained): [all] 177 datasets | 6/6 HEALTHY | nano step 12685 loss 1.9111 (+81.7%) PPL 3.28 | Rec #4,900\u2192#7,400 (0% Dup \u00b7 Ep 1))"
+    "ollama": "ok (7 tags updated with live stats, push=True)",
+    "hf": "ok (sync(pretrained): [all] 177 datasets | 6/6 HEALTHY | nano step 12785 loss 0.0460 (+99.6%) PPL 2.42 | Rec #7,400\u2192#9,900 (0% Dup \u00b7 Ep 1))",
+    "git": "ok (pushed to origin & updated PR)"
   },
-  "headline": "sync(pretrained): [all] 177 datasets | 6/6 HEALTHY | nano step 12685 loss 1.9111 (+81.7%) PPL 3.28 | Rec #4,900\u2192#7,400 (0% Dup \u00b7 Ep 1)",
-  "timestamp": "2026-11-09T17:13:22.963729+00:00"
+  "headline": "sync(pretrained): [all] 177 datasets | 6/6 HEALTHY | nano step 12785 loss 0.0460 (+99.6%) PPL 2.42 | Rec #7,400\u2192#9,900 (0% Dup \u00b7 Ep 1)",
+  "timestamp": "2026-11-10T03:40:47.314342+00:00"
 }
