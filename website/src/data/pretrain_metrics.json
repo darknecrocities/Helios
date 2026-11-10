@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-10T04:16:39.565683+00:00",
+  "lastUpdatedUtc": "2026-11-10T07:41:23.583429+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
@@ -14,14 +14,14 @@
   },
   "curriculum": {
     "totalDatasets": 177,
-    "totalRecords": 141748,
+    "totalRecords": 203240,
     "baseRecords": 120616,
     "totalTokens": 92771031,
     "baseTokens": 90376089,
     "tokensFormatted": "92.77M",
     "baseTokensFormatted": "90.38M",
-    "cumulativeUniqueTrained": 21132,
-    "activeCursorOffset": 9900,
+    "cumulativeUniqueTrained": 82624,
+    "activeCursorOffset": 30400,
     "totalSteps": 16574,
     "tokensTrained": 2394942,
     "tokensTrainedFormatted": "2.39M",
@@ -37,8 +37,8 @@
   "topics": [
     {
       "name": "Coding",
-      "count": 8718,
-      "percentage": 60.1,
+      "count": 29246,
+      "percentage": 51.6,
       "samplePrompts": [
         "Describe how a Gaussian Mixture Model (GMM) works in Python using scikit-learn.",
         "Create an array of column names in a MySQL query with item_name and item_price.",
@@ -47,9 +47,19 @@
       ]
     },
     {
+      "name": "History",
+      "count": 9426,
+      "percentage": 16.6,
+      "samplePrompts": [
+        "Distinguish the root causes and combatant alliances of World War I versus World War II.",
+        "Describe the geopolitical consequences of the Treaty of Versailles in 1919.",
+        "Analyze the fall of Constantinople in 1453 and its impact on European Renaissance trade."
+      ]
+    },
+    {
       "name": "Math",
-      "count": 2628,
-      "percentage": 18.1,
+      "count": 8732,
+      "percentage": 15.4,
       "samplePrompts": [
         "Solve the modular congruence 17x \u2261 9 (mod 43) using the Extended Euclidean Algorithm.",
         "Prove that the sequence a_n = 3a_{n-1} - 2a_{n-2} has an explicit closed form.",
@@ -59,8 +69,8 @@
     },
     {
       "name": "Agents",
-      "count": 2121,
-      "percentage": 14.6,
+      "count": 7097,
+      "percentage": 12.5,
       "samplePrompts": [
         "Construct an MCP JSON-RPC 2.0 tool definition for executing sandboxed bash commands.",
         "Format a Nous Research Hermes XML function call with schema validation.",
@@ -70,8 +80,8 @@
     },
     {
       "name": "Geography",
-      "count": 230,
-      "percentage": 1.6,
+      "count": 815,
+      "percentage": 1.4,
       "samplePrompts": [
         "List the 18 administrative regions of the Philippines with their regional centers.",
         "Describe the geological formation and tectonic significance of the Marianas Trench.",
@@ -79,9 +89,19 @@
       ]
     },
     {
+      "name": "Tagalog",
+      "count": 530,
+      "percentage": 0.9,
+      "samplePrompts": [
+        "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
+        "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
+        "Ilarawan ang kasaysayan ng Katipunan at ang pamumuno ni Andres Bonifacio."
+      ]
+    },
+    {
       "name": "Science",
-      "count": 224,
-      "percentage": 1.5,
+      "count": 394,
+      "percentage": 0.7,
       "samplePrompts": [
         "Explain the mechanism of CRISPR-Cas9 endonuclease target cleavage and PAM recognition.",
         "Compare the thermodynamic efficiency of the Rankine cycle versus the Brayton cycle.",
@@ -90,19 +110,9 @@
       ]
     },
     {
-      "name": "Tagalog",
-      "count": 198,
-      "percentage": 1.4,
-      "samplePrompts": [
-        "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
-        "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
-        "Ilarawan ang kasaysayan ng Katipunan at ang pamumuno ni Andres Bonifacio."
-      ]
-    },
-    {
       "name": "General Web",
-      "count": 197,
-      "percentage": 1.4,
+      "count": 274,
+      "percentage": 0.5,
       "samplePrompts": [
         "Summarize the historical evolution of modern operating system microkernels.",
         "Explain the trade-offs between monolithic databases and distributed consensus engines.",
@@ -110,19 +120,9 @@
       ]
     },
     {
-      "name": "History",
-      "count": 137,
-      "percentage": 0.9,
-      "samplePrompts": [
-        "Distinguish the root causes and combatant alliances of World War I versus World War II.",
-        "Describe the geopolitical consequences of the Treaty of Versailles in 1919.",
-        "Analyze the fall of Constantinople in 1453 and its impact on European Renaissance trade."
-      ]
-    },
-    {
       "name": "Law",
-      "count": 43,
-      "percentage": 0.3,
+      "count": 113,
+      "percentage": 0.2,
       "samplePrompts": [
         "Explain the legal doctrine of stare decisis and its application in common law jurisdictions.",
         "Analyze the constitutional scope of executive privilege during congressional inquiries.",

@@ -4,26 +4,38 @@
 
 ## 1. Cumulative Curriculum Status
 - **Total External Datasets Synced**: `177` (`120,616` consolidated records)
-- **Cumulative Unique Records Trained**: `75,132`
-- **Latest Active Cursor (`all`)**: Offset `27,900` / `120,616` (Epoch `1`)
-- **Latest Trained Topics Summary**: `History 38% · Coding 37% · Math 12% · Agents 10% · Geography 1% · Tagalog 1% · Science 1% · Law 1% · General Web 1%`
+- **Cumulative Unique Records Trained**: `82,624`
+- **Latest Active Cursor (`all`)**: Offset `30,400` / `120,616` (Epoch `1`)
+- **Latest Trained Topics Summary**: `History 37% · Coding 37% · Math 12% · Agents 10% · Geography 1% · Tagalog 1% · Science 1% · Law 1% · General Web 1%`
 - **Cross-Session Duplication Rate**: `0.0%`
 
 ## 2. Cumulative Topics Trained Across All Sessions
 
 | Topic Domain | Records / Samples Trained | Share | Duplication Rate |
 | :--- | ---: | ---: | :--- |
-| **Coding** | `26,742` | `53.6%` | `0% (SHA-256 Verified)` |
-| **Math** | `7,940` | `15.9%` | `0% (SHA-256 Verified)` |
-| **History** | `6,918` | `13.9%` | `0% (SHA-256 Verified)` |
-| **Agents** | `6,418` | `12.9%` | `0% (SHA-256 Verified)` |
-| **Geography** | `715` | `1.4%` | `0% (SHA-256 Verified)` |
-| **Tagalog** | `473` | `0.9%` | `0% (SHA-256 Verified)` |
-| **Science** | `359` | `0.7%` | `0% (SHA-256 Verified)` |
-| **General Web** | `263` | `0.5%` | `0% (SHA-256 Verified)` |
-| **Law** | `99` | `0.2%` | `0% (SHA-256 Verified)` |
+| **Coding** | `29,246` | `51.6%` | `0% (SHA-256 Verified)` |
+| **History** | `9,426` | `16.6%` | `0% (SHA-256 Verified)` |
+| **Math** | `8,732` | `15.4%` | `0% (SHA-256 Verified)` |
+| **Agents** | `7,097` | `12.5%` | `0% (SHA-256 Verified)` |
+| **Geography** | `815` | `1.4%` | `0% (SHA-256 Verified)` |
+| **Tagalog** | `530` | `0.9%` | `0% (SHA-256 Verified)` |
+| **Science** | `394` | `0.7%` | `0% (SHA-256 Verified)` |
+| **General Web** | `274` | `0.5%` | `0% (SHA-256 Verified)` |
+| **Law** | `113` | `0.2%` | `0% (SHA-256 Verified)` |
 
 ## 3. Session-by-Session Non-Repeating Training Log
+
+### Session #10 — `2026-11-10 07:08:05 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #27,900→#30,400 (0% Dup · Ep 1)` (`7492` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (2508), **Coding** (2504), **Math** (792), **Agents** (679), **Geography** (100), **Tagalog** (57), **Science** (35), **Law** (14), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Create a hashmap data structure in Python that stores keys and values."*
+  - *"Develop an algorithm in Python to generate a maze."*
+  - *"Create a Python program to find the total number of vowels and consonants in a given set of words.
+"Hello Worl"*
+  - *"Write a Python script that takes a dictionary and prints out the keys and their respective lengths.
+dictionary"*
 
 ### Session #9 — `2026-11-10 04:55:11 UTC` (Category: `all`)
 - **Corpus Slice**: `Rec #24,900→#27,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
