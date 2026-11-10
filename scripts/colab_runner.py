@@ -382,7 +382,7 @@ def run_h100_pretraining(
             # Guaranteed 0% Duplication Record Slice
             batch_recs, start_cur, end_cur = get_deduplicated_record_slice(records, ledger, slice_size=1000)
 
-            batches = prepare_token_batches(batch_recs, tok, block_size=block_size, batch_size=batch_size)
+            batches = prepare_token_batches(batch_recs, tok, max_seq_len=block_size, batch_size=batch_size, device=device)
             if not batches:
                 continue
 
@@ -392,13 +392,14 @@ def run_h100_pretraining(
             steps_in_tier = 0
             t0 = time.time()
 
-            for batch_ids in batches:
+            for batch in batches:
                 if TERMINATION_REQUESTED:
                     break
-                batch_ids = batch_ids.to(device=device)
+                input_ids = batch["input_ids"].to(device=device)
+                labels = batch["labels"].to(device=device)
                 optimizer.zero_grad()
 
-                out = model(batch_ids, labels=batch_ids)
+                out = model(input_ids, labels=labels)
                 loss = out.loss if hasattr(out, "loss") else out["loss"]
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -408,7 +409,7 @@ def run_h100_pretraining(
                 running_loss += loss_val
                 steps_in_tier += 1
                 current_step += 1
-                tokens_in_step = batch_ids.numel()
+                tokens_in_step = input_ids.numel()
                 total_tokens_trained += tokens_in_step
 
             elapsed = max(0.001, time.time() - t0)
