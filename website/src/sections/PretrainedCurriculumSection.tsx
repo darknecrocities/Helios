@@ -102,11 +102,10 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 />
               </div>
               <div className="font-mono-tabular text-[11px] uppercase tracking-[0.2em] text-[#141312]/60 pt-2">
-                Total Pretraining Tokens
+                Total Pretraining Dataset Tokens
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                {data.curriculum.tokensFormatted ?? "506.59M"} cumulative tokens ({data.curriculum.baseTokensFormatted ?? "90.38M"} base corpus
-                + {data.curriculum.tokensTrainedFormatted ?? "416.21M"} parameter tokens ingested in non-repeating curriculum training across all 6 tiers).
+                Combined token size of all datasets in our pretraining pool. Helios has actively completed 46,970 training steps across this curriculum with zero repetition.
               </p>
             </div>
           </div>
@@ -126,8 +125,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 Total Pretraining Records
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-sm">
-                {(data.curriculum.totalRecords ?? 676093).toLocaleString()} consolidated records on OneTouch storage
-                ({(data.curriculum.cumulativeUniqueTrained ?? 555477).toLocaleString()} unique samples ingested with zero repetition; cursor #{((data.curriculum.activeCursorOffset ?? 54019)).toLocaleString()}).
+                Consolidated texts and verified questions stored across the 16 learning domains, deduplicated by SHA-256 hash.
               </p>
             </div>
 
@@ -142,8 +140,7 @@ export const PretrainedCurriculumSection: React.FC = () => {
                 Total Training Steps Executed
               </div>
               <p className="text-xs sm:text-sm text-[#141312]/70 leading-relaxed font-sans max-w-md">
-                {(data.curriculum.totalSteps ?? 46970).toLocaleString()} forward-backward steps completed with up to 99.9% loss drop and top held-out
-                perplexity of 3.28 on Nano (0.19 loss on Core, 0.035 on Alpha).
+                Continuous training passes executed across all 6 model tiers, reaching healthy convergence and low loss on Apple Silicon MPS.
               </p>
             </div>
           </div>
