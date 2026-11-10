@@ -1,129 +1,127 @@
-"""Automatic Mirror Sync between Google Drive and One Touch External SSD.
+"""Mirror Colab training progress onto the One Touch external drive.
 
-Continuously watches or syncs:
-  Google Drive (`/content/drive/MyDrive/Helios/` or local `~/Google Drive/MyDrive/Helios`)
-  -> Local External SSD (`/Volumes/One Touch/Helios/`)
-Ensures 0B internal Mac SSD writes and triggers local Ollama tags update on change.
+Sources:
+  hf    (default) Pull continuous/<tier> checkpoints from Darknecrocities/Helios and
+        curriculum_ledger.json from Darknecrocities/Helios-Pretrain-Corpus. The Colab
+        runner pushes both after every tier, so this works without a desktop Drive app.
+  drive Copy from a locally synced Google Drive folder.
 
-Author: Arron Kian Parejas <parejasarronkian@gmail.com>
+Writes only to /Volumes/One Touch/Helios (HF cache is redirected there too), and
+triggers the Ollama refresh when new weights land.
+
+Author: Arron Kian Parejas
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import logging
 import os
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
-from typing import Any
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("helios.sync_drive_onetouch")
+logger = logging.getLogger("helios.sync_onetouch")
 
 ONE_TOUCH_ROOT = Path("/Volumes/One Touch/Helios")
 MODEL_TIERS = ["nano", "alpha", "beta", "core", "pro", "flagship"]
+CKPT_FILES = ["model.safetensors", "config.json", "manifest.json", "SHA256SUMS"]
+MODEL_REPO = "Darknecrocities/Helios"
+DATA_REPO = "Darknecrocities/Helios-Pretrain-Corpus"
 
 
-def sync_file_if_changed(src: Path, dst: Path) -> bool:
-    """Copies src to dst if dst does not exist or size/mtime differ."""
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        while chunk := f.read(1 << 20):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _copy_if_changed(src: Path, dst: Path) -> bool:
     if not src.exists():
         return False
     dst.parent.mkdir(parents=True, exist_ok=True)
-    if not dst.exists() or dst.stat().st_size != src.stat().st_size:
-        logger.info("Mirroring %s -> %s", src.name, dst)
-        shutil.copy2(src, dst)
-        return True
-    return False
+    if dst.exists() and dst.stat().st_size == src.stat().st_size and _sha256(dst) == _sha256(src):
+        return False
+    tmp = dst.with_suffix(dst.suffix + ".part")
+    shutil.copy2(src, tmp)
+    os.replace(tmp, dst)  # atomic swap: a half-copied checkpoint never becomes "latest"
+    logger.info("Mirrored %s -> %s", src.name, dst)
+    return True
 
 
-def sync_drive_to_onetouch(drive_root: Path, onetouch_root: Path = ONE_TOUCH_ROOT) -> int:
-    """Performs an incremental mirror sync of checkpoints and ledger to external drive."""
-    if not onetouch_root.exists():
-        logger.error("External drive %s is not mounted!", onetouch_root)
-        return 0
+def sync_from_hf(onetouch: Path) -> int:
+    os.environ.setdefault("HF_HOME", str(onetouch / "data" / "hf_cache"))
+    from huggingface_hub import hf_hub_download
 
-    if not drive_root.exists():
-        logger.warning("Google Drive root %s not found.", drive_root)
-        return 0
-
-    files_synced = 0
-    # 1. Sync checkpoints
+    token = os.environ.get("HF_TOKEN")
+    changed = 0
     for tier in MODEL_TIERS:
-        src_latest = drive_root / "checkpoints" / f"{tier}_continuous" / "latest"
-        dst_latest = onetouch_root / "checkpoints" / f"{tier}_continuous" / "latest"
-        if not src_latest.exists():
-            continue
-
-        for fname in ["model.safetensors", "config.json", "manifest.json", "SHA256SUMS"]:
-            src_f = src_latest / fname
-            dst_f = dst_latest / fname
-            if sync_file_if_changed(src_f, dst_f):
-                files_synced += 1
-
-    # 2. Sync curriculum ledger
-    src_ledger = drive_root / "manifests" / "curriculum_ledger.json"
-    dst_ledger = onetouch_root / "manifests" / "curriculum_ledger.json"
-    if sync_file_if_changed(src_ledger, dst_ledger):
-        files_synced += 1
-
-    logger.info("Drive -> One Touch sync complete (%d files mirrored).", files_synced)
-    return files_synced
-
-
-def update_ollama_tags() -> None:
-    """Invokes local Ollama sync script to refresh local Ollama models."""
-    cmd = [sys.executable, "scripts/sync_ollama_models.py"]
+        for fname in CKPT_FILES:
+            try:
+                src = Path(hf_hub_download(MODEL_REPO, f"continuous/{tier}/{fname}", token=token))
+            except Exception as e:
+                logger.warning("Skip %s/%s: %s", tier, fname, e)
+                continue
+            dst = onetouch / "checkpoints" / f"{tier}_continuous" / "latest" / fname
+            changed += _copy_if_changed(src, dst)
     try:
-        logger.info("Triggering local Ollama models refresh...")
-        subprocess.run(cmd, check=True)
+        src = Path(hf_hub_download(DATA_REPO, "curriculum_ledger.json", repo_type="dataset", token=token))
+        changed += _copy_if_changed(src, onetouch / "manifests" / "curriculum_ledger.json")
     except Exception as e:
-        logger.warning("Could not refresh Ollama tags: %s", e)
+        logger.warning("Ledger sync failed: %s", e)
+    return changed
+
+
+def sync_from_drive(drive_root: Path, onetouch: Path) -> int:
+    changed = 0
+    for tier in MODEL_TIERS:
+        for fname in CKPT_FILES:
+            rel = Path("checkpoints") / f"{tier}_continuous" / "latest" / fname
+            changed += _copy_if_changed(drive_root / rel, onetouch / rel)
+    rel = Path("manifests") / "curriculum_ledger.json"
+    changed += _copy_if_changed(drive_root / rel, onetouch / rel)
+    return changed
+
+
+def refresh_ollama() -> None:
+    try:
+        subprocess.run([sys.executable, "scripts/sync_ollama_models.py"], check=True, timeout=3600)
+    except Exception as e:
+        logger.warning("Ollama refresh failed: %s", e)
+
+
+def run_once(args: argparse.Namespace) -> None:
+    if not args.onetouch_root.exists():
+        logger.error("One Touch drive not mounted at %s", args.onetouch_root)
+        return
+    n = sync_from_hf(args.onetouch_root) if args.source == "hf" else sync_from_drive(args.drive_root, args.onetouch_root)
+    logger.info("Sync complete: %d file(s) updated on One Touch.", n)
+    if n and not args.skip_ollama:
+        refresh_ollama()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Mirror Drive Checkpoints to One Touch")
-    parser.add_argument(
-        "--drive-root",
-        type=Path,
-        default=Path.home() / "Google Drive" / "MyDrive" / "Helios",
-        help="Google Drive local sync folder",
-    )
-    parser.add_argument(
-        "--onetouch-root",
-        type=Path,
-        default=ONE_TOUCH_ROOT,
-        help="One Touch destination path",
-    )
-    parser.add_argument(
-        "--loop",
-        action="store_true",
-        help="Run continuously as background daemon",
-    )
-    parser.add_argument(
-        "--interval",
-        type=int,
-        default=300,
-        help="Sync interval in seconds (default: 300)",
-    )
-    args = parser.parse_args()
-
-    if args.loop:
-        logger.info("Starting background sync daemon (interval: %ds)...", args.interval)
-        while True:
-            n = sync_drive_to_onetouch(args.drive_root, args.onetouch_root)
-            if n > 0:
-                update_ollama_tags()
-            time.sleep(args.interval)
-    else:
-        n = sync_drive_to_onetouch(args.drive_root, args.onetouch_root)
-        if n > 0:
-            update_ollama_tags()
+    p = argparse.ArgumentParser(description="Mirror Colab checkpoints to One Touch")
+    p.add_argument("--source", choices=["hf", "drive"], default="hf")
+    p.add_argument("--drive-root", type=Path, default=Path.home() / "Google Drive" / "MyDrive" / "Helios")
+    p.add_argument("--onetouch-root", type=Path, default=ONE_TOUCH_ROOT)
+    p.add_argument("--loop", action="store_true", help="Run continuously")
+    p.add_argument("--interval", type=int, default=600, help="Seconds between syncs")
+    p.add_argument("--skip-ollama", action="store_true")
+    args = p.parse_args()
+    if not args.loop:
+        run_once(args)
+        return
+    while True:
+        run_once(args)
+        time.sleep(args.interval)
 
 
 if __name__ == "__main__":
-    import sys
     main()

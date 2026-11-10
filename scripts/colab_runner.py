@@ -259,6 +259,24 @@ def push_to_huggingface_hub(tier: str, latest_dir: Path, hf_repo: str = "Darknec
         logger.warning("Could not push to Hugging Face: %s", e)
 
 
+def push_ledger_to_hub(ledger_path: Path) -> None:
+    """Mirrors the dedup ledger to the HF dataset repo so local One Touch sync stays current."""
+    token = os.environ.get("HF_TOKEN")
+    if not token or not ledger_path.exists():
+        return
+    try:
+        from huggingface_hub import HfApi
+        HfApi(token=token).upload_file(
+            path_or_fileobj=str(ledger_path),
+            path_in_repo="curriculum_ledger.json",
+            repo_id="Darknecrocities/Helios-Pretrain-Corpus",
+            repo_type="dataset",
+            commit_message="Auto-sync curriculum ledger from Colab runner",
+        )
+    except Exception as e:
+        logger.warning("Could not push ledger to Hugging Face: %s", e)
+
+
 def compute_record_hash(record: dict[str, Any]) -> str:
     """Computes deterministic 64-bit SHA hash for deduplication."""
     text = record.get("text") or record.get("content") or json.dumps(record, sort_keys=True)
@@ -364,7 +382,8 @@ def run_h100_pretraining(
                     mf = tier_out / "latest" / "manifest.json"
                     if mf.exists():
                         with open(mf, "r") as f:
-                            current_step = json.load(f).get("step", 0)
+                            mdata = json.load(f)
+                            current_step = int(mdata.get("step") or mdata.get("total_steps") or 0)
                     logger.info("Resumed %s from step %d", tier, current_step)
                 except Exception as ex:
                     logger.warning("Could not resume %s: %s", tier, ex)
@@ -427,6 +446,7 @@ def run_h100_pretraining(
 
             if hf_sync:
                 push_to_huggingface_hub(tier, tier_out / "latest")
+                push_ledger_to_hub(ledger_path)
 
             del model, raw_model, optimizer
             clean_ephemeral_cache()
