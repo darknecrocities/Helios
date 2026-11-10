@@ -38,6 +38,7 @@ from safetensors.torch import save_file
 
 from helios.cli.utils import load_or_create_tokenizer
 from helios.model import HeliosBlock, HeliosConfig, HeliosForCausalLM, RMSNorm
+TRAIN_TIERS = ["nano", "alpha", "beta", "core", "pro", "flagship"]
 TIER_PRESET_MAP = {
     "nano": "nano-20m",
     "alpha": "alpha-100m",
@@ -46,6 +47,7 @@ TIER_PRESET_MAP = {
     "pro": "pro-3b",
     "flagship": "flagship-6b",
 }
+from scripts.colab_dedup import get_deduplicated_record_slice
 from scripts.pretrain_helios import load_dataset_records, prepare_token_batches
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -157,6 +159,26 @@ def ensure_drive_corpus_and_ledger(drive_root: Path) -> tuple[Path, Path]:
     return corpus_path, ledger_path
 
 
+def load_trained_tokenizer(drive_root: Path):
+    """Load the tokenizer all checkpoints were trained with; refuse to train on a fresh one."""
+    tok_dir = drive_root / "tokenizer"
+    tok_dir.mkdir(parents=True, exist_ok=True)
+    if not (tok_dir / "tokenizer.json").exists():
+        from huggingface_hub import hf_hub_download
+        token = os.environ.get("HF_TOKEN")
+        for fname in ("tokenizer.json", "special_tokens_map.json"):
+            dl = hf_hub_download("Darknecrocities/Helios", f"tokenizer/{fname}", token=token)
+            import shutil
+            shutil.copy2(dl, tok_dir / fname)
+    tok = load_or_create_tokenizer(tok_dir)
+    sample = "Napoleon Bonaparte was a French military leader who rose to prominence during the French Revolution."
+    chars_per_token = len(sample) / len(tok.encode(sample))
+    if chars_per_token < 1.8:  # trained BPE ~2.7; an untrained byte-level one is ~1.0
+        raise RuntimeError(f"Tokenizer looks untrained ({chars_per_token:.2f} chars/token); aborting.")
+    logger.info("Loaded trained tokenizer from %s (vocab=%d)", tok_dir, tok.vocab_size)
+    return tok
+
+
 def ensure_tier_weights(tier: str, tier_out: Path) -> None:
     """Ensures checkpoint weights exist; downloads continuous weights from HF if missing."""
     latest_dir = tier_out / "latest"
@@ -202,7 +224,7 @@ def save_checkpoint_to_drive(
     latest_dir.mkdir(parents=True, exist_ok=True)
 
     unwrapped_model = getattr(model, "_orig_mod", model)
-    state_dict = unwrapped_model.state_dict()
+    state_dict = {k: v.detach().cpu().contiguous().clone() for k, v in unwrapped_model.state_dict().items()}
     st_path = step_dir / "model.safetensors"
     save_file(state_dict, str(st_path))
 
@@ -277,48 +299,6 @@ def push_ledger_to_hub(ledger_path: Path) -> None:
         logger.warning("Could not push ledger to Hugging Face: %s", e)
 
 
-def compute_record_hash(record: dict[str, Any]) -> str:
-    """Computes deterministic 64-bit SHA hash for deduplication."""
-    text = record.get("text") or record.get("content") or json.dumps(record, sort_keys=True)
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
-
-
-def get_deduplicated_record_slice(
-    records: list[dict[str, Any]],
-    ledger: dict[str, Any],
-    slice_size: int = 1000,
-) -> tuple[list[dict[str, Any]], int, int]:
-    """Retrieves next slice of records, strictly guaranteeing 0% duplication."""
-    total_records = len(records)
-    cursor = ledger.get("category_cursors", {}).get("all", 0)
-    seen_hashes_set = set(ledger.get("seen_hashes", []))
-
-    selected: list[dict[str, Any]] = []
-    idx = cursor
-    skipped_dups = 0
-
-    while len(selected) < slice_size and len(seen_hashes_set) < total_records:
-        rec = records[idx % total_records]
-        r_hash = compute_record_hash(rec)
-        if r_hash not in seen_hashes_set:
-            selected.append(rec)
-            seen_hashes_set.add(r_hash)
-            ledger.setdefault("seen_hashes", []).append(r_hash)
-        else:
-            skipped_dups += 1
-        idx += 1
-        if idx % total_records == 0:
-            current_epoch = ledger.get("category_epochs", {}).get("all", 1)
-            ledger.setdefault("category_epochs", {})["all"] = current_epoch + 1
-            logger.info("Curriculum looped to Epoch %d. Seen unique hashes: %d", current_epoch + 1, len(seen_hashes_set))
-
-    new_cursor = idx % total_records
-    ledger.setdefault("category_cursors", {})["all"] = new_cursor
-    logger.info("Extracted %d unique records (skipped %d duplicates). New cursor=%d | Total unique seen=%d",
-                len(selected), skipped_dups, new_cursor, len(seen_hashes_set))
-    return selected, cursor, new_cursor
-
-
 def run_h100_pretraining(
     drive_root: Path,
     target_tokens: int = 2_000_000_000,
@@ -326,6 +306,9 @@ def run_h100_pretraining(
     block_size: int = 1024,
     enable_compile: bool = True,
     hf_sync: bool = True,
+    lr: float = 5e-5,
+    warmup_steps: int = 20,
+    slice_size: int = 4000,
 ) -> None:
     """Continuous high-throughput pretraining loop scaling across all 6 tiers."""
     device, dtype = configure_h100_environment()
@@ -335,7 +318,7 @@ def run_h100_pretraining(
 
     corpus_path, ledger_path = ensure_drive_corpus_and_ledger(drive_root)
 
-    tok = load_or_create_tokenizer()
+    tok = load_trained_tokenizer(drive_root)
     ledger: dict[str, Any] = {"category_cursors": {"all": 0}, "category_epochs": {"all": 1}, "seen_hashes": []}
     if ledger_path.exists():
         try:
@@ -358,7 +341,7 @@ def run_h100_pretraining(
         logger.info("=== Training Cycle #%d | Progress: %d / %d tokens (%.2f%%) ===",
                     cycle, total_tokens_trained, target_tokens, (total_tokens_trained / target_tokens) * 100)
 
-        for tier in ["nano", "alpha", "beta", "core", "pro", "flagship"]:
+        for tier in TRAIN_TIERS:
             if TERMINATION_REQUESTED:
                 break
 
@@ -370,7 +353,12 @@ def run_h100_pretraining(
             tier_out = checkpoints_dir / f"{tier}_continuous"
             ensure_tier_weights(tier, tier_out)
 
-            raw_model = HeliosForCausalLM(cfg).to(device=device, dtype=dtype)
+            raw_model = HeliosForCausalLM(cfg)
+            n_params = sum(p.numel() for p in raw_model.parameters())
+            fp32_master = n_params <= 4_000_000_000  # AdamW fp32 state ~16 B/param must fit in 80GB
+            raw_model = raw_model.to(device=device, dtype=torch.float32 if fp32_master else dtype)
+            logger.info("%s: %.2fM params, %s weights + %s autocast", tier, n_params / 1e6,
+                        "fp32" if fp32_master else "bf16", dtype)
 
             # Resume existing weights if present
             latest_st = tier_out / "latest" / "model.safetensors"
@@ -399,13 +387,13 @@ def run_h100_pretraining(
                     model = raw_model
 
             # Guaranteed 0% Duplication Record Slice
-            batch_recs, start_cur, end_cur = get_deduplicated_record_slice(records, ledger, slice_size=1000)
+            batch_recs, start_cur, end_cur = get_deduplicated_record_slice(records, ledger, slice_size=slice_size)
 
             batches = prepare_token_batches(batch_recs, tok, max_seq_len=block_size, batch_size=batch_size, device=device)
             if not batches:
                 continue
 
-            optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4, betas=(0.9, 0.95), weight_decay=0.01)
+            optimizer = torch.optim.AdamW(model.parameters(), lr=lr, betas=(0.9, 0.95), weight_decay=0.01)
             model.train()
             running_loss = 0.0
             steps_in_tier = 0
@@ -418,7 +406,10 @@ def run_h100_pretraining(
                 labels = batch["labels"].to(device=device)
                 optimizer.zero_grad()
 
-                out = model(input_ids, labels=labels)
+                for g in optimizer.param_groups:  # linear warmup protects resumed weights
+                    g["lr"] = lr * min(1.0, (steps_in_tier + 1) / warmup_steps)
+                with torch.autocast(device_type=device.type, dtype=dtype, enabled=device.type == "cuda"):
+                    out = model(input_ids, labels=labels)
                 loss = out.loss if hasattr(out, "loss") else out["loss"]
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -460,6 +451,9 @@ def main() -> None:
     parser.add_argument("--target-tokens", type=int, default=2_000_000_000)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--block-size", type=int, default=1024)
+    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--warmup-steps", type=int, default=20)
+    parser.add_argument("--slice-size", type=int, default=4000)
     parser.add_argument("--no-compile", action="store_true")
     parser.add_argument("--skip-hf-sync", action="store_true")
     args = parser.parse_args()
@@ -471,6 +465,9 @@ def main() -> None:
         block_size=args.block_size,
         enable_compile=not args.no_compile,
         hf_sync=not args.skip_hf_sync,
+        lr=args.lr,
+        warmup_steps=args.warmup_steps,
+        slice_size=args.slice_size,
     )
 
 
