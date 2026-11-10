@@ -38,7 +38,14 @@ from safetensors.torch import save_file
 
 from helios.cli.utils import load_or_create_tokenizer
 from helios.model import HeliosBlock, HeliosConfig, HeliosForCausalLM, RMSNorm
-from scripts.build_roadmap_models import ROADMAP_SPECS, calculate_param_counts
+TIER_PRESET_MAP = {
+    "nano": "nano-20m",
+    "alpha": "alpha-100m",
+    "beta": "beta-300m",
+    "core": "core-1b",
+    "pro": "pro-3b",
+    "flagship": "flagship-6b",
+}
 from scripts.pretrain_helios import load_dataset_records, prepare_token_batches
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -337,16 +344,10 @@ def run_h100_pretraining(
             if TERMINATION_REQUESTED:
                 break
 
-            spec = ROADMAP_SPECS[tier]
-            cfg = HeliosConfig(
-                vocab_size=tok.vocab_size,
-                max_seq_len=block_size,
-                d_model=spec["d_model"],
-                n_layers=spec["n_layers"],
-                n_heads=spec["n_heads"],
-                n_kv_heads=spec["n_kv_heads"],
-                d_ff=spec["d_ff"],
-            )
+            preset_name = TIER_PRESET_MAP[tier]
+            cfg = HeliosConfig.from_preset(preset_name)
+            cfg.vocab_size = tok.vocab_size
+            cfg.max_seq_len = block_size
 
             tier_out = checkpoints_dir / f"{tier}_continuous"
             ensure_tier_weights(tier, tier_out)
