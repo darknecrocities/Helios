@@ -4,156 +4,207 @@
 
 ## 1. Cumulative Curriculum Status
 - **Total External Datasets Synced**: `177` (`120,616` consolidated records)
-- **Cumulative Unique Records Trained**: `82,624`
-- **Latest Active Cursor (`all`)**: Offset `30,400` / `120,616` (Epoch `1`)
-- **Latest Trained Topics Summary**: `History 37% · Coding 37% · Math 12% · Agents 10% · Geography 1% · Tagalog 1% · Science 1% · Law 1% · General Web 1%`
+- **Cumulative Unique Records Trained**: `555,477`
+- **Latest Active Cursor (`all`)**: Offset `54,019` / `120,616` (Epoch `2`)
+- **Latest Trained Topics Summary**: `Science 66% · Tagalog 12% · Agents 9% · History 5% · Coding 4% · Math 2% · Geography 2% · Law 1% · General Web 1%`
 - **Cross-Session Duplication Rate**: `0.0%`
 
 ## 2. Cumulative Topics Trained Across All Sessions
 
 | Topic Domain | Records / Samples Trained | Share | Duplication Rate |
 | :--- | ---: | ---: | :--- |
-| **Coding** | `29,246` | `51.6%` | `0% (SHA-256 Verified)` |
-| **History** | `9,426` | `16.6%` | `0% (SHA-256 Verified)` |
-| **Math** | `8,732` | `15.4%` | `0% (SHA-256 Verified)` |
-| **Agents** | `7,097` | `12.5%` | `0% (SHA-256 Verified)` |
-| **Geography** | `815` | `1.4%` | `0% (SHA-256 Verified)` |
-| **Tagalog** | `530` | `0.9%` | `0% (SHA-256 Verified)` |
-| **Science** | `394` | `0.7%` | `0% (SHA-256 Verified)` |
-| **General Web** | `274` | `0.5%` | `0% (SHA-256 Verified)` |
-| **Law** | `113` | `0.2%` | `0% (SHA-256 Verified)` |
+| **Coding** | `108,230` | `30.3%` | `0% (SHA-256 Verified)` |
+| **History** | `60,756` | `17.0%` | `0% (SHA-256 Verified)` |
+| **Math** | `55,816` | `15.6%` | `0% (SHA-256 Verified)` |
+| **Agents** | `49,039` | `13.7%` | `0% (SHA-256 Verified)` |
+| **Science** | `39,657` | `11.1%` | `0% (SHA-256 Verified)` |
+| **Tagalog** | `23,910` | `6.7%` | `0% (SHA-256 Verified)` |
+| **Law** | `9,656` | `2.7%` | `0% (SHA-256 Verified)` |
+| **Geography** | `7,435` | `2.1%` | `0% (SHA-256 Verified)` |
+| **General Web** | `3,085` | `0.9%` | `0% (SHA-256 Verified)` |
 
 ## 3. Session-by-Session Non-Repeating Training Log
 
-### Session #10 — `2026-11-10 07:08:05 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #27,900→#30,400 (0% Dup · Ep 1)` (`7492` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **History** (2508), **Coding** (2504), **Math** (792), **Agents** (679), **Geography** (100), **Tagalog** (57), **Science** (35), **Law** (14), **General Web** (11)
+### Session #50 — `2026-11-10 11:00:57 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #51,019→#54,019 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Science** (3002), **Tagalog** (527), **Agents** (398), **History** (216), **Coding** (195), **Math** (96), **Geography** (83), **Law** (30), **General Web** (11)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Create a hashmap data structure in Python that stores keys and values."*
-  - *"Develop an algorithm in Python to generate a maze."*
-  - *"Create a Python program to find the total number of vowels and consonants in a given set of words.
-"Hello Worl"*
-  - *"Write a Python script that takes a dictionary and prints out the keys and their respective lengths.
-dictionary"*
+  - *"The best site to obtain a swab in acute symptomatic gonorrhea is:"*
+  - *"All are true about chaperones except"*
+  - *"Millennium Development goals are to be achieved by: March 2012"*
+  - *"Most dicient larval control method ent transmission of urban malaria:"*
 
-### Session #9 — `2026-11-10 04:55:11 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #24,900→#27,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (998), **Agents** (800), **Geography** (107), **Tagalog** (45), **Science** (27), **Law** (13), **General Web** (11)
+### Session #49 — `2026-11-10 10:57:01 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #48,019→#51,019 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Science** (3002), **Tagalog** (497), **Agents** (427), **History** (207), **Coding** (195), **Math** (106), **Geography** (95), **Law** (36), **General Web** (11)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Construct Python code to count the occurrence of a specific word in a given sentence.
-sentence = "She sells se"*
-  - *"Write a bash script to build a Jupyter Notebook environment from scratch.
+  - *"Condition required for autoclave is?"*
+  - *"An obese, diabetic patient with hypertension who is also a smoker, currently on anti-hypertensive and OHA drug"*
+  - *"Blue sclera is seen in -"*
+  - *"A 3 year graduate MBBS programme was suggested by which committee?"*
+
+### Session #48 — `2026-11-10 10:53:04 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #45,019→#48,019 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Science** (3002), **Tagalog** (504), **Agents** (435), **History** (220), **Coding** (203), **Math** (123), **Geography** (82), **Law** (27), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Ferruginous bodies are seen in?"*
+  - *"65-year-old man presents with anaemia and posterior column dysfunction, the likely cause is -"*
+  - *"Which type of cattle poisoning occurs due to ingestion of LINSEED plant?"*
+  - *"A 40 year old female patient complains of excessive bleeding and drowsiness. Patient gives a history of road t"*
+
+### Session #47 — `2026-11-10 10:49:17 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #42,019→#45,019 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (1570), **Law** (1538), **Science** (1309), **Math** (350), **Tagalog** (284), **Agents** (198), **Geography** (148), **Coding** (144), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"A federal agency has been established for the purpose of stabilizing, supporting, and protecting farm income a"*
+  - *"A woman hired a builder to build a house according to certain plans and specifications prepared by the woman's"*
+  - *"A woman owned land that abutted a public highway to the south. A neighbor owned the land immediately to the no"*
+  - *"One morning in a Laundromat, a defendant approached a man and said, "If you don't pay me $500 by July 2, I'll "*
+
+### Session #46 — `2026-11-10 10:45:20 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #39,000→#42,019 (0% Dup · Ep 2)` (`9000` unique texts, `19` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (2288), **Coding** (1075), **Law** (691), **Science** (634), **Math** (476), **Agents** (388), **Geography** (311), **Tagalog** (252), **General Web** (142)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Write a script to measure temperature from a device using python
+The device outputs an array of size 3, [Temp_"*
+  - *"Suggest a solution for the following prompt.
+Write a Python script to generate the Fibonacci sequence up until"*
+  - *"The given code is a Python class called `isoMeasurer` that inherits from another class called `Measurer`. It c"*
+  - *"Create a Python program to compare two lists and find their common elements.
+list1 = [1, 2, 3, 4, 5]
+list2 = ["*
+
+### Session #45 — `2026-11-10 10:41:23 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #36,000→#39,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (938), **Agents** (791), **Geography** (108), **Tagalog** (57), **Science** (25), **Law** (17), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Write a Python program to calculate the entropy of a given dataset.
+Dataset: [1,1,1,1,1,1,2,2,2,2,3,3]"*
+  - *"The given code is a Python script that defines a class and several methods for handling cross-pod requests. To"*
+  - *"Create a function in Python that will sort a list of tuples based on the second elements in the tuples.
+[(2, 1"*
+  - *"Optimize the following Python function to calculate the largest prime factor of a given number.
+24"*
+
+### Session #44 — `2026-11-10 10:37:28 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #33,000→#36,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (956), **Agents** (758), **Geography** (117), **Tagalog** (43), **Science** (33), **Law** (14), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Optimize a Python script that prints the nth Fibonacci number
+n = 10"*
+  - *"Devise a python program to generate permutations of an array."*
+  - *"Write a Python program to read a given string and sort it alphabetically.
+"Hello, World!""*
+  - *"Generate a program to merge two sorted linked lists in Python."*
+
+### Session #43 — `2026-11-10 10:33:46 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #30,000→#33,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (989), **Agents** (779), **Geography** (119), **Tagalog** (52), **Science** (31), **Law** (13), **General Web** (11)
+- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
+- **Sample Prompts Trained in This Slice**:
+  - *"Create a Python program that takes a list as argument and returns it in reverse order.
+[1, 3, 5, 6, 10]"*
+  - *"Generate a Python code to print the largest prime factor of the given positive integer
+21"*
+  - *"Create a Python program to parse a HTML page and extract all the hyperlinks from it.
+let html = 
+`<html>
+ <bod"*
+  - *"Translate the following Python code to JavaScript:
+
+def sum(a, b):
 Not applicable"*
-  - *"Create a function in Python to convert a given string to its corresponding ASCII code."*
-  - *"Generate a Python program to apply custom formatting for the following output.
-Given a list of strings, output"*
 
-### Session #8 — `2026-11-10 04:47:20 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #21,900→#24,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (986), **Agents** (792), **Geography** (131), **Tagalog** (67), **Science** (25), **Law** (15), **General Web** (11)
+### Session #42 — `2026-11-10 10:32:45 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #27,000→#30,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (987), **Agents** (811), **Geography** (114), **Tagalog** (63), **Science** (35), **Law** (14), **General Web** (11)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Develop a Python script to print the first 10 cubes of natural numbers."*
-  - *"Create a python function that takes in two strings and output their combined length.
-string_1 = "Hello"
-string"*
-  - *"Develop a function in Python to randomly select one element from a given array.
-[1, 2, 3, 4]"*
-  - *"Develop a Python script to train a multi-layer perceptron to identify MNIST handwritten digits.
-Not applicable"*
+  - *"Generate a sentence in Python that uses a for loop to iterate over a list of strings.
+strings = ['apple', 'ban"*
+  - *"Write a Python function that generates a random password of 8 characters containing alphanumeric characters an"*
+  - *"Create a web service in Python which allows a user to register their email address."*
+  - *"Create a python class object for the following data:
+A customer has name, age, emailid and phone number as att"*
 
-### Session #7 — `2026-11-10 04:39:45 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #18,900→#21,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (3004), **Math** (875), **Agents** (707), **History** (661), **Geography** (66), **Tagalog** (58), **Science** (28), **General Web** (11), **Law** (7)
+### Session #41 — `2026-11-10 10:31:16 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #24,000→#27,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **History** (3008), **Coding** (3004), **Math** (972), **Agents** (795), **Geography** (115), **Tagalog** (55), **Science** (28), **Law** (17), **General Web** (11)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Explain why the following C++ code would not compile.
-string result = to_string(3.14);"*
-  - *"Generate a JavaScript code snippet to toggle a given CSS class on an element with a given ID.
-element_id: "but"*
-  - *"Suggest a code segment to render a greeting message in a terminal window using Python."*
-  - *"Suppose a functiona and a variable are already defined. Write a code statement to assign the value of the vari"*
+  - *"Develop a function in Python which reverses any given string."*
+  - *"Create a deep learning program in Python that classifies animals into seven categories.
+[
+{
+    "image": "dog."*
+  - *"Generate a Python code to implement the classic Tower of Hanoi problem."*
+  - *"Design a Python program to find the sum of the two largest numbers in a list.
+[1, 3, 5, 7, 9]"*
 
-### Session #6 — `2026-11-10 04:32:09 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #15,900→#18,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (3004), **Math** (788), **Agents** (634), **Geography** (69), **History** (38), **Tagalog** (36), **Science** (17), **General Web** (11), **Law** (8)
+### Session #40 — `2026-11-10 10:29:58 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #21,000→#24,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **History** (2743), **Math** (998), **Agents** (788), **Geography** (119), **Tagalog** (64), **Science** (31), **Law** (13), **General Web** (11)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Create two classes 'Circle' and 'Rectangle' in Java which print the circumference and area of their respective"*
-  - *"What is an HTML tag?"*
-  - *"Write a function in Java to instantiate an Employee class with a given name and age."*
-  - *"Explain the difference between subclasses and superclasses."*
+  - *"Create a query that displays the employees who are completed more than 20 years in the company."*
+  - *"Automatically reformat the following code to be more readable:
+for (int i=0;i<n;i++){int j=0;System.out.printl"*
+  - *"Write a SQL query to list the salary of all employees as a percentage of the salary of the highest paid employ"*
+  - *"Write a function that given a list of unique integers, returns the sum of the non-duplicated integer elements."*
 
-### Session #5 — `2026-11-10 04:24:22 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #12,900→#15,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (3004), **Math** (821), **Agents** (705), **Geography** (52), **Tagalog** (37), **History** (31), **Science** (18), **General Web** (11), **Law** (6)
+### Session #39 — `2026-11-10 10:28:37 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #18,000→#21,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (802), **Agents** (647), **Geography** (50), **Tagalog** (49), **History** (28), **Science** (21), **General Web** (11), **Law** (7)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Build a function to identify a duplicate element in a list
-list = [2,4,8,7,2,5]"*
-  - *"Combine the two strings into one and save it as a variable called full_name.
-first_name = 'John'
-last_name = '"*
-  - *"Calculate the number of days from January 1, 2021 to June 30, 2021."*
-  - *"Given the function, predict the output.
-def foo(a, b):
-    return a + b
+  - *"You need to convert the following statement in SQL to equivalent PostgreSQL syntax.
+SELECT * FROM Table WHERE "*
+  - *"Create a program to find the largest common factor in two numbers.
+24 and 48"*
+  - *"Implement a Class in Java that creates a new array of two integers and allows the user to set and get the valu"*
+  - *"Design a data structure in Java to store student records which includes Roll Number, Name, and Grade of the st"*
 
-print(foo(3, 5))"*
-
-### Session #4 — `2026-11-10 04:16:49 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #9,900→#12,900 (0% Dup · Ep 1)` (`9000` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (3004), **Math** (844), **Agents** (659), **Geography** (60), **History** (35), **Tagalog** (32), **Science** (20), **General Web** (11), **Law** (7)
+### Session #38 — `2026-11-10 10:27:16 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #15,000→#18,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (778), **Agents** (664), **Geography** (70), **History** (45), **Tagalog** (38), **Science** (18), **General Web** (11), **Law** (8)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Generate random numbers in range [0,10] in C++."*
-  - *"Construct a simple Java program that calculates the sum of two integers."*
-  - *"Name three software design principles."*
-  - *"Write a Java program to remove the duplicates in an array."*
+  - *"Add exception handling for user-defined errors to the following code snippet in Java.
+public class MyClass {
+ "*
+  - *"Write a code snippet to get the remainder when 34 is divided by 5 in JavaScript."*
+  - *"Construct an SQL query that selects the employee name, job title, and salary for employees with a salary great"*
+  - *"Write a JavaScript code snippet that creates a pop-up window with the text "Welcome!"."*
 
-### Session #3 — `2026-11-10 03:33:06 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #7,400→#9,900 (0% Dup · Ep 1)` (`7492` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (2504), **Math** (711), **Agents** (554), **Geography** (46), **Tagalog** (32), **History** (29), **Science** (17), **General Web** (11), **Law** (7)
+### Session #37 — `2026-11-10 10:25:59 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #12,000→#15,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (859), **Agents** (697), **Geography** (55), **Tagalog** (33), **History** (27), **Science** (17), **General Web** (11), **Law** (6)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Create an array containing 10 random numbers between 0 and 10."*
-  - *"Write a code to edit a given column in an SQL table."*
-  - *"How would you implement a simple object oriented Programming concept in Python?"*
-  - *"Write a JavaScript function to perform a binary search.
-let array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-let x = 5;"*
+  - *"Split the string "hello world" into an array of individual words in JavaScript."*
+  - *"Write a SQL query which returns the top 10 most popular products in the following "products" table."*
+  - *"Change the following HTML elements into a bulleted list with CSS.
+<div>Item 1</div>
+<div>Item 2</div>
+<div>Ite"*
+  - *"Create a Java program which will print the following pattern."*
 
-### Session #2 — `2026-11-09 15:56:23 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #4,900→#7,400 (0% Dup · Ep 1)` (`7492` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (2504), **Math** (714), **Agents** (581), **Geography** (42), **Tagalog** (27), **History** (22), **Science** (13), **General Web** (11), **Law** (7)
+### Session #36 — `2026-11-10 10:24:40 UTC` (Category: `all`)
+- **Corpus Slice**: `Rec #9,000→#12,000 (0% Dup · Ep 2)` (`9000` unique texts, `0` duplicates skipped)
+- **Trained Topics Breakdown**: **Coding** (3004), **Math** (824), **Agents** (662), **Geography** (54), **History** (39), **Tagalog** (34), **Science** (18), **General Web** (11), **Law** (7)
 - **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
 - **Sample Prompts Trained in This Slice**:
-  - *"Modify the following code to output Odd numbers from 1 to 10
-for num in range(1, 10):
-    print( num )"*
-  - *"Given the following code, what should the output be when the function is called?
-def add(x, y):
-    z = x + y
-"*
-  - *"Using the given list, create a code that will generate a unique list of numbers
-x = [4, 10, 16, 22, 28, 34]"*
-  - *"What will the following code output?
-i = 1
-
-while i < 4:
-    print(i)
-    i = i + 1"*
-
-### Session #1 — `2026-11-09 12:16:45 UTC` (Category: `all`)
-- **Corpus Slice**: `Rec #2,400→#4,900 (0% Dup · Ep 1)` (`3748` unique texts, `0` duplicates skipped)
-- **Trained Topics Breakdown**: **Coding** (2502), **Math** (755), **Agents** (653), **Geography** (58), **Tagalog** (27), **History** (19), **Science** (14), **General Web** (4)
-- **Active External Datasets (177 mapped)**: `FineWeb-Edu (1.3T Tokens)`, `FineWeb (15T Tokens)`, `DCLM-Baseline (4T Tokens)`, `Cosmopedia v2`, `Wikipedia Multi-Domain Dump`, `Wikidata Knowledge Graph Triples`
-- **Sample Prompts Trained in This Slice**:
-  - *"Create an array of column names in a MySQL query.
-Column Names: item_name, item_price"*
-  - *"Write a function in PHP to convert a string to an array.
-String: "A,B,C""*
-  - *"Describe how a bubble sort algorithm works."*
-  - *"Create a while loop in JavaScript to print out all the numbers between 20 and 30."*
+  - *"Take in an array of integers and return the sum of all odd numbers.
+[1,2,3,4,5]"*
+  - *"Parse a given input of timestamp and convert it to a datetime object in python.
+1552520802"*
+  - *"Take in a string and return an output where every second character of the input string is capitalized.
+'apple'"*
+  - *"Write a set of if-else statements to convert numerical grade 1-100 to their letter grade equivalent."*

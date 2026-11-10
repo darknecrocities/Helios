@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdatedUtc": "2026-11-10T07:41:23.583429+00:00",
+  "lastUpdatedUtc": "2026-11-10T11:01:33.230736+00:00",
   "creator": {
     "name": "Arron Kian Parejas",
     "role": "Lead Architect and AI Engineer in the Philippines",
@@ -14,14 +14,14 @@
   },
   "curriculum": {
     "totalDatasets": 177,
-    "totalRecords": 203240,
+    "totalRecords": 676093,
     "baseRecords": 120616,
     "totalTokens": 92771031,
     "baseTokens": 90376089,
     "tokensFormatted": "92.77M",
     "baseTokensFormatted": "90.38M",
-    "cumulativeUniqueTrained": 82624,
-    "activeCursorOffset": 30400,
+    "cumulativeUniqueTrained": 555477,
+    "activeCursorOffset": 54019,
     "totalSteps": 16574,
     "tokensTrained": 2394942,
     "tokensTrainedFormatted": "2.39M",
@@ -37,8 +37,8 @@
   "topics": [
     {
       "name": "Coding",
-      "count": 29246,
-      "percentage": 51.6,
+      "count": 108230,
+      "percentage": 30.3,
       "samplePrompts": [
         "Describe how a Gaussian Mixture Model (GMM) works in Python using scikit-learn.",
         "Create an array of column names in a MySQL query with item_name and item_price.",
@@ -48,8 +48,8 @@
     },
     {
       "name": "History",
-      "count": 9426,
-      "percentage": 16.6,
+      "count": 60756,
+      "percentage": 17.0,
       "samplePrompts": [
         "Distinguish the root causes and combatant alliances of World War I versus World War II.",
         "Describe the geopolitical consequences of the Treaty of Versailles in 1919.",
@@ -58,8 +58,8 @@
     },
     {
       "name": "Math",
-      "count": 8732,
-      "percentage": 15.4,
+      "count": 55816,
+      "percentage": 15.6,
       "samplePrompts": [
         "Solve the modular congruence 17x \u2261 9 (mod 43) using the Extended Euclidean Algorithm.",
         "Prove that the sequence a_n = 3a_{n-1} - 2a_{n-2} has an explicit closed form.",
@@ -69,8 +69,8 @@
     },
     {
       "name": "Agents",
-      "count": 7097,
-      "percentage": 12.5,
+      "count": 49039,
+      "percentage": 13.7,
       "samplePrompts": [
         "Construct an MCP JSON-RPC 2.0 tool definition for executing sandboxed bash commands.",
         "Format a Nous Research Hermes XML function call with schema validation.",
@@ -79,29 +79,9 @@
       ]
     },
     {
-      "name": "Geography",
-      "count": 815,
-      "percentage": 1.4,
-      "samplePrompts": [
-        "List the 18 administrative regions of the Philippines with their regional centers.",
-        "Describe the geological formation and tectonic significance of the Marianas Trench.",
-        "Explain the atmospheric circulation patterns governing the Pacific Ring of Fire."
-      ]
-    },
-    {
-      "name": "Tagalog",
-      "count": 530,
-      "percentage": 0.9,
-      "samplePrompts": [
-        "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
-        "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
-        "Ilarawan ang kasaysayan ng Katipunan at ang pamumuno ni Andres Bonifacio."
-      ]
-    },
-    {
       "name": "Science",
-      "count": 394,
-      "percentage": 0.7,
+      "count": 39657,
+      "percentage": 11.1,
       "samplePrompts": [
         "Explain the mechanism of CRISPR-Cas9 endonuclease target cleavage and PAM recognition.",
         "Compare the thermodynamic efficiency of the Rankine cycle versus the Brayton cycle.",
@@ -110,23 +90,43 @@
       ]
     },
     {
-      "name": "General Web",
-      "count": 274,
-      "percentage": 0.5,
+      "name": "Tagalog",
+      "count": 23910,
+      "percentage": 6.7,
       "samplePrompts": [
-        "Summarize the historical evolution of modern operating system microkernels.",
-        "Explain the trade-offs between monolithic databases and distributed consensus engines.",
-        "Detail the core principles of the Open Source Initiative and software licensing."
+        "Sino si Dr. Jose Rizal at ano ang naging epekto ng Noli Me Tangere sa bansang Pilipinas?",
+        "Ipaliwanag ang pagkakaiba ng mga gitlaping -um- at -in- sa balarilang Tagalog.",
+        "Ilarawan ang kasaysayan ng Katipunan at ang pamumuno ni Andres Bonifacio."
       ]
     },
     {
       "name": "Law",
-      "count": 113,
-      "percentage": 0.2,
+      "count": 9656,
+      "percentage": 2.7,
       "samplePrompts": [
         "Explain the legal doctrine of stare decisis and its application in common law jurisdictions.",
         "Analyze the constitutional scope of executive privilege during congressional inquiries.",
         "Detail the standard of proof required in criminal proceedings versus civil litigation."
+      ]
+    },
+    {
+      "name": "Geography",
+      "count": 7435,
+      "percentage": 2.1,
+      "samplePrompts": [
+        "List the 18 administrative regions of the Philippines with their regional centers.",
+        "Describe the geological formation and tectonic significance of the Marianas Trench.",
+        "Explain the atmospheric circulation patterns governing the Pacific Ring of Fire."
+      ]
+    },
+    {
+      "name": "General Web",
+      "count": 3085,
+      "percentage": 0.9,
+      "samplePrompts": [
+        "Summarize the historical evolution of modern operating system microkernels.",
+        "Explain the trade-offs between monolithic databases and distributed consensus engines.",
+        "Detail the core principles of the Open Source Initiative and software licensing."
       ]
     }
   ],
