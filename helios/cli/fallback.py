@@ -16,9 +16,10 @@ from typing import TYPE_CHECKING, Any
 
 from helios.cli.utils import MODEL_FAMILY_CATALOG, resolve_tier_key
 from helios.memory.bm25 import extract_content_tokens, has_conflicting_numerals
-from helios.reasoning.cot_engine import (
-    is_synthetic_benchmark_probe,
-    resolve_conversational_followup,
+from helios.reasoning.cot_engine import is_synthetic_benchmark_probe, resolve_conversational_followup
+from helios.reasoning.intent import (
+    QueryIntent, classify_query_intent, clean_meta_prompt_answer,
+    is_candidate_intent_compatible, score_qa_alignment, synthesize_first_principles_definition,
 )
 
 if TYPE_CHECKING:
@@ -422,23 +423,23 @@ def resolve_verified_semantic_reply(
     if best_response is not None and best_score >= 0.45:
         return best_response
 
-    # 6. Content-level document search across indexed text (with numeral conflict check)
+    # 6. Intent-aware semantic document search across indexed records
+    intent = classify_query_intent(effective_query)
     for doc in hma.semantic.documents.values():
         doc_prompt = doc.metadata.get("prompt", "")
         resp = sanitize_output_privacy(doc.metadata.get("response", ""))
         if not resp or is_bare_numeric_response(resp) or contains_forbidden_identity_claim(resp):
             continue
-        if has_conflicting_numerals(effective_query, doc_prompt + " " + resp[:120]):
+        if not is_candidate_intent_compatible(intent, doc_prompt, resp, query=effective_query):
             continue
-        resp_tokens = set(extract_content_tokens(resp))
-        if any(name in resp for name in ("Arron Kian Parejas", "Arron", "Parejas")) and not any(
-            t in q_tokens for t in ("helios", "arron", "parejas", "you", "your", "model")
-        ):
-            continue
-        if q_set.issubset(resp_tokens):
-            return resp
+        p_tokens = set(extract_content_tokens(doc_prompt))
+        if q_set and p_tokens:
+            q_cov = len(q_set & p_tokens) / len(q_set)
+            p_spec = len(q_set & p_tokens) / len(p_tokens)
+            if q_cov >= 0.75 and (p_spec >= 0.40 or len(q_set) >= 3):
+                return clean_meta_prompt_answer(resp)
 
-    # 7. SQLite FTS5 Full-Text Knowledge Base Grounding across 134,728 records
+    # 7. SQLite FTS5 Knowledge Base Grounding with Intent Filtering & Q-to-Q Reranking
     fts = getattr(hma, "fts_corpus", None)
     if fts is None:
         try:
@@ -452,16 +453,18 @@ def resolve_verified_semantic_reply(
 
     if fts is not None:
         fts_query = " ".join(q_tokens[:6]) if q_tokens else effective_query
-        hits = fts.query_corpus(fts_query, top_k=8)
+        hits = fts.query_corpus(fts_query, top_k=12)
         if hits:
-            candidate_resp: str | None = None
+            best_fts_score = -1.0
+            best_fts_ans: str | None = None
             for hit in hits:
                 content = hit.content
-                q_part = content.split("\nA: ", 1)[0] if "\nA: " in content else content[:120]
-                if has_conflicting_numerals(effective_query, q_part):
-                    continue
-                ans = sanitize_agentic_fts_content(content.split("\nA: ", 1)[1].strip() if "\nA: " in content else content.strip())
+                q_part = content.split("\nA: ", 1)[0].replace("Q: ", "").strip() if "\nA: " in content else content[:120]
+                raw_ans = content.split("\nA: ", 1)[1].strip() if "\nA: " in content else content.strip()
+                ans = clean_meta_prompt_answer(sanitize_agentic_fts_content(raw_ans))
                 if not ans or is_bare_numeric_response(ans) or contains_forbidden_identity_claim(ans):
+                    continue
+                if not is_candidate_intent_compatible(intent, q_part, ans, query=effective_query):
                     continue
                 if ("arron" in ans.lower() or "helios" in ans.lower()) and not (
                     any(t in q_norm for t in ("helios", "arron", "parejas", "domodomo", "appbuilders", "gdg")) or is_tagalog_creator_query(q_norm)
@@ -469,27 +472,21 @@ def resolve_verified_semantic_reply(
                     continue
 
                 ans_is_tl = is_tagalog_text(ans)
-                if query_is_tl and ans_is_tl:
-                    return ans
-                if not query_is_tl and not ans_is_tl:
-                    return ans
-                if candidate_resp is None:
-                    candidate_resp = ans
+                score = score_qa_alignment(effective_query, q_part, ans, query_is_tl=query_is_tl, cand_is_tl=ans_is_tl)
+                if score > best_fts_score:
+                    best_fts_score = score
+                    best_fts_ans = ans
 
-            if candidate_resp is not None:
-                return candidate_resp
+            if best_fts_ans is not None and best_fts_score >= 0.35:
+                return best_fts_ans
 
-    # 8. Deductive First-Principles Synthesis for Unindexed Real Queries
+    # 8. Dynamic First-Principles Generative Synthesis for Unindexed Real Queries
+    if intent == QueryIntent.ENTITY_DEFINITION:
+        return synthesize_first_principles_definition(effective_query, is_tagalog=query_is_tl)
+
     from helios.reasoning.cot_engine import synthesize_dynamic_response
-    thought_body = (
-        f"Batay sa masusing pagsusuri at pangkalahatang kaalaman tungkol sa '{effective_query.strip()}', "
-        "ang paksang ito ay sumasaklaw sa mga konseptong may kinalaman sa agham, kasaysayan, o pilosopiya. "
-        "Magbigay ng karagdagang detalye upang higit pang mapalawak ang paliwanag."
-        if query_is_tl
-        else f"Based on first-principles analysis regarding '{effective_query.strip()}', "
-        "this topic pertains to foundational domain concepts. "
-        "Please provide specific aspects or context you would like to explore further."
-    )
-    return synthesize_dynamic_response(effective_query, thought_body, preset=preset, include_thought=False)
+    t_en = f"Based on first-principles analysis regarding '{effective_query.strip()}', this topic pertains to foundational concepts. Please provide specific aspects to explore further."
+    t_tl = f"Batay sa masusing pagsusuri tungkol sa '{effective_query.strip()}', ang paksang ito ay may kinalaman sa agham o kasaysayan. Magbigay ng karagdagang detalye."
+    return synthesize_dynamic_response(effective_query, t_tl if query_is_tl else t_en, preset=preset, include_thought=False)
 
 # fmt: on

@@ -169,24 +169,34 @@ class ChatSession:
             ) from exc
 
     def _is_coherent_reply(self, reply: str) -> bool:
-        """Evaluate semantic coherence ratio against known vocabulary."""
+        """Evaluate semantic coherence ratio using lexical and structural integrity heuristics."""
         if not reply or len(reply.strip()) < 8:
             return False
-        # Catch spaced-out or byte-looping corruption artifacts
         if "   " in reply or len(re.findall(r"\b[a-zA-Z]{3,}\b", reply)) < 2:
             return False
-        corrupt_frags = ("<|", "|>", "_o", "|a", "_a", "?|", "|s")
-        corrupt_frags += ("||", "t|", "d|", "_e", "_s", "o_", "i_")
+        corrupt_frags = ("<|", "|>", "_o", "|a", "_a", "?|", "|s", "||", "t|", "d|", "_e", "_s", "o_", "i_")
         if any(frag in reply for frag in corrupt_frags):
             return False
         words = [w.lower().strip(".,!?:;\"'()[]{}") for w in reply.split()]
-        words = [w for w in words if len(w) >= 2]
-        if len(words) < 2:
+        words = [w for w in words if len(w) >= 1]
+        if len(words) < 2 or any(len(w) > 22 for w in words):
             return False
-        if not self._valid_words:
-            return True
-        valid_count = sum(1 for w in words if w in self._valid_words)
-        return (valid_count / len(words)) >= 0.70
+        if len(words) >= 6:
+            counts = {w: words.count(w) for w in set(words)}
+            if max(counts.values()) / len(words) >= 0.55:
+                return False
+        from helios.cli.fallback import TAGALOG_MARKERS
+        common_en = {
+            "the", "be", "to", "of", "and", "a", "in", "that", "have", "it", "for", "not", "on", "with", "he",
+            "as", "you", "do", "at", "this", "but", "his", "by", "from", "they", "we", "say", "her", "she",
+            "or", "an", "will", "my", "one", "all", "would", "there", "their", "what", "so", "up", "out",
+            "if", "about", "who", "get", "which", "go", "when", "make", "can", "like", "time", "no", "just",
+            "him", "know", "take", "into", "year", "your", "some", "could", "them", "other", "than", "then",
+            "now", "its", "over", "also", "after", "use", "two", "how", "our", "even", "new", "any", "these",
+            "is", "was", "are", "were", "been", "has", "had", "born", "served", "called", "known", "located"
+        }
+        known_count = sum(1 for w in words if w in common_en or w in TAGALOG_MARKERS or w in self._valid_words)
+        return (known_count / len(words)) >= 0.70
 
     def clear(self) -> None:
         """Clear active working memory and reset conversation turn state."""
@@ -354,7 +364,7 @@ class ChatSession:
                 try:
                     for piece in generator:
                         full_reply_parts.append(piece)
-                        if len(full_reply_parts) >= 8 and not self._is_coherent_reply(
+                        if len(full_reply_parts) >= 32 and not self._is_coherent_reply(
                             "".join(full_reply_parts)
                         ):
                             break
