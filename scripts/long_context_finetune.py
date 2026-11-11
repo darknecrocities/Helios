@@ -45,11 +45,11 @@ TIERS = {
 }
 
 
-def load_student(tier, device):
+def load_student(tier, device, seq_len=8192):
     preset, parent, _ = TIERS[tier]
     parent_dir = CHECKPOINTS / parent
     config = HeliosConfig.from_pretrained(parent_dir)
-    config.max_seq_len = None  # set by args
+    config.max_seq_len = seq_len
     model = HeliosForCausalLM(config)
     state_path = parent_dir / "state.pt"
     if state_path.is_file():
@@ -97,8 +97,7 @@ def main():
     device = resolve_device("auto")
     print(f"device: {device}, max_ctx: {args.max_ctx}, seq_len: {args.seq_len}", flush=True)
 
-    model, tokenizer, config = load_student(args.tier, device)
-    config.max_seq_len = args.seq_len
+    model, tokenizer, config = load_student(args.tier, device, args.seq_len)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
 
     out_dir = Path(args.out)

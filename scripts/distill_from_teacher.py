@@ -151,9 +151,11 @@ def main():
             continue
         with torch.no_grad():
             with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type in ("cuda","mps")):
-                t_logits = teacher(input_ids=ids).logits
+                t_out = teacher(input_ids=ids)
+            t_logits = t_out["logits"] if isinstance(t_out, dict) else t_out.logits
         with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type in ("cuda","mps")):
-            s_logits = student(input_ids=ids).logits if hasattr(student, "logits") else student(ids).logits
+            out = student(input_ids=ids)
+        s_logits = out["logits"] if isinstance(out, dict) else out.logits
         labels = ids.clone()
         loss, ce, kl = kd_loss(s_logits, t_logits, labels, args.temperature, args.alpha)
         loss = loss / args.accum
