@@ -1,0 +1,19 @@
+{
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (Helios)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "parejasarronkian/Helios:nano": { "name": "Helios Nano (17.8M)" },
+        "parejasarronkian/Helios:alpha": { "name": "Helios Alpha (100M)" },
+        "parejasarronkian/Helios:beta": { "name": "Helios Beta (303M)" },
+        "parejasarronkian/Helios:core": { "name": "Helios Core (1.1B, Qwen2.5-Coder base)" },
+        "parejasarronkian/Helios:pro": { "name": "Helios Pro (3.3B, Qwen2.5-Coder base)" },
+        "parejasarronkian/Helios:flagship": { "name": "Helios Flagship (5.8B, Qwen2.5-Coder base)" }
+      }
+    }
+  }
+}

@@ -256,6 +256,7 @@ def train_tier(
     device_name: str,
     dry_run: bool,
     allow_heavy: bool,
+    checkpoint_every: int = 1000,
 ) -> dict[str, Any]:
     """Continue one full tier from its verified parent."""
     if TIERS[tier]["parent"] is None:
@@ -317,25 +318,41 @@ def train_tier(
             "dry_run": True,
         }
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01, fused=False)
+    use_amp = device.type in ("cuda", "mps")
+    amp_dtype = torch.bfloat16 if device.type == "cuda" else torch.float16
+    scaler = torch.amp.GradScaler(device.type) if (use_amp and device.type == "cuda") else None
+
     start = time.perf_counter()
     steps = tokens = 0
     first = last = float("nan")
     while time.perf_counter() - start < seconds:
         batch = train_batches[steps % len(train_batches)]
         optimizer.zero_grad(set_to_none=True)
-        if device.type == "cuda":
-            with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+        if use_amp:
+            with torch.autocast(device_type=device.type, dtype=amp_dtype):
                 loss = model(batch["input_ids"], labels=batch["labels"])["loss"]
         else:
             loss = model(batch["input_ids"], labels=batch["labels"])["loss"]
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        optimizer.step()
+        if scaler is not None:
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
         steps += 1
         tokens += int((batch["labels"] != -100).sum())
         first = float(loss.item()) if steps == 1 else first
         last = float(loss.item())
+        if checkpoint_every > 0 and steps % checkpoint_every == 0:
+            ckpt_dir = LINEAGE_ROOT / f"{tier}_full" / f"step_{int(parent_payload.get('step', 0)) + steps:08d}_partial"
+            ckpt_dir.mkdir(parents=True, exist_ok=True)
+            torch.save({"model_state_dict": model.state_dict(), "step": int(parent_payload.get("step", 0)) + steps, "parent_step": int(parent_payload.get("step", 0))}, ckpt_dir / "state.pt")
+            print(f"  checkpoint saved: {ckpt_dir}", flush=True)
 
     elapsed = time.perf_counter() - start
     after = mean_loss(model, eval_batches, device)
@@ -378,6 +395,7 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--data-limit", type=int, default=9000)
     parser.add_argument("--eval-limit", type=int, default=300)
+    parser.add_argument("--checkpoint-every", type=int, default=1000)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -407,6 +425,7 @@ def main() -> None:
             args.device,
             args.dry_run,
             args.allow_heavy,
+            args.checkpoint_every,
         )
         print(json.dumps(result, indent=2), flush=True)
         results.append(result)
