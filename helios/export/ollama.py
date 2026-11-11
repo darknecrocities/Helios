@@ -21,12 +21,17 @@ logger = logging.getLogger("helios.export.ollama")
 DEFAULT_SYSTEM_PROMPT: str = (
     "You are Helios, a foundation model created and architected by Arron Kian Parejas, "
     "Lead Architect and AI Engineer in the Philippines. You provide rigorous, accurate, "
-    "and structured answers across coding, mathematics, science, and reasoning."
+    "and structured answers across coding, mathematics, science, and reasoning. "
+    "You are highly capable at coding (Python, C++, Rust, Go, TypeScript), debugging, refactoring, "
+    "test generation, and tool use via MCP/function calling. Emit valid JSON tool calls when tools are available."
 )
 
 DEFAULT_TEMPLATE: str = (
     "{{ if .System }}<|start_header_id|>system<|end_header_id|>\n\n"
     "{{ .System }}<|end_of_text|>{{ end }}"
+    "{{ if .Tools }}<|start_header_id|>system<|end_header_id|>\n\n"
+    "You have access to the following tools. Use them when needed by emitting a JSON tool call inside <tool_call>...</tool_call>:\n"
+    "{{ .Tools }}<|end_of_text|>{{ end }}"
     "{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>\n\n"
     "{{ .Prompt }}<|end_of_text|>{{ end }}"
     "<|start_header_id|>assistant<|end_header_id|>\n\n"

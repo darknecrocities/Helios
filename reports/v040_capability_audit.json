@@ -1,0 +1,308 @@
+{
+  "generated_at": "2026-11-11T08:46:07.233833+00:00",
+  "host": {
+    "machine": "Mac15,12",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "cpu_count": 8,
+    "memory_gib": 16.0,
+    "internal_free_gib": 67.15,
+    "drive_present": true,
+    "drive_free_gib": 642.24,
+    "torch": "2.15.0",
+    "mps": true,
+    "cuda": false
+  },
+  "checkpoints": {
+    "core": {
+      "tier": "core",
+      "path": "/Volumes/One Touch/Helios/checkpoints/core_continuous/latest",
+      "exists": true,
+      "mode": "block_slice",
+      "declared_step": 11304,
+      "effective_step": 11304,
+      "config_max_seq_len": 64,
+      "trained_seq_len": 96,
+      "tensor_count": 12,
+      "parameter_count": 52697088,
+      "keys_prefix": "block.",
+      "integrity": "ok",
+      "actual_sha256": "9b7037a78d4a25a5bdd880c1c02c652e544935108afea862979babfb4f762813",
+      "expected_sha256": "9b7037a78d4a25a5bdd880c1c02c652e544935108afea862979babfb4f762813",
+      "model_matches_step": "",
+      "state_matches_step": "",
+      "consistent_step": "latest",
+      "notes": [
+        "single-block slice; full-tier export requires replication or full retraining"
+      ]
+    },
+    "pro": {
+      "tier": "pro",
+      "path": "/Volumes/One Touch/Helios/checkpoints/pro_continuous/latest",
+      "exists": true,
+      "mode": "block_slice",
+      "declared_step": 5053,
+      "effective_step": 5145,
+      "config_max_seq_len": 64,
+      "trained_seq_len": 96,
+      "tensor_count": 12,
+      "parameter_count": 113255424,
+      "keys_prefix": "block.",
+      "integrity": "mismatch",
+      "actual_sha256": "16779fd14519a44593e02a7b005ea50d7b7147daad893d49c452a5e82bd87c1c",
+      "expected_sha256": "c295ec99ead0326313395340dec9d7da707e6a2908486fa5ac249709efcaa58a",
+      "model_matches_step": "step_00005145",
+      "state_matches_step": "step_00005053",
+      "consistent_step": "step_00005145",
+      "notes": [
+        "mixed latest: model.safetensors is step_00005145, state.pt is step_00005053",
+        "step_00005145 is internally consistent",
+        "single-block slice; full-tier export requires replication or full retraining"
+      ]
+    },
+    "flagship": {
+      "tier": "flagship",
+      "path": "/Volumes/One Touch/Helios/checkpoints/flagship_continuous/latest",
+      "exists": true,
+      "mode": "block_slice",
+      "declared_step": 6119,
+      "effective_step": 6119,
+      "config_max_seq_len": 64,
+      "trained_seq_len": 96,
+      "tensor_count": 12,
+      "parameter_count": 193998848,
+      "keys_prefix": "block.",
+      "integrity": "ok",
+      "actual_sha256": "c1d0f24f9b2cbcea4c287a85fbe94c7a5bf9b0af1f2415b620f4ade89d4c701a",
+      "expected_sha256": "c1d0f24f9b2cbcea4c287a85fbe94c7a5bf9b0af1f2415b620f4ade89d4c701a",
+      "model_matches_step": "",
+      "state_matches_step": "",
+      "consistent_step": "latest",
+      "notes": [
+        "single-block slice; full-tier export requires replication or full retraining"
+      ]
+    }
+  },
+  "lineage": {
+    "path": "/Volumes/One Touch/Helios/checkpoints/v040_lineage",
+    "present": true,
+    "tiers": {
+      "core": {
+        "path": "/Volumes/One Touch/Helios/checkpoints/v040_lineage/core_continuous/latest",
+        "total_steps": 11842,
+        "parent_step": 11304,
+        "parent_sha256": "9b7037a78d4a25a5",
+        "steps": 538,
+        "tokens": 56041,
+        "seconds": 60.13,
+        "heldout_loss_before": 9.966166,
+        "heldout_loss_after": 7.020557,
+        "heldout_improvement_pct": 29.5561,
+        "target_context_length": 1000000,
+        "context_extension_status": "target_only_not_trained",
+        "integrity": "declared"
+      },
+      "pro": {
+        "path": "/Volumes/One Touch/Helios/checkpoints/v040_lineage/pro_continuous/latest",
+        "total_steps": 5369,
+        "parent_step": 5145,
+        "parent_sha256": "16779fd14519a445",
+        "steps": 224,
+        "tokens": 22947,
+        "seconds": 60.17,
+        "heldout_loss_before": 13.954476,
+        "heldout_loss_after": 7.527563,
+        "heldout_improvement_pct": 46.0563,
+        "target_context_length": 1000000,
+        "context_extension_status": "target_only_not_trained",
+        "integrity": "declared"
+      },
+      "flagship": {
+        "path": "/Volumes/One Touch/Helios/checkpoints/v040_lineage/flagship_continuous/latest",
+        "total_steps": 6234,
+        "parent_step": 6119,
+        "parent_sha256": "c1d0f24f9b2cbcea",
+        "steps": 115,
+        "tokens": 11747,
+        "seconds": 60.53,
+        "heldout_loss_before": 12.081981,
+        "heldout_loss_after": 7.92326,
+        "heldout_improvement_pct": 34.4209,
+        "target_context_length": 1000000,
+        "context_extension_status": "target_only_not_trained",
+        "integrity": "declared"
+      }
+    },
+    "notes": [
+      "lineage.json declares v0.4.0-coding-agents"
+    ]
+  },
+  "ollama": {
+    "core": {
+      "tier": "core",
+      "tag": "parejasarronkian/Helios:core",
+      "found": true,
+      "family": "gemma2",
+      "parameter_size": "2.6B",
+      "parameter_count": 2614341888,
+      "context_length": 131072,
+      "capabilities": [
+        "completion"
+      ],
+      "template_has_tools": false,
+      "live_tool_call": "not_run",
+      "live_tool_arguments": {},
+      "live_vision": "not_run",
+      "live_vision_response": "",
+      "notes": [
+        "served through the gemma2 base model; not Helios-native weights"
+      ]
+    },
+    "pro": {
+      "tier": "pro",
+      "tag": "parejasarronkian/Helios:pro",
+      "found": true,
+      "family": "llama",
+      "parameter_size": "3.2B",
+      "parameter_count": 3212749888,
+      "context_length": 131072,
+      "capabilities": [
+        "tools",
+        "completion"
+      ],
+      "template_has_tools": true,
+      "live_tool_call": "verified",
+      "live_tool_arguments": {
+        "city": "Manila"
+      },
+      "live_vision": "not_run",
+      "live_vision_response": "",
+      "notes": [
+        "served through the llama base model; not Helios-native weights"
+      ]
+    },
+    "flagship": {
+      "tier": "flagship",
+      "tag": "parejasarronkian/Helios:flagship",
+      "found": true,
+      "family": "gemma3",
+      "parameter_size": "4.3B",
+      "parameter_count": 4299915632,
+      "context_length": 262144,
+      "capabilities": [
+        "completion",
+        "vision"
+      ],
+      "template_has_tools": false,
+      "live_tool_call": "not_run",
+      "live_tool_arguments": {},
+      "live_vision": "accepted",
+      "live_vision_response": "<thought>Let's analyze the provided image. The image consists of a solid block of color. Visually inspecting it, the dom",
+      "notes": [
+        "served through the gemma3 base model; not Helios-native weights"
+      ]
+    }
+  },
+  "huggingface": {
+    "repo": "Darknecrocities/Helios",
+    "reachable": true,
+    "sha": "5c9b60cc5c76f47f09e765cf50b0ec216ba7ffbb",
+    "last_modified": "2026-11-10T06:56:33.000Z",
+    "branches": [
+      "nano",
+      "main",
+      "flagship",
+      "pro",
+      "core",
+      "beta",
+      "alpha"
+    ],
+    "tiers": {
+      "core": {
+        "tier": "core",
+        "branch": "core",
+        "branch_config_present": true,
+        "branch_model_bytes": 2257809360,
+        "continuous_steps": 9210,
+        "drive_steps": 11304,
+        "stale": true,
+        "continuous_model_bytes": 210789568,
+        "notes": [
+          "Hub step 9210 is behind drive step 11304",
+          "branch model.safetensors is 2.10 GiB"
+        ]
+      },
+      "pro": {
+        "tier": "pro",
+        "branch": "pro",
+        "branch_config_present": true,
+        "branch_model_bytes": 6639491152,
+        "continuous_steps": 4142,
+        "drive_steps": 5145,
+        "stale": true,
+        "continuous_model_bytes": 453022920,
+        "notes": [
+          "Hub step 4142 is behind drive step 5145",
+          "branch model.safetensors is 6.18 GiB"
+        ]
+      },
+      "flagship": {
+        "tier": "flagship",
+        "branch": "flagship",
+        "branch_config_present": true,
+        "branch_model_bytes": 11604107552,
+        "continuous_steps": 2390,
+        "drive_steps": 6119,
+        "stale": true,
+        "continuous_model_bytes": 775996624,
+        "notes": [
+          "Hub step 2390 is behind drive step 6119",
+          "branch model.safetensors is 10.81 GiB"
+        ]
+      }
+    },
+    "notes": []
+  },
+  "matrix": {
+    "core": {
+      "text": "available",
+      "native_weights": "block_slice_only+continuation_demo",
+      "coding": "target_only",
+      "tools": "unavailable",
+      "mcp": "runtime_missing",
+      "vision": "unavailable",
+      "long_context": "trained_96_header_131072"
+    },
+    "pro": {
+      "text": "available",
+      "native_weights": "block_slice_only+continuation_demo",
+      "coding": "target_only",
+      "tools": "verified",
+      "mcp": "runtime_missing",
+      "vision": "unavailable",
+      "long_context": "trained_96_header_131072"
+    },
+    "flagship": {
+      "text": "available",
+      "native_weights": "block_slice_only+continuation_demo",
+      "coding": "target_only",
+      "tools": "unavailable",
+      "mcp": "runtime_missing",
+      "vision": "accepted_by_runtime",
+      "long_context": "trained_96_header_262144"
+    }
+  },
+  "findings": [
+    "core: only a single-block slice is present; this is not a full core model and cannot be exported as one without replication/retraining",
+    "core: trained at 96 tokens; any larger context advertised by Ollama is a header value, not a trained capability",
+    "pro: latest checkpoint is a mixed copy (model=step_00005145, state=step_00005053); use step_00005145 as parent",
+    "pro: trained at 96 tokens; any larger context advertised by Ollama is a header value, not a trained capability",
+    "flagship: only a single-block slice is present; this is not a full flagship model and cannot be exported as one without replication/retraining",
+    "flagship: trained at 96 tokens; any larger context advertised by Ollama is a header value, not a trained capability",
+    "flagship: Ollama exposes vision through the base model, not through a trained Helios vision adapter",
+    "core: Hub continuous checkpoint is stale (9210 vs drive 11304)",
+    "pro: Hub continuous checkpoint is stale (4142 vs drive 5145)",
+    "flagship: Hub continuous checkpoint is stale (2390 vs drive 6119)",
+    "MCP is not installed as a runtime client; tool metadata is not MCP"
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "dataset_dir": "/Volumes/One Touch/Helios/datasets/_smoke_fineweb",
+  "dataset": "helios_fineweb_v1",
+  "created_at": "2026-11-11 09:21:57 UTC",
+  "shards": [
+    {
+      "file": "train_00000.bin",
+      "split": "train",
+      "tokens": 101749,
+      "documents": 101,
+      "size_bytes": 203498,
+      "sha256": "3604336f1616a3cb1859367d51d269cecad379801d5fd0705b5b386c3a9a81b7",
+      "min_token_id": 1,
+      "max_token_id": 3996,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00001.bin",
+      "split": "train",
+      "tokens": 100933,
+      "documents": 100,
+      "size_bytes": 201866,
+      "sha256": "7b9776546417628945f3f821c4de0057a591d20e4c71748629ab5e659c5afa57",
+      "min_token_id": 1,
+      "max_token_id": 3997,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00002.bin",
+      "split": "train",
+      "tokens": 101445,
+      "documents": 90,
+      "size_bytes": 202890,
+      "sha256": "464447eb87edee87f0e21693de77dacd266983b9a69c2227764b9d1d6472e433",
+      "min_token_id": 1,
+      "max_token_id": 3997,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00003.bin",
+      "split": "train",
+      "tokens": 100770,
+      "documents": 90,
+      "size_bytes": 201540,
+      "sha256": "4decf846f5a316d84aac5dde5f555827f0eb1273384f309991150a07233b27c2",
+      "min_token_id": 1,
+      "max_token_id": 3998,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00004.bin",
+      "split": "train",
+      "tokens": 102022,
+      "documents": 65,
+      "size_bytes": 204044,
+      "sha256": "29c2edf248d3f725b62d4ff7ea9808267f70bd41ba9547ff6f1eabf893a608c8",
+      "min_token_id": 1,
+      "max_token_id": 3995,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00005.bin",
+      "split": "train",
+      "tokens": 69046,
+      "documents": 35,
+      "size_bytes": 138092,
+      "sha256": "80d19e22090fe28467c5b3ee02a82412a97d0caa7d70c12d4ad455eaf42627ee",
+      "min_token_id": 1,
+      "max_token_id": 3994,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "val_00000.bin",
+      "split": "val",
+      "tokens": 17312,
+      "documents": 19,
+      "size_bytes": 34624,
+      "sha256": "f2e2f1bbe9b3d8a5e79c677fa6786e8626cf7ff82506b0c53d95606ff0f6fab9",
+      "min_token_id": 1,
+      "max_token_id": 3994,
+      "provenance_duplicates": 0
+    }
+  ],
+  "totals": {
+    "tokens": 593277,
+    "documents": 500,
+    "unique_hashes": 500,
+    "train_hashes": 481,
+    "val_hashes": 19
+  },
+  "train_val_overlap": 0,
+  "problems": [],
+  "passed": true
+}

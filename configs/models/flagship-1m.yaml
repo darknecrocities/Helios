@@ -1,0 +1,51 @@
+# Helios Flagship v0.4.0 — 1M-context target profile
+# Status: TARGET ONLY. The current Flagship checkpoint is a 96-token
+# block-slice checkpoint; this profile is the training/serving target.
+model:
+  id: "helios-flagship-1m"
+  name: "Helios Flagship 1M"
+  epithet: "Sol Invictus Extended"
+  preset: "flagship-6b"
+  parameters: 5802037248
+  layers: 32
+  d_model: 4096
+  n_heads: 32
+  n_kv_heads: 8
+  d_ffn: 11008
+  context_length: 1000000
+  rope_theta: 10000000.0
+  tie_embeddings: true
+  target_hardware: "8x H100/H200 for training; 192GB+ unified/HBM for FP16 raw 1M, 128GB+ with INT8 KV"
+  default_device: "cuda"
+
+context_extension:
+  method: "yarn"
+  original_context: 262144
+  scale_factor: 3.814697265625
+  training_schedule: [4096, 32768, 131072, 262144, 524288, 1000000]
+  status: "target_not_trained"
+  notes: "Dense attention at 1M needs ~131.1GB KV cache in FP16 for K+V; use paged/quantized KV and sequence parallelism."
+
+serving:
+  kv_cache_fp16_gb_at_1m: 131.1
+  kv_cache_int8_gb_at_1m: 65.5
+  kv_cache_q4_gb_at_1m: 32.8
+  weights_fp16_gb: 11.6
+  total_fp16_kv_gb_at_1m: 142.7
+  total_int8_kv_gb_at_1m: 77.1
+  minimum_unified_memory_gb_fp16_kv: 192
+  minimum_unified_memory_gb_int8_kv: 128
+  local_recommended_raw_context: 32768
+  local_1m_mode: "hma_retrieval"
+  ollama_env:
+    OLLAMA_FLASH_ATTENTION: "1"
+    OLLAMA_KV_CACHE_TYPE: "q8_0"
+    OLLAMA_NUM_PARALLEL: "1"
+
+capabilities:
+  text: "available"
+  coding: "target"
+  tools: "target"
+  mcp: "target_client_side"
+  vision: "target_multimodal_adapter"
+  long_context: "target"

@@ -1,0 +1,36 @@
+# Helios Core v0.4.0 — capability target profile
+# Status: TARGET ONLY. The current Core checkpoint is a 96-token block-slice
+# checkpoint and the deployed Ollama tag is text-only. Tools/MCP/vision are
+# training and runtime targets, not current native capabilities.
+model:
+  id: "helios-core-v040"
+  name: "Helios Core v0.4.0"
+  epithet: "Hyperion"
+  preset: "core-1b"
+  parameters: 1128890000
+  layers: 24
+  d_model: 2048
+  n_heads: 16
+  n_kv_heads: 4
+  d_ffn: 5504
+  context_length: 131072
+  rope_theta: 5000000.0
+  tie_embeddings: true
+  target_hardware: "16GB developer laptop; tools via client; vision via multimodal adapter"
+  default_device: "mps"
+
+serving:
+  kv_cache_fp16_gb_at_128k: 6.44
+  kv_cache_int8_gb_at_128k: 3.22
+  weights_fp16_gb: 2.26
+  total_int8_kv_gb_at_128k: 5.48
+  local_recommended_raw_context: 32768
+  local_1m_mode: "hma_retrieval"
+
+capabilities:
+  text: "available"
+  coding: "target"
+  tools: "target_sft_required"
+  mcp: "target_client_side"
+  vision: "target_multimodal_adapter"
+  long_context: "available_128k_header_only"
