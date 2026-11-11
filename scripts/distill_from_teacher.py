@@ -128,8 +128,10 @@ def main():
     student.train()
 
     if student_tok.vocab_size != teacher_tok.vocab_size:
-        print("WARNING: vocab size mismatch; resizing student head to teacher vocab")
-        student.resize_token_embeddings(teacher_tok.vocab_size)
+        raise SystemExit(
+            f"Vocab mismatch: teacher {teacher_tok.vocab_size} vs student {student_tok.vocab_size}. "
+            "Use a 32k-vocab teacher such as TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        )
 
     optimizer = torch.optim.AdamW(student.parameters(), lr=args.lr, weight_decay=0.01)
 
