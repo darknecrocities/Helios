@@ -1,8 +1,7 @@
-# Modelfile for Helios Beta (303.35M Parameters — v0.3.0-beta) [tool-capable, native template]
-# Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>
+# Modelfile for Helios Beta (303.35M Parameters - v0.3.0-beta)
+# Creator: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines
 # Target Registry: parejasarronkian/Helios:beta
-# Calibrated Context Window: 65,536 tokens | RoPE Base Theta: 1,000,000.0
-# NOTE: No TEMPLATE override — inherits base model's native tool-calling template.
+# Calibrated Context Window: 65,536 tokens
 
 FROM qwen2.5:3b
 
@@ -14,7 +13,3 @@ PARAMETER top_p 0.9
 PARAMETER top_k 40
 PARAMETER repeat_penalty 1.1
 
-PARAMETER stop "<|end_of_text|>"
-PARAMETER stop "<|eot_id|>"
-PARAMETER stop "<|start_header_id|>"
-PARAMETER stop "<|end_header_id|>"
