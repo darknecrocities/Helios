@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Regenerate Ollama Modelfiles with tool-calling + coding-capable templates."""
+"""Regenerate Ollama Modelfiles using each base model's native tool-capable template.
+
+By NOT overriding TEMPLATE, Ollama inherits the base model's built-in template
+which supports tool calling (e.g. Qwen2.5-Coder's <tool_call> format).
+"""
 
 from __future__ import annotations
-
 from pathlib import Path
 
 TIERS = [
@@ -14,22 +17,11 @@ TIERS = [
     ("flagship", "qwen2.5-coder:7b", 262144, 10000000.0, "5.80B", "32 layers, d_model=4096, 32Q/8KV GQA heads", "v0.3.0-flagship"),
 ]
 
-TEMPLATE = '''{{ if .System }}<|start_header_id|>system<|end_header_id|>
-
-{{ .System }}<|end_of_text|>{{ end }}{{ if .Tools }}<|start_header_id|>system<|end_header_id|>
-
-You have access to the following tools. Use them when needed by emitting a JSON tool call inside <tool_call>...</tool_call>:
-{{ .Tools }}<|end_of_text|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
-
-{{ .Prompt }}<|end_of_text|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
-
-{{ .Response }}<|end_of_text|>'''
-
 SYSTEM = ("You are Helios {tier} ({params} parameters, {ver}, Context Window: {ctx} tokens, "
           "RoPE Theta: {theta}, Topology: {topo}), a foundation model created and architected by "
           "Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines. "
-          "You are highly capable at coding (Python, C++, Rust, Go, TypeScript), software engineering, "
-          "debugging, refactoring, test generation, and tool use via MCP/function calling. "
+          "You are highly capable at coding (Python, C++, Rust, Go, TypeScript), debugging, refactoring, "
+          "test generation, and tool use via MCP/function calling. "
           "When responding, reason step-by-step inside <thought>...</thought> before the final answer. "
           "For coding tasks, produce complete, typed, documented code. For tool tasks, emit valid JSON tool calls. "
           "Reason freely across technology, science, mathematics, and Philippine institutions.")
@@ -38,14 +30,13 @@ OUT = Path("deploy/ollama")
 for name, base, ctx, theta, params, topo, ver in TIERS:
     tag = "parejasarronkian/Helios:" + ("latest" if name == "core" else name)
     system = SYSTEM.format(tier=name.capitalize(), params=params, ver=ver, ctx=f"{ctx:,}", theta=f"{theta:,.1f}", topo=topo)
-    content = f"""# Modelfile for Helios {name.capitalize()} ({params} Parameters — {ver}) [tool-capable]
+    content = f"""# Modelfile for Helios {name.capitalize()} ({params} Parameters — {ver}) [tool-capable, native template]
 # Creator & Lead Architect: Arron Kian Parejas, Lead Architect and AI Engineer in the Philippines <parejasarronkian@gmail.com>
 # Target Registry: {tag}
 # Calibrated Context Window: {ctx:,} tokens | RoPE Base Theta: {theta:,.1f}
+# NOTE: No TEMPLATE override — inherits base model's native tool-calling template.
 
 FROM {base}
-
-TEMPLATE \"\"\"{TEMPLATE}\"\"\"
 
 SYSTEM \"\"\"{system}\"\"\"
 
@@ -59,12 +50,7 @@ PARAMETER stop "<|end_of_text|>"
 PARAMETER stop "<|eot_id|>"
 PARAMETER stop "<|start_header_id|>"
 PARAMETER stop "<|end_header_id|>"
-PARAMETER stop "</tool_call>"
 """
-    suffix = "" if name == "core" else "." + name
-    # core default Modelfile (no suffix) and core-specific
     path = OUT / ("Modelfile" if name == "core" else f"Modelfile.{name}")
     path.write_text(content, encoding="utf-8")
     print("wrote", path)
-
-# Also write a flagship-latest alias? keep as is
