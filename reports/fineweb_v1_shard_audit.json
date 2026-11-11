@@ -1,0 +1,83 @@
+{
+  "dataset_dir": "/Volumes/One Touch/Helios/datasets/helios_fineweb_v1",
+  "dataset": "helios_fineweb_v1",
+  "created_at": "2026-11-11 09:52:05 UTC",
+  "shards": [
+    {
+      "file": "train_00000.bin",
+      "split": "train",
+      "tokens": 20000110,
+      "documents": 19509,
+      "size_bytes": 40000220,
+      "sha256": "b2371eda4f0beb79050545b220b0d7deaf254e50318f79344600cfdc2ba4fbae",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00001.bin",
+      "split": "train",
+      "tokens": 20000780,
+      "documents": 19707,
+      "size_bytes": 40001560,
+      "sha256": "a5d8bc78ca865c2dbe1eec179f5a3edfc2042730839422377d4f53b9d29c081e",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00002.bin",
+      "split": "train",
+      "tokens": 20000117,
+      "documents": 19775,
+      "size_bytes": 40000234,
+      "sha256": "a012a2090be21ad0af5e3a5d6f5350b367f57fb53c4c8838568d3730f1d8bf4a",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00003.bin",
+      "split": "train",
+      "tokens": 20002316,
+      "documents": 13436,
+      "size_bytes": 40004632,
+      "sha256": "00bfec2b9ac3d18cc14778486bca3fe24024a1e9aec398e7f8547f3a9aa299c1",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "train_00004.bin",
+      "split": "train",
+      "tokens": 2713483,
+      "documents": 1806,
+      "size_bytes": 5426966,
+      "sha256": "d924cd303f46c363846e8f0a722f4508d87070fa09d00f27b21a5131122f28bc",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    },
+    {
+      "file": "val_00000.bin",
+      "split": "val",
+      "tokens": 787770,
+      "documents": 733,
+      "size_bytes": 1575540,
+      "sha256": "5b9e3816088ff6093806a8ce4fd8897e7fd64307b5980d6353710d4c9fcd0821",
+      "min_token_id": 1,
+      "max_token_id": 3999,
+      "provenance_duplicates": 0
+    }
+  ],
+  "totals": {
+    "tokens": 83504576,
+    "documents": 74966,
+    "unique_hashes": 74966,
+    "train_hashes": 74233,
+    "val_hashes": 733
+  },
+  "train_val_overlap": 0,
+  "problems": [],
+  "passed": true
+}
