@@ -49,5 +49,5 @@ PARAMETER temperature 0.7
 PARAMETER top_p 0.9
 PARAMETER top_k 40
 PARAMETER repeat_penalty 1.1
-PARAMETER num_predict 2048
+PARAMETER num_predict 1024
 
