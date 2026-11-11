@@ -1,0 +1,101 @@
+[
+  {
+    "tier": "nano",
+    "advertised_unique_parameters": 17842880,
+    "stored_state_parameters": 28082880,
+    "tensor_count": 66,
+    "expected_full_tensors": 66,
+    "full_model": true,
+    "mode": "full",
+    "effective_step": 18577,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_nano",
+    "locally_trainable": true,
+    "estimated_training_gib": 0.24,
+    "notes": [
+      "v0.5.0 lineage: full, 66 tensors, 28.08M stored params, step 18577"
+    ]
+  },
+  {
+    "tier": "alpha",
+    "advertised_unique_parameters": 100092672,
+    "stored_state_parameters": 124668672,
+    "tensor_count": 111,
+    "expected_full_tensors": 111,
+    "full_model": true,
+    "mode": "full",
+    "effective_step": 5010,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_alpha",
+    "locally_trainable": true,
+    "estimated_training_gib": 1.21,
+    "notes": [
+      "v0.5.0 lineage: full, 111 tensors, 124.67M stored params, step 5010"
+    ]
+  },
+  {
+    "tier": "beta",
+    "advertised_unique_parameters": 303350784,
+    "stored_state_parameters": 336118784,
+    "tensor_count": 219,
+    "expected_full_tensors": 219,
+    "full_model": true,
+    "mode": "full",
+    "effective_step": 2260,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_beta",
+    "locally_trainable": true,
+    "estimated_training_gib": 3.51,
+    "notes": [
+      "v0.5.0 lineage: full, 219 tensors, 336.12M stored params, step 2260"
+    ]
+  },
+  {
+    "tier": "core",
+    "advertised_unique_parameters": 1128892416,
+    "stored_state_parameters": 52697088,
+    "tensor_count": 12,
+    "expected_full_tensors": 219,
+    "full_model": false,
+    "mode": "block_slice",
+    "effective_step": 15,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_core",
+    "locally_trainable": false,
+    "estimated_training_gib": 12.86,
+    "notes": [
+      "parent is not a full model",
+      "v0.4.0 lineage: block_slice, 12 tensors, 52.70M stored params"
+    ]
+  },
+  {
+    "tier": "pro",
+    "advertised_unique_parameters": 3319729152,
+    "stored_state_parameters": 113255424,
+    "tensor_count": 12,
+    "expected_full_tensors": 291,
+    "full_model": false,
+    "mode": "block_slice",
+    "effective_step": 15,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_pro",
+    "locally_trainable": false,
+    "estimated_training_gib": 37.47,
+    "notes": [
+      "parent is not a full model",
+      "v0.4.0 lineage: block_slice, 12 tensors, 113.26M stored params"
+    ]
+  },
+  {
+    "tier": "flagship",
+    "advertised_unique_parameters": 5802037248,
+    "stored_state_parameters": 193998848,
+    "tensor_count": 12,
+    "expected_full_tensors": 291,
+    "full_model": false,
+    "mode": "block_slice",
+    "effective_step": 15,
+    "parent_path": "/Volumes/One Touch/Helios/checkpoints/helios_flagship",
+    "locally_trainable": false,
+    "estimated_training_gib": 65.33,
+    "notes": [
+      "parent is not a full model",
+      "v0.4.0 lineage: block_slice, 12 tensors, 194.00M stored params"
+    ]
+  }
+]
