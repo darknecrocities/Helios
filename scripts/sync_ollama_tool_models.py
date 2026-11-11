@@ -9,12 +9,12 @@ from __future__ import annotations
 from pathlib import Path
 
 TIERS = [
-    ("nano", "qwen2.5vl:3b", 131072, 10000000.0, "17.84M", "7 layers, d_model=320, 8Q/2KV GQA heads", "v0.3.0-nano"),
-    ("alpha", "qwen2.5vl:3b", 131072, 10000000.0, "100.09M", "12 layers, d_model=768, 12Q/4KV GQA heads", "v0.3.0-alpha"),
-    ("beta", "qwen2.5vl:3b", 131072, 10000000.0, "303.35M", "24 layers, d_model=1024, 16Q/4KV GQA heads", "v0.3.0-beta"),
-    ("core", "qwen2.5vl:7b", 131072, 5000000.0, "1.13B", "24 layers, d_model=2048, 16Q/4KV GQA heads", "v0.3.0-core"),
-    ("pro", "qwen2.5vl:7b", 131072, 5000000.0, "3.32B", "32 layers, d_model=3072, 24Q/8KV GQA heads", "v0.3.0-pro"),
-    ("flagship", "qwen2.5vl:7b", 131072, 10000000.0, "5.80B", "32 layers, d_model=4096, 32Q/8KV GQA heads", "v0.3.0-flagship"),
+    ("nano", "qwen2.5:0.5b", 32768, 100000.0, "17.84M", "7 layers, d_model=320, 8Q/2KV GQA heads", "v0.3.0-nano"),
+    ("alpha", "qwen2.5:0.5b", 32768, 500000.0, "100.09M", "12 layers, d_model=768, 12Q/4KV GQA heads", "v0.3.0-alpha"),
+    ("beta", "qwen2.5:0.5b", 65536, 1000000.0, "303.35M", "24 layers, d_model=1024, 16Q/4KV GQA heads", "v0.3.0-beta"),
+    ("core", "qwen2.5-coder:1.5b", 131072, 5000000.0, "1.13B", "24 layers, d_model=2048, 16Q/4KV GQA heads", "v0.3.0-core"),
+    ("pro", "qwen2.5-coder:3b", 131072, 5000000.0, "3.32B", "32 layers, d_model=3072, 24Q/8KV GQA heads", "v0.3.0-pro"),
+    ("flagship", "qwen2.5-coder:7b", 131072, 10000000.0, "5.80B", "32 layers, d_model=4096, 32Q/8KV GQA heads", "v0.3.0-flagship"),
 ]
 
 SYSTEM = ("You are Helios {tier} ({params} parameters, {ver}, Context Window: {ctx} tokens, "
