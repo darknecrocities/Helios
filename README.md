@@ -31,14 +31,14 @@ HELIOS is an actively evolving project. Its architecture, training pipeline, and
 
 HELIOS currently has six model tiers, each targeting a different balance of model capacity, resource consumption, and application requirements.
 
-| Model | Parameters | Base Model | Context Window | Size | Capabilities |
+| Model | Parameters | Context Window | Size | Capabilities |
 |---|---:|---|---:|---:|---|
-| HELIOS Nano | 17.84M | qwen2.5:0.5b | 16K | 397 MB | Text, Tools |
-| HELIOS Alpha | 100.09M | qwen2.5:1.5b | 32K | ~1 GB | Text, Tools |
-| HELIOS Beta | 303.35M | qwen2.5:3b | 64K | ~2 GB | Text, Tools |
-| HELIOS Core | 1.13B | qwen2.5vl:7b | 32K | ~5.5 GB | Image, Text, Tools |
-| HELIOS Pro | 3.32B | qwen2.5vl:7b | 64K | ~5.5 GB | Image, Text, Tools |
-| HELIOS Flagship | 5.80B | qwen2.5vl:7b | 128K | ~5.5 GB | Image, Text, Tools |
+| HELIOS Nano | 17.84M | 16K | 397 MB | Text, Tools |
+| HELIOS Alpha | 100.09M | 32K | ~1 GB | Text, Tools |
+| HELIOS Beta | 303.35M | 64K | ~2 GB | Text, Tools |
+| HELIOS Core | 1.13B | 32K | ~5.5 GB | Image, Text, Tools |
+| HELIOS Pro | 3.32B | 64K | ~5.5 GB | Image, Text, Tools |
+| HELIOS Flagship | 5.80B | 128K | ~5.5 GB | Image, Text, Tools |
 
 *These are the project's documented model specifications. Actual Ollama package sizes, context limits, and runtime memory requirements depend on the published model artifacts and configuration.*
 
