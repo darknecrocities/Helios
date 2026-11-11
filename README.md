@@ -10,6 +10,13 @@ tags:
 pipeline_tag: text-generation
 ---
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/darknecrocities/Helios/blob/pretrained/notebooks/helios_colab_pipeline.ipynb)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg?logo=pytorch)](https://pytorch.org)
+[![Ollama](https://img.shields.io/badge/Ollama-Compatible-000000.svg?logo=ollama)](https://ollama.com/parejasarronkian/Helios)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-Model%20Hub-FFD21E.svg?logo=huggingface)](https://huggingface.co/Darknecrocities/Helios)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717.svg?logo=github)](https://github.com/darknecrocities/Helios)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # HELIOS — Open-Source AI Model Family
 
 **HELIOS** is an open-source, open-weight AI model ecosystem developed by **Arron Kian Parejas**. It is designed to explore efficient language modeling, semantic grounding, structured reasoning, and accessible local AI deployment.
