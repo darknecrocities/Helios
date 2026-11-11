@@ -111,6 +111,7 @@ def main():
     ap.add_argument("--temperature", type=float, default=2.0)
     ap.add_argument("--alpha", type=float, default=0.7)
     ap.add_argument("--max-steps", type=int, default=10000)
+    ap.add_argument("--checkpoint-every", type=int, default=500)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -161,6 +162,10 @@ def main():
             elapsed = (time.time() - t0) / 60
             print(f"step {step+1} loss {accum_loss:.4f} ce {ce:.4f} kl {kl:.4f} elapsed {elapsed:.1f}m", flush=True)
             accum_loss = 0.0
+        if (step + 1) % args.checkpoint_every == 0:
+            ckpt = out_dir / f"state_step_{step+1}.pt"
+            torch.save({"model_state_dict": student.state_dict(), "step": step+1, "teacher": args.teacher}, ckpt)
+            print(f"  checkpoint saved: {ckpt}", flush=True)
         step += 1
 
     import torch as _t
