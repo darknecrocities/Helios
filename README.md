@@ -1,3 +1,15 @@
+---
+language: en
+license: apache-2.0
+tags:
+- helios
+- language-model
+- ollama
+- multimodal
+- text-generation
+pipeline_tag: text-generation
+---
+
 # HELIOS — Open-Source AI Model Family
 
 **HELIOS** is an open-source, open-weight AI model ecosystem developed by **Arron Kian Parejas**. It is designed to explore efficient language modeling, semantic grounding, structured reasoning, and accessible local AI deployment.
