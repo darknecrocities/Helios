@@ -3,7 +3,7 @@
 # Target Registry: parejasarronkian/Helios:pro
 # Calibrated Context Window: 131,072 tokens | RoPE Base Theta: 5,000,000.0
 
-FROM llama3.2:latest
+FROM qwen2.5-coder:3b
 
 TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
 
