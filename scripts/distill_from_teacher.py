@@ -148,8 +148,10 @@ def main():
         if ids.size(1) < 8:
             continue
         with torch.no_grad():
-            t_logits = teacher(input_ids=ids).logits
-        s_logits = student(input_ids=ids).logits if hasattr(student, "logits") else student(ids).logits
+            with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type in ("cuda","mps")):
+                t_logits = teacher(input_ids=ids).logits
+        with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type in ("cuda","mps")):
+            s_logits = student(input_ids=ids).logits if hasattr(student, "logits") else student(ids).logits
         labels = ids.clone()
         loss, ce, kl = kd_loss(s_logits, t_logits, labels, args.temperature, args.alpha)
         loss = loss / args.accum
