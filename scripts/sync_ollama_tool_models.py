@@ -88,6 +88,7 @@ for name, base, ctx, theta, params, topo, ver in TIERS:
     lines.append("PARAMETER top_p 0.9")
     lines.append("PARAMETER top_k 40")
     lines.append("PARAMETER repeat_penalty 1.1")
+    lines.append("PARAMETER num_predict 2048")
     lines.append("")
     content = "\n".join(lines) + "\n"
     path = OUT / ("Modelfile" if name == "core" else "Modelfile." + name)
